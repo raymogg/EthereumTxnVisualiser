@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import { Graph } from 'react-d3-graph';
-
+import windowSize from 'react-window-size';
 
 const containerStyles = {
     width: '100%',
@@ -14,12 +14,14 @@ const paperStyle = {
     flex: 1,
     flexDirection: "row",
     width: '100%',
-    backgroundColor:"#241e56",
+    backgroundColor: "#241e56",
     textAlign: "center",
-    color:"white"
+    color: "white"
 };
 
 var myConfig = {
+    width: '1000',
+    height: '1000',
     nodeHighlightBehavior: true,
     node: {
         color: 'lightgreen',
@@ -33,12 +35,14 @@ var myConfig = {
 
 class CustomGraph extends Component {
     state = {
-      nodeSize: 0,
+        nodeSize: 0,
     };
 
-    setNodeSize(config) {
-      config.node.size = 5000 / this.props.graph.nodes.length;
-      return config;
+    setConfig(config) {
+        config.node.size = 5000 / this.props.graph.nodes.length;
+        config.width = this.props.windowWidth
+        config.height = this.props.windowHeight
+        return config;
     }
 
     componentDidMount = async () => {
@@ -60,8 +64,8 @@ class CustomGraph extends Component {
                 <Graph
                     id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                     data={this.props.graph}
-                    config={this.setNodeSize(myConfig)}
-                    style={{width: '100%!important', height:'100vh!important'}}
+                    config={this.setConfig(myConfig)}
+                    style={{ width: '100%!important', height: '100vh!important' }}
                 />
             )
         }
@@ -77,4 +81,4 @@ class CustomGraph extends Component {
     }
 }
 
-export default (CustomGraph);
+export default windowSize(CustomGraph);
