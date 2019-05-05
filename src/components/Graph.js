@@ -9,14 +9,17 @@ const containerStyles = {
 }
 
 const paperStyle = {
-    height: "100%",
+    height: "100vh",
     // marginTop: "5px",
     flex: 1,
     flexDirection: "row",
-    width: '100%'
+    width: '100%',
+    backgroundColor:"#241e56",
+    textAlign: "center",
+    color:"white"
 };
 
-const myConfig = {
+var myConfig = {
     nodeHighlightBehavior: true,
     node: {
         color: 'lightgreen',
@@ -30,7 +33,13 @@ const myConfig = {
 
 class CustomGraph extends Component {
     state = {
+      nodeSize: 0,
     };
+
+    setNodeSize(config) {
+      config.node.size = 5000 / this.props.graph.nodes.length;
+      return config;
+    }
 
     componentDidMount = async () => {
         //this.setState({graphData: this.props.graph})
@@ -45,13 +54,14 @@ class CustomGraph extends Component {
 
     getGraphRender = () => {
         if (!this.props.dataSet) {
-            return <h1>No Graph Data Yet </h1> 
+            return <h1>No Graph Data Yet </h1>
         } else {
             return (
                 <Graph
                     id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                     data={this.props.graph}
-                    config={myConfig}
+                    config={this.setNodeSize(myConfig)}
+                    style={{width: '100%!important', height:'100vh!important'}}
                 />
             )
         }
@@ -68,4 +78,3 @@ class CustomGraph extends Component {
 }
 
 export default (CustomGraph);
-
