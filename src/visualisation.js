@@ -62,6 +62,25 @@ function containsEdge(edges, edge) {
 	return null
 }
 
+function numberToColor(number) {
+	if (number < 5) {
+		//Dark red
+		return "#8e1c05"
+	} else if (number < 15) {
+		//Red
+		return "#ef2c04"
+	} else if (number < 30) {
+		//Orange
+		return "#d8822b"
+	} else if (number < 50) {
+		//Dark green
+		return "#1c6602"
+	} else {
+		//Green
+		return "#40f700"
+	}
+}
+
 
 function edgesOfTransactions(transactions) {
 	// return transactions.reduce(function (edges, transaction) {
@@ -82,14 +101,19 @@ function edgesOfTransactions(transactions) {
 			id: transaction.hash,
 			source: transaction.from,
 			target: transaction.to,
+			occurences: 1,
 			strokeWidth: 1,
-			color: '#000'
+			color: numberToColor(1)
 		}
 
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge) 
 		if (existentEdge != null) {
-			existentEdge.strokeWidth += 1
+			existentEdge.occurences += 1
+			if (existentEdge.occurences < 20) {
+				existentEdge.strokeWidth += 1
+			}
+			existentEdge.color = numberToColor(existentEdge.strokeWidth)
 		} else {
 			//Otherwise simply add the edge
 			edges.push(edge)
