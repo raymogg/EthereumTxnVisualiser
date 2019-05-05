@@ -26,7 +26,8 @@ var myConfig = {
     node: {
         color: 'lightgreen',
         size: 120,
-        highlightStrokeColor: 'blue'
+        highlightStrokeColor: 'blue',
+        renderLabel: false
     },
     link: {
         highlightColor: 'lightblue'

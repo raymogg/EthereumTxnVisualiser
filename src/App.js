@@ -85,7 +85,7 @@ class App extends Component {
         <div className="mainContainer"
           style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
           <AddressEntry searchHandler={this.searchHandler} />
-          <CustomGraph style={{backgroundColor: "black"}} graph={this.state.graph} dataSet={this.state.dataSet}/>
+          <CustomGraph style={{backgroundColor: "black"}} graph={this.state.graph} dataSet={this.state.dataSet} onHover={this.onMouseOverNode}/>
         </div>
 
       </div>
