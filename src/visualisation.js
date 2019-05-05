@@ -1,3 +1,5 @@
+import { array } from "prop-types";
+
 /**
  Javascript to handle the visualisation using Sigma.js
  A transaction is split across 2 Nodes and an Edge.
@@ -18,11 +20,11 @@
  * @param{id}: Integer. The sending node ID
  */
 class GraphNode {
-    constructor(id) {
-        this.id = id;
+	constructor(id) {
+		this.id = id;
 
-        this.position = new Point();
-    }
+		this.position = new Point();
+	}
 }
 
 /**
@@ -30,11 +32,11 @@ class GraphNode {
  * The position on the screen of the transaction
  */
 class Point {
-    constructor() {
-        // might not be great logic, but follows guidance from Sigma.js
-        this.x = Math.random();
-        this.y = Math.random();
-    }
+	constructor() {
+		// might not be great logic, but follows guidance from Sigma.js
+		this.x = Math.random();
+		this.y = Math.random();
+	}
 }
 
 /**
@@ -42,91 +44,132 @@ class Point {
  * @param{source}: String. The ID of the sending node.
  */
 class Edge {
-    constructor (source, destination, weight, id) {
-        this.source = source;
-        this.destination = destination;
-        this.weight = weight;
-        this.id = id;
-    }
+	constructor(source, destination, weight, id) {
+		this.source = source;
+		this.destination = destination;
+		this.weight = weight;
+		this.id = id;
+	}
+}
+
+function containsEdge(edges, edge) {
+	for (var i = 0; i < edges.length; i++) {
+		if (edges[i].source == edge.source && edges[i].target == edge.target) {
+			return edges[i]
+		}
+	}
+
+	return null
 }
 
 
 function edgesOfTransactions(transactions) {
-	return transactions.reduce(function(edges, transaction) {
-		return edges.concat({
+	// return transactions.reduce(function (edges, transaction) {
+	// 	return edges.concat({
+	// 		id: transaction.hash,
+	// 		source: transaction.from,
+	// 		target: transaction.to,
+	// 		size: 1,
+	// 		color: '#000'
+	// 	});
+	// }, [])
+
+	//TODO Weight graph edges by number of transactions between each account
+	var edges = []
+	for (var i = 0; i < transactions.length; i++) {
+		var transaction = transactions[i]
+		var edge = {
 			id: transaction.hash,
 			source: transaction.from,
 			target: transaction.to,
-			size: 1,
+			strokeWidth: 1,
 			color: '#000'
-		});
-	}, [])
+		}
+
+		//Check if this edge is already in the edges array
+		var existentEdge = containsEdge(edges, edge) 
+		if (existentEdge != null) {
+			existentEdge.strokeWidth += 1
+		} else {
+			//Otherwise simply add the edge
+			edges.push(edge)
+		}		
+	}
+	return edges
 }
 
 
 function nodesOfTransactions(transactions) {
-  return transactions.reduce(function(nodes, transaction) {
-		nodes[transaction.from] = {
-			id: transaction.from,
-			label: transaction.from,
-			// x: Math.random(),
-			// y: Math.random(),
-			size: 1,
-			color: "#000"
-		};
+	var nodes = []
+	for (var i = 0; i < transactions.length; i++) {
+		var transaction = transactions[i]
+		if (!nodes.includes(transaction.from)) {
+			nodes.push({
+				id: transaction.from,
+				//TODO any other node data needed for formatting goes here
+				// label: transaction.from,
+				// // x: Math.random(),
+				// // y: Math.random(),
+				// size: 1,
+				//color: "#000"
+			})
+		}
 
-		nodes[transaction.to] = {
-			id: transaction.to,
-			label: transaction.to,
-			// x: Math.random(),
-			// y: Math.random(),
-			size: 1,
-			color: "#000"
-		};
+		if (!nodes.includes(transaction.to)) {
+			nodes.push({
+				id: transaction.to,
+				//TODO any other node data needed for formatting goes here
+				// label: transaction.from,
+				// // x: Math.random(),
+				// // y: Math.random(),
+				// size: 1,
+				//color: "#000"
+			})
+		}
+	}
 
-		return nodes;
-	}, {});
+	return nodes;
 }
 
 
 export function processTransactions(transactions) {
-    let nodes = nodesOfTransactions(transactions)
-			/*
-			transactions.reduce(function(nodes, transaction) {
-        nodes[transaction.from] = {
-            id: transaction.from,
-            label: transaction.from,
-            x: Math.random(),
-            y: Math.random(),
-            size: 1,
-            color: "#000"
-        };
+	let nodes = nodesOfTransactions(transactions)
+	/*
+	transactions.reduce(function(nodes, transaction) {
+nodes[transaction.from] = {
+	id: transaction.from,
+	label: transaction.from,
+	x: Math.random(),
+	y: Math.random(),
+	size: 1,
+	color: "#000"
+};
 
-        nodes[transaction.to] = {
-            id: transaction.to,
-            label: transaction.to,
-            x: Math.random(),
-            y: Math.random(),
-            size: 1,
-            color: "#000"
-        };
+nodes[transaction.to] = {
+	id: transaction.to,
+	label: transaction.to,
+	x: Math.random(),
+	y: Math.random(),
+	size: 1,
+	color: "#000"
+};
 
-        return nodes;
-    }, {});
-			*/
+return nodes;
+}, {});
+	*/
 
-    // let edges = transactions.reduce(function(edges, transaction) {
-    //     return edges.concat({
-    //         id: transaction.hash,
-    //         source: transaction.from,
-    //         target: transaction.to,
-    //         size: 1,
-    //         color: '#000'
-    //     });
-    // }, []);
-		let edges = edgesOfTransactions(transactions)
+	// let edges = transactions.reduce(function(edges, transaction) {
+	//     return edges.concat({
+	//         id: transaction.hash,
+	//         source: transaction.from,
+	//         target: transaction.to,
+	//         size: 1,
+	//         color: '#000'
+	//     });
+	// }, []);
+	let edges = edgesOfTransactions(transactions)
 
-    return {nodes, edges};
+	return { nodes, edges };
 }
 
 

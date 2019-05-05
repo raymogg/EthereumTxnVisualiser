@@ -46,9 +46,10 @@ class App extends Component {
     let graph = processTransactions(transactions)
     console.log('searchHandler:graph:', graph)
 
-    var nodes = Object.keys(graph.nodes).map((id) => {
-      return { id: id }
-    })
+    // var nodes = Object.keys(graph.nodes).map((id) => {
+    //   return { id: id }
+    // })
+    var nodes = graph.nodes
 
     var edges = (graph.edges)
 
