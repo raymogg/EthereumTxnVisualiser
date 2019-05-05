@@ -27,23 +27,28 @@ class AddressEntry extends Component {
       console.log(fetchTransactions(this.onComplete, this.state.address));
     }
 
-    handleChange = (text) => {
-        this.setState({address: text})
+    handleChange = event => {
+        this.setState({ address: event.target.value })
+    }
+
+    onSearch = () => {
+        alert("Starting search for: " + this.state.address )
     }
 
     render() {
         return (
             <div>
-                <Paper style={paperStyle}>
-                    <TextField
-                        id="addess-entry"
-                        label="Start Address"
-                        value={this.state.address}
-                        onChange={this.handleChange}
-                        margin="normal"
-                    />
-                    <Button> Search </Button>
-                </Paper>
+                    <div style={{flex: 1, alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
+                        <TextField
+                            id="addess-entry"
+                            label="Start Address"
+                            value={this.state.address}
+                            onChange={this.handleChange}
+                            
+                        />
+                        <Button variant="contained" color="primary" style={{marginLeft: '10px'}}
+                        onClick={this.onSearch}> Search </Button>
+                    </div>
             </div>
         )
     }
