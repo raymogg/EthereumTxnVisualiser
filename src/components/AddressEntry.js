@@ -16,10 +16,14 @@ const paperStyle = {
 };
 
 class AddressEntry extends Component {
-
     state = {
         address: "0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a"
     };
+
+    constructor(props) {
+        super(props);
+        // console.log('addressentry:props:', props);
+    }
 
     componentDidMount = async (input) => {
         console.log('addressentry:input:', input);
@@ -39,7 +43,7 @@ class AddressEntry extends Component {
     }
 
     onSearch = () => {
-        alert("Starting search for: " + this.state.address)
+        this.props.searchHandler(this.state.address)
     }
 
     render() {
@@ -51,7 +55,6 @@ class AddressEntry extends Component {
                         label="Start Address"
                         value={this.state.address}
                         onChange={this.handleChange}
-
                     />
                     <Button variant="contained" color="primary" style={{ marginLeft: '10px' }}
                         onClick={this.onSearch}> Search </Button>

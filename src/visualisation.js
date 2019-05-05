@@ -69,8 +69,8 @@ function nodesOfTransactions(transactions) {
 		nodes[transaction.from] = {
 			id: transaction.from,
 			label: transaction.from,
-			x: Math.random(),
-			y: Math.random(),
+			// x: Math.random(),
+			// y: Math.random(),
 			size: 1,
 			color: "#000"
 		};
@@ -78,8 +78,8 @@ function nodesOfTransactions(transactions) {
 		nodes[transaction.to] = {
 			id: transaction.to,
 			label: transaction.to,
-			x: Math.random(),
-			y: Math.random(),
+			// x: Math.random(),
+			// y: Math.random(),
 			size: 1,
 			color: "#000"
 		};
