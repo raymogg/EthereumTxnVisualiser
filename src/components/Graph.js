@@ -2,13 +2,6 @@ import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import { Graph } from 'react-d3-graph';
 
-const data = {
-    nodes: [{ id: 'Harry' }, { id: 'Sally' }, { id: 'Alice' }],
-    links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice', strokeWidth: 5 }]
-};
-
-
-
 
 const containerStyles = {
     width: '100%',
@@ -37,22 +30,38 @@ const myConfig = {
 
 class CustomGraph extends Component {
     state = {
-        
     };
 
     componentDidMount = async () => {
+        //this.setState({graphData: this.props.graph})
+        console.log(this.props.graph.nodes)
+        console.log(this.props.graph.edges)
+    }
 
+    componentDidUpdate = async () => {
+        console.log(this.props.graph.nodes)
+        console.log(this.props.graph.edges)
+    }
+
+    getGraphRender = () => {
+        if (this.props.graph.nodes == [] && this.props.graph.links == []) {
+            return <h1>No Graph Data Yet </h1> 
+        } else {
+            return (
+                <Graph
+                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+                    data={this.props.graph}
+                    config={myConfig}
+                />
+            )
+        }
     }
 
     render() {
 
         return (
             <Paper style={paperStyle}>
-                <Graph
-                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                    data={data}
-                    config={myConfig}
-                />;
+                {this.getGraphRender()}
             </Paper>
         )
     }

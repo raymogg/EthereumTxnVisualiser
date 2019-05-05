@@ -6,8 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import { createMuiTheme } from '@material-ui/core/styles';
-import {fetchTransactions} from "./services/api";
-import {processTransactions} from "./visualisation";
+import { fetchTransactions } from "./services/api";
+import { processTransactions } from "./visualisation";
 
 const theme = createMuiTheme({
   palette: {
@@ -24,39 +24,59 @@ const theme = createMuiTheme({
   },
 });
 
+const data = {
+  nodes: [{ id: 'Harry' }, { id: 'Sally' }, { id: 'Alice' }],
+  links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice', strokeWidth: 5 }]
+};
+
 
 class App extends Component {
-	state = {
-		graph: {nodes: [], edges: []}
-	}
 
-	componentDidMount = async () => {
+  state = {
+    graph: data
+  }
+
+  componentDidMount = async () => {
 
   }
 
-	searchHandler = async (address) => {
-		let transactions = await fetchTransactions(address)
-		let graph = processTransactions(transactions)
-		console.log('searchHandler:graph:', graph)
-		this.setState({ graph })
-	}
+  searchHandler = async (address) => {
+    let transactions = await fetchTransactions(address)
+    let graph = processTransactions(transactions)
+    console.log('searchHandler:graph:', graph)
 
-	render() {
-  	return (
-			<div className="App">
-				<AppBar position="static" color='primary'>
-					<Toolbar>
-						<Typography variant="h5" color="inherit" style={{paddingRight: "50px"}}>
-							Transaction Visualizer
+    var nodes = Object.keys(graph.nodes).map((id) => {
+      return { id: id }
+    })
+
+    var edges = (graph.edges)
+
+    var graphData = {
+      nodes: nodes,
+      links: edges
+    }
+
+    this.setState({ graph: graphData }, alert("State updated"))
+
+
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <AppBar position="static" color='primary'>
+          <Toolbar>
+            <Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
+              Transaction Visualizer
 						</Typography>
-					</Toolbar>
-				</AppBar>
+          </Toolbar>
+        </AppBar>
 
-				<div className="mainContainer"
-						 style={{paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px'}}>
-					<AddressEntry searchHandler={this.searchHandler}/>
-					<CustomGraph graph={this.state.graph}/>
-				</div>
+        <div className="mainContainer"
+          style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
+          <AddressEntry searchHandler={this.searchHandler} />
+          <CustomGraph graph={this.state.graph} />
+        </div>
 
       </div>
     );
