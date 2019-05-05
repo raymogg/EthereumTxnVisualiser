@@ -2,10 +2,9 @@
 const API_KEY = `FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7`;
 
 
-export function fetchTransactions(onComplete, address) {
+export function fetchTransactions(address) {
 	return fetch('http://api.etherscan.io/api?module=account&action=txlist&address=' + address +'&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
 		.then(function(response) {
-			console.log("in here");
 			return response.json();
 		})
 		//Handling data here

@@ -50,12 +50,49 @@ class Edge {
     }
 }
 
-/**
- * Variables for nodes and edges
- */
+
+function edgesOfTransactions(transactions) {
+	return transactions.reduce(function(edges, transaction) {
+		return edges.concat({
+			id: transaction.hash,
+			source: transaction.from,
+			target: transaction.to,
+			size: 1,
+			color: '#000'
+		});
+	}, [])
+}
+
+
+function nodesOfTransactions(transactions) {
+  return transactions.reduce(function(nodes, transaction) {
+		nodes[transaction.from] = {
+			id: transaction.from,
+			label: transaction.from,
+			x: Math.random(),
+			y: Math.random(),
+			size: 1,
+			color: "#000"
+		};
+
+		nodes[transaction.to] = {
+			id: transaction.to,
+			label: transaction.to,
+			x: Math.random(),
+			y: Math.random(),
+			size: 1,
+			color: "#000"
+		};
+
+		return nodes;
+	}, {});
+}
+
 
 export function processTransactions(transactions) {
-    let nodes = transactions.reduce(function(nodes, transaction) {
+    let nodes = nodesOfTransactions(transactions)
+			/*
+			transactions.reduce(function(nodes, transaction) {
         nodes[transaction.from] = {
             id: transaction.from,
             label: transaction.from,
@@ -76,20 +113,56 @@ export function processTransactions(transactions) {
 
         return nodes;
     }, {});
+			*/
 
-    let edges = transactions.reduce(function(edges, transaction) {
-        return edges.concat({
-            id: transaction.hash,
-            source: transaction.from,
-            target: transaction.to,
-            size: 1,
-            color: '#000'
-        });
-    }, []);
+    // let edges = transactions.reduce(function(edges, transaction) {
+    //     return edges.concat({
+    //         id: transaction.hash,
+    //         source: transaction.from,
+    //         target: transaction.to,
+    //         size: 1,
+    //         color: '#000'
+    //     });
+    // }, []);
+		let edges = edgesOfTransactions(transactions)
 
     return {nodes, edges};
 }
 
+
+/**
+ * Accept an existing graph & a list of transactions
+ * calculate any nodes or edges that don't exist yet & add them into the graph.
+ *
+ * NOTE t this will mutate the graph
+ *
+ * TODO optimise this - it's pretty inefficient.
+ */
+export function addTransactions(graph, transactions) {
+	const { nodes, edges } = graph
+	// process nodes:
+	// get any 'from' or 'to' addresses from the xactions that are not currently in 'graph'
+	// create nodes from the different ones and add them into 'graph.nodes'
+	const transactionsWithNewNodes = transactions.filter(t => {
+		return !nodes.some(node => node.id !== t.from || node.id !== t.to)
+	});
+	const newNodes = nodesOfTransactions(transactionsWithNewNodes)
+
+	// process edges:
+	// get any diff transaction.hash (s) that are not in 'graph.edges'
+	// & add them them into 'graph.edges'
+	const transactionsWithNewEdges = transactions.filter(t => {
+		return !edges.some(edge => edge.id !== t.hash)
+	})
+	const newEdges = edgesOfTransactions(transactionsWithNewEdges)
+
+	// Perform the mutations
+	// Not yet sure if mutating the existing graph is the right way to go.
+	newNodes.forEach(n => graph.nodes.push(n))
+	newEdges.forEach(e => graph.edges.push(e))
+
+	return graph
+}
 
 
 // let [nodes, edges] = processList();
