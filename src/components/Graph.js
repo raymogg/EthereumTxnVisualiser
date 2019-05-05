@@ -45,13 +45,14 @@ class CustomGraph extends Component {
 
     getGraphRender = () => {
         if (!this.props.dataSet) {
-            return <h1>No Graph Data Yet </h1> 
+            return <h1>No Graph Data Yet </h1>
         } else {
             return (
                 <Graph
                     id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                     data={this.props.graph}
                     config={myConfig}
+                    onMouseOverNode={this.props.onHover}
                 />
             )
         }
@@ -68,4 +69,3 @@ class CustomGraph extends Component {
 }
 
 export default (CustomGraph);
-

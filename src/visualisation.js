@@ -9,7 +9,7 @@
 
 function containsEdge(edges, edge) {
 	for (var i = 0; i < edges.length; i++) {
-		if (edges[i].source == edge.source && edges[i].target == edge.target) {
+		if (edges[i].source === edge.source && edges[i].target === edge.target) {
 			return edges[i]
 		}
 	}
@@ -33,13 +33,13 @@ function edgesOfTransactions(transactions) {
 		}
 
 		//Check if this edge is already in the edges array
-		var existentEdge = containsEdge(edges, edge) 
+		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge != null) {
 			existentEdge.strokeWidth += 1
 		} else {
 			//Otherwise simply add the edge
 			edges.push(edge)
-		}		
+		}
 	}
 	return edges
 }
@@ -49,19 +49,21 @@ function nodesOfTransactions(transactions) {
 	var nodes = []
 	for (var i = 0; i < transactions.length; i++) {
 		var transaction = transactions[i]
+        //console.log('Transaction = ', transaction)
 		if (!nodes.includes(transaction.from)) {
 			nodes.push({
 				id: transaction.from,
+                ...transaction
 			})
 		}
 
 		if (!nodes.includes(transaction.to)) {
 			nodes.push({
 				id: transaction.to,
+                ...transaction
 			})
 		}
 	}
-
 	return nodes;
 }
 

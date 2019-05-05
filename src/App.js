@@ -41,6 +41,14 @@ class App extends Component {
 
   }
 
+  onMouseOverNode = (node) => {
+      // Display the node metadata on mouse hover
+      const n = this.state.graph.nodes.find(n => n.id === node)
+      console.log('NODE', n)
+      console.log('Node ID', n.id)
+      console.log('Node GAS', n.gas)
+  }
+
   searchHandler = async (address) => {
     let transactions = await fetchTransactions(address)
     let graph = processTransactions(transactions)
@@ -77,7 +85,7 @@ class App extends Component {
         <div className="mainContainer"
           style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
           <AddressEntry searchHandler={this.searchHandler} />
-          <CustomGraph graph={this.state.graph} dataSet={this.state.dataSet}/>
+          <CustomGraph graph={this.state.graph} dataSet={this.state.dataSet} onHover={this.onMouseOverNode}/>
         </div>
 
       </div>
