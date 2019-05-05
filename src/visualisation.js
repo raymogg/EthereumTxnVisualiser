@@ -54,10 +54,7 @@ class Edge {
  * Variables for nodes and edges
  */
 
-// var nodes = [];
-// var edges = [];
-
-function processList() {
+export function processTransactions(transactions) {
     // var list = require('./mock-data.js');
     var list = window.data;
 
@@ -96,14 +93,14 @@ function processList() {
     return [nodes, edges];
 }
 
-let [nodes, edges] = processList();
-
-let g = {
-    nodes: nodes,
-    edges: edges
-};
-
-s = new sigma({
-    graph: g,
-    container: "test"
-});
+// let [nodes, edges] = processList();
+//
+// let g = {
+//     nodes: nodes,
+//     edges: edges
+// };
+//
+// s = new sigma({
+//     graph: g,
+//     container: "test"
+// });

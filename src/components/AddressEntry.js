@@ -24,7 +24,11 @@ class AddressEntry extends Component {
       console.log(data)
     }
     componentDidMount = async () => {
+			// TODO: actuallly use the transactions.
       console.log(fetchTransactions(this.onComplete, this.state.address));
+			// const tansactions = await fetchTransactions(this.onComplete, this.state.address);
+			// const graphDS = processlist(transations);
+			// this.setState({ graphDS })
     }
 
     handleChange = event => {
