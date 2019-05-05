@@ -25,15 +25,16 @@ const theme = createMuiTheme({
 });
 
 const data = {
-  nodes: [{ id: 'Harry' }, { id: 'Sally' }, { id: 'Alice' }],
-  links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice', strokeWidth: 5 }]
+  nodes: [],
+  links: []
 };
 
 
 class App extends Component {
 
   state = {
-    graph: data
+    graph: data,
+    dataSet: false
   }
 
   componentDidMount = async () => {
@@ -56,7 +57,7 @@ class App extends Component {
       links: edges
     }
 
-    this.setState({ graph: graphData }, alert("State updated"))
+    this.setState({ graph: graphData, dataSet: true }, alert("State updated"))
 
 
   }
@@ -75,7 +76,7 @@ class App extends Component {
         <div className="mainContainer"
           style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
           <AddressEntry searchHandler={this.searchHandler} />
-          <CustomGraph graph={this.state.graph} />
+          <CustomGraph graph={this.state.graph} dataSet={this.state.dataSet}/>
         </div>
 
       </div>

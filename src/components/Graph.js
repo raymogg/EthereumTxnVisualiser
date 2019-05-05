@@ -44,7 +44,7 @@ class CustomGraph extends Component {
     }
 
     getGraphRender = () => {
-        if (this.props.graph.nodes == [] && this.props.graph.links == []) {
+        if (!this.props.dataSet) {
             return <h1>No Graph Data Yet </h1> 
         } else {
             return (
