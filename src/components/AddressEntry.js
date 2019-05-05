@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
 import {fetchTransactions} from "../services/api.js";
+import {processTransactions} from "../visualisation";
 
 const paperStyle = {
     height: "100%",
@@ -24,7 +25,14 @@ class AddressEntry extends Component {
       console.log(data)
     }
     componentDidMount = async () => {
-      console.log(fetchTransactions(this.onComplete, this.state.address));
+			// TODO: actuallly use the transactions.
+      // console.log(fetchTransactions(this.onComplete, this.state.address));
+			fetchTransactions(this.onComplete, this.state.address)
+				.then(function(transactions) {
+				  // console.log('transactions', transactions)
+					return processTransactions(transactions)
+				}).then(function({nodes, edges}) {
+				})
     }
 
     handleChange = event => {
@@ -40,7 +48,7 @@ class AddressEntry extends Component {
             <div>
                     <div style={{flex: 1, alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
                         <TextField
-                            id="addess-entry"
+                            id="address-entry"
                             label="Start Address"
                             value={this.state.address}
                             onChange={this.handleChange}
