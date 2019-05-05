@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
 import { Sigma, RandomizeNodePositions, RelativeSize } from 'react-sigma'
-import Tree from 'react-d3-tree';
+import {Tree, treeUtil} from 'react-d3-tree';
 
 const myTreeData = [
     {
@@ -37,7 +37,7 @@ const containerStyles = {
 
 const paperStyle = {
     height: "100%",
-    marginTop: "5px",
+    // marginTop: "5px",
     flex: 1,
     flexDirection: "row",
     marginLeft: '20px',
@@ -60,7 +60,6 @@ class Graph extends Component {
                 y: dimensions.height / 2
             }
         });
-
     }
 
     render() {

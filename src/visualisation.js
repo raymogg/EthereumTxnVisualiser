@@ -55,10 +55,7 @@ class Edge {
  */
 
 export function processTransactions(transactions) {
-    // var list = require('./mock-data.js');
-    var list = window.data;
-
-    let nodes = list.result.reduce(function(nodes, transaction) {
+    let nodes = transactions.reduce(function(nodes, transaction) {
         nodes[transaction.from] = {
             id: transaction.from,
             label: transaction.from,
@@ -80,7 +77,7 @@ export function processTransactions(transactions) {
         return nodes;
     }, {});
 
-    let edges = list.result.reduce(function(edges, transaction) {
+    let edges = transactions.reduce(function(edges, transaction) {
         return edges.concat({
             id: transaction.hash,
             source: transaction.from,
@@ -90,8 +87,10 @@ export function processTransactions(transactions) {
         });
     }, []);
 
-    return [nodes, edges];
+    return {nodes, edges};
 }
+
+
 
 // let [nodes, edges] = processList();
 //
