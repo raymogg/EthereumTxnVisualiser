@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
-import { fetchTransactions } from "../services/api.js";
-import { processTransactions, addTransactions } from "../visualisation";
+
 
 const paperStyle = {
     height: "100%",
@@ -22,20 +19,9 @@ class AddressEntry extends Component {
 
     constructor(props) {
         super(props);
-        // console.log('addressentry:props:', props);
     }
 
-    componentDidMount = async (input) => {
-        console.log('addressentry:input:', input);
-        // fetchTransactions(this.onComplete, this.state.address)
-        // 	.then(function(transactions) {
-        // 		return processTransactions(transactions)
-        // 	}).then(function({nodes, edges}) {
-        //
-        // 	})
-
-        let transactions = await fetchTransactions(this.state.address)
-        let graph = processTransactions(transactions)
+    componentDidMount = async () => {
     }
 
     handleChange = event => {
@@ -43,8 +29,11 @@ class AddressEntry extends Component {
     }
 
     onSearch = () => {
-        this.props.searchHandler(this.state.address)
-    }
+			this.props.searchHandler(this.state.address)
+				.catch(function(error) {
+					console.log('AddressEntry.onSearch ERROR', error);
+				})
+		}
 
     render() {
         return (
@@ -56,8 +45,13 @@ class AddressEntry extends Component {
                         value={this.state.address}
                         onChange={this.handleChange}
                     />
-                    <Button variant="contained" color="primary" style={{ marginLeft: '10px' }}
-                        onClick={this.onSearch}> Search </Button>
+									<Button
+										variant="contained"
+										color="primary"
+										style={{marginLeft: '10px'}}
+										onClick={this.onSearch}>
+										Search
+									</Button>
                 </div>
             </div>
         )

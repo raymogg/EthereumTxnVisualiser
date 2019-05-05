@@ -8,6 +8,7 @@ const containerStyles = {
     height: '80vh',
 }
 
+
 const paperStyle = {
     height: "100vh",
     // marginTop: "5px",
@@ -19,7 +20,8 @@ const paperStyle = {
     color: "white"
 };
 
-var myConfig = {
+
+const myConfig = {
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,
@@ -33,6 +35,7 @@ var myConfig = {
         highlightColor: 'lightblue'
     }
 };
+
 
 class CustomGraph extends Component {
     state = {
@@ -48,30 +51,30 @@ class CustomGraph extends Component {
 
     componentDidMount = async () => {
         //this.setState({graphData: this.props.graph})
-        console.log(this.props.graph.nodes)
-        console.log(this.props.graph.edges)
+        // console.log(this.props.graph.nodes)
+        // console.log(this.props.graph.edges)
     }
 
     componentDidUpdate = async () => {
-        console.log(this.props.graph.nodes)
-        console.log(this.props.graph.edges)
+        // console.log(this.props.graph.nodes)
+        // console.log(this.props.graph.edges)
     }
 
     getGraphRender = () => {
-        if (!this.props.dataSet) {
-            return <h1>No Graph Data Yet </h1>
-        } else {
-            return (
-                <Graph
-                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                    data={this.props.graph}
-                    config={this.setConfig(myConfig)}
-                    style={{ width: '100%!important', height: '100vh!important' }}
-                    onMouseOverNode={this.props.onHover}
-                    onClickNode={this.props.onClickNode}
-                />
-            )
-        }
+			if (!this.props.dataSet) {
+					return <h1>No Graph Data Yet</h1>
+			} else {
+					return (
+							<Graph
+									id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+									data={this.props.graph}
+									config={this.setConfig(myConfig)}
+									style={{ width: '100%!important', height: '100vh!important' }}
+									onMouseOverNode={this.props.onHover}
+									onClickNode={this.props.onClickNode}
+							/>
+					)
+			}
     }
 
     render() {
