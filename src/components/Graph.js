@@ -66,6 +66,7 @@ class CustomGraph extends Component {
                     data={this.props.graph}
                     config={this.setConfig(myConfig)}
                     style={{ width: '100%!important', height: '100vh!important' }}
+										onClickNode={this.props.onClickNode}
                 />
             )
         }

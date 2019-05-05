@@ -7,7 +7,7 @@ import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { fetchTransactions } from "./services/api";
-import { processTransactions } from "./visualisation";
+import {containsNode, processTransactions} from "./visualisation";
 
 const theme = createMuiTheme({
   palette: {
@@ -43,12 +43,10 @@ class App extends Component {
 
   searchHandler = async (address) => {
     let transactions = await fetchTransactions(address)
+		this.setState({ transactions })
     let graph = processTransactions(transactions)
     console.log('searchHandler:graph:', graph)
 
-    // var nodes = Object.keys(graph.nodes).map((id) => {
-    //   return { id: id }
-    // })
     var nodes = graph.nodes
 
     var edges = (graph.edges)
@@ -58,10 +56,32 @@ class App extends Component {
       links: edges
     }
 
-    this.setState({ graph: graphData, dataSet: true }, alert("State updated"))
-
-
+    this.setState({ graph: graphData, dataSet: true })
   }
+
+  onClickNode = (nodeId) => {
+		let state = this.state
+		console.log('onClickNode:', nodeId, state)
+
+		fetchTransactions(nodeId)
+			.then(transactions => {
+				console.log('transactions', transactions)
+				// add transaction to existing ones
+				for (const transaction of transactions) {
+					const newToNode = { id: transaction.to, ...transaction }
+					if (!containsNode(this.state.graph.nodes, newToNode)) {
+						console.log('adding:', newToNode)
+						this.state.graph.nodes.push(newToNode)
+					}
+
+					const newFromNode = { id: transaction.to, ...transaction }
+					if (!containsNode(this.state.graph.nodes, newFromNode)) {
+						console.log('adding:', newFromNode)
+						this.state.graph.nodes.push(newFromNode)
+					}
+				}
+			})
+	}
 
   render() {
     return (
@@ -77,7 +97,10 @@ class App extends Component {
         <div className="mainContainer"
           style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
           <AddressEntry searchHandler={this.searchHandler} />
-          <CustomGraph style={{backgroundColor: "black"}} graph={this.state.graph} dataSet={this.state.dataSet}/>
+					<CustomGraph graph={this.state.graph}
+											 style={{backgroundColor: "black"}}
+											 dataSet={this.state.dataSet}
+											 onClickNode={this.onClickNode}/>
         </div>
 
       </div>

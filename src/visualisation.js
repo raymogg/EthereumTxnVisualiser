@@ -6,8 +6,17 @@
 // http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7
 
 
+export function containsNode(nodes, node) {
+	for (let existingNode of nodes) {
+		if (existingNode.id === node.id) {
+			return true
+		}
+	}
+	return false
+}
 
-function containsEdge(edges, edge) {
+
+export function containsEdge(edges, edge) {
 	for (var i = 0; i < edges.length; i++) {
 		if (edges[i].source == edge.source && edges[i].target == edge.target) {
 			return edges[i]
