@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Graph from "./components/Graph.js"
+import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import { createMuiTheme } from '@material-ui/core/styles';
 
@@ -24,28 +24,28 @@ const theme = createMuiTheme({
 
 
 class App extends Component {
-	componentDidMount = async () => {
+  componentDidMount = async () => {
 
-	}
+  }
 
-	render() {
-  	return (
-			<div className="App">
-				<AppBar position="static"  color='primary'>
-					<Toolbar>
-						<Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
-							Transaction Visualizer
+  render() {
+    return (
+      <div className="App">
+        <AppBar position="static" color='primary'>
+          <Toolbar>
+            <Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
+              Transaction Visualizer
 						</Typography>
-					</Toolbar>
-				</AppBar>
-				<div className="mainContainer" style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px'}}>
-					<AddressEntry />
-					<Graph />
-				</div>
+          </Toolbar>
+        </AppBar>
+        <div className="mainContainer" style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
+          <AddressEntry />
+          <CustomGraph />
+        </div>
 
-			</div>
-		);
-	}
+      </div>
+    );
+  }
 }
 
 // function App() {

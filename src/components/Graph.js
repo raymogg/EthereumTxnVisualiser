@@ -1,50 +1,12 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
-import { Sigma, RandomizeNodePositions, RelativeSize } from 'react-sigma';
+import { Graph } from 'react-d3-graph';
 
-const myGraph = {
-	nodes: [{id: "n1", label: "Alice"}, {id: "n2", label: "Rabbit"}, {id: "n3", label: "Mad Hatter"}],
-	edges: [{id: "e1", source: "n1", target: "n2", label: "SEES", size: 1}, {
-		id: "e2",
-		source: "n1",
-		target: "n3",
-		label: "SEES",
-		size: 1
-	},
-		{id: "e3", source: "n1", target: "n3", label: "SEES", size: 4}]
+const data = {
+    nodes: [{ id: 'Harry' }, { id: 'Sally' }, { id: 'Alice' }],
+    links: [{ source: 'Harry', target: 'Sally' }, { source: 'Harry', target: 'Alice', strokeWidth: 5 }]
 };
 
-const myTreeData = [
-    {
-        name: 'Top Level',
-        attributes: {
-            keyA: 'val A',
-            keyB: 'val B',
-            keyC: 'val C',
-        },
-        children: [
-            {
-                name: 'Level 2: A',
-                attributes: {
-                    keyA: 'val A',
-                    keyB: 'val B',
-                    keyC: 'val C',
-                },
-            },
-            {
-                name: 'Level 2: B',
-            },
-        ],
-    },
-];
-
-const jsonData = [{ "Parent": "A", "Child": "B" },
-{ "Parent": "A", "Child": "B" },
-{ "Parent": "B", "Child": "C" }]
-
-const flatData = [["A", "B"],
-["A", "B"],
-["B", "C"]]
 
 
 
@@ -58,43 +20,43 @@ const paperStyle = {
     // marginTop: "5px",
     flex: 1,
     flexDirection: "row",
-    marginLeft: '20px',
-    marginRight: '20px',
-    marginTop: '20px',
-    marginBottom: '20px',
     width: '100%'
 };
 
-class Graph extends Component {
+const myConfig = {
+    nodeHighlightBehavior: true,
+    node: {
+        color: 'lightgreen',
+        size: 120,
+        highlightStrokeColor: 'blue'
+    },
+    link: {
+        highlightColor: 'lightblue'
+    }
+};
+
+class CustomGraph extends Component {
     state = {
-        graphData: myTreeData
+        
     };
 
     componentDidMount = async () => {
-        //const dimensions = this.treeContainer.getBoundingClientRect();
-        // this.setState({
-        //     translate: {
-        //         x: dimensions.width / 2,
-        //         y: dimensions.height / 2
-        //     }
-        // });
 
-        // treeUtil.parseFlatJSON(jsonData).then((data) => {
-        //     this.setState({ graphData: data })
-        // })
     }
 
     render() {
+
         return (
             <Paper style={paperStyle}>
-                <Sigma graph={myGraph} settings={{ drawEdges: true, clone: false, minEdgeSize: 1, maxEdgeSize: 5 }}>
-                    <RelativeSize initialSize={15} />
-                    <RandomizeNodePositions />
-                </Sigma>
+                <Graph
+                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+                    data={data}
+                    config={myConfig}
+                />;
             </Paper>
         )
     }
 }
 
-export default (Graph);
+export default (CustomGraph);
 
