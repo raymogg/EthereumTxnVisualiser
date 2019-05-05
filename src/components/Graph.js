@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField';
-import { Sigma, RandomizeNodePositions, RelativeSize } from 'react-sigma'
-import Tree from 'react-d3-tree';
+import Tree, { treeUtil } from 'react-d3-tree';
+import { Sigma, RandomizeNodePositions, RelativeSize } from 'react-sigma';
+const myGraph = {nodes:[{id:"n1", label:"Alice"}, {id:"n2", label:"Rabbit"}, {id:"n3", label:"Mad Hatter"}],
+     edges:[{id:"e1",source:"n1",target:"n2",label:"SEES", size: 1}, {id:"e2",source:"n1",target:"n3",label:"SEES", size: 1},
+     {id:"e3",source:"n1",target:"n3",label:"SEES", size: 4}]};
 
 const myTreeData = [
     {
@@ -30,6 +30,16 @@ const myTreeData = [
     },
 ];
 
+const jsonData = [{ "Parent": "A", "Child": "B" },
+{ "Parent": "A", "Child": "B" },
+{ "Parent": "B", "Child": "C" }]
+
+const flatData = [["A", "B"],
+["A", "B"],
+["B", "C"]]
+
+
+
 const containerStyles = {
     width: '100%',
     height: '80vh',
@@ -49,30 +59,31 @@ const paperStyle = {
 
 class Graph extends Component {
     state = {
-
+        graphData: myTreeData
     };
 
     componentDidMount = async () => {
-        const dimensions = this.treeContainer.getBoundingClientRect();
-        this.setState({
-            translate: {
-                x: dimensions.width / 2,
-                y: dimensions.height / 2
-            }
-        });
+        //const dimensions = this.treeContainer.getBoundingClientRect();
+        // this.setState({
+        //     translate: {
+        //         x: dimensions.width / 2,
+        //         y: dimensions.height / 2
+        //     }
+        // });
+
+        // treeUtil.parseFlatJSON(jsonData).then((data) => {
+        //     this.setState({ graphData: data })
+        // })
 
     }
 
     render() {
         return (
             <Paper style={paperStyle}>
-                <div style={containerStyles} ref={tc => (this.treeContainer = tc)}>
-                    <Tree
-                        data={myTreeData}
-                        translate={this.state.translate}
-                        orientation={'vertical'}
-                    />
-                </div>
+                <Sigma graph={myGraph} settings={{ drawEdges: true, clone: false, minEdgeSize: 1, maxEdgeSize: 5 }}>
+                    <RelativeSize initialSize={15} />
+                    <RandomizeNodePositions />
+                </Sigma>
             </Paper>
         )
     }
