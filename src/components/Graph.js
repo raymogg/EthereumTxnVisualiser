@@ -14,40 +14,6 @@ const myGraph = {
 		{id: "e3", source: "n1", target: "n3", label: "SEES", size: 4}]
 };
 
-const myTreeData = [
-    {
-        name: 'Top Level',
-        attributes: {
-            keyA: 'val A',
-            keyB: 'val B',
-            keyC: 'val C',
-        },
-        children: [
-            {
-                name: 'Level 2: A',
-                attributes: {
-                    keyA: 'val A',
-                    keyB: 'val B',
-                    keyC: 'val C',
-                },
-            },
-            {
-                name: 'Level 2: B',
-            },
-        ],
-    },
-];
-
-const jsonData = [{ "Parent": "A", "Child": "B" },
-{ "Parent": "A", "Child": "B" },
-{ "Parent": "B", "Child": "C" }]
-
-const flatData = [["A", "B"],
-["A", "B"],
-["B", "C"]]
-
-
-
 const containerStyles = {
     width: '100%',
     height: '80vh',
@@ -65,10 +31,14 @@ const paperStyle = {
     width: '100%'
 };
 
+
 class Graph extends Component {
-    state = {
-        graphData: myTreeData
-    };
+		constructor(props) {
+			super(props)
+			console.log('Graph:constructor:props:', props)
+			// this.setState({ graph: props.graph })
+		}
+
 
     componentDidMount = async () => {
         //const dimensions = this.treeContainer.getBoundingClientRect();
@@ -85,9 +55,11 @@ class Graph extends Component {
     }
 
     render() {
+			console.log('graph:render:', this.props.graph);
+
         return (
             <Paper style={paperStyle}>
-                <Sigma graph={myGraph} settings={{ drawEdges: true, clone: false, minEdgeSize: 1, maxEdgeSize: 5 }}>
+                <Sigma graph={this.props.graph} settings={{ drawEdges: true, clone: false, minEdgeSize: 1, maxEdgeSize: 5 }}>
                     <RelativeSize initialSize={15} />
                     <RandomizeNodePositions />
                 </Sigma>
