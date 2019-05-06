@@ -53,6 +53,8 @@ class App extends Component {
         dataSet: false,
     	/* object with 'nodes' and 'links' properties */
         graph: emptyGraph,
+
+        selectedNode: {}
   }
 
   componentDidMount = async () => {
@@ -125,6 +127,7 @@ class App extends Component {
                     <div className="node-info">
 									<span>Node</span>
     					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'square'}}>
+                                    
     								</ul>
 					</div>
 					<AddressEntry searchHandler={this.searchHandler}/>
