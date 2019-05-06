@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import { Graph } from 'react-d3-graph';
+import { DotLoader } from 'react-spinners';
+
 import windowSize from 'react-window-size';
 import "./AddressEntry.css";
 
@@ -59,17 +61,23 @@ class CustomGraph extends Component {
               </div>
             );
 			} else {
-					return (
-							<Graph
-									id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-									data={this.props.graph}
-									config={this.setConfig(myConfig)}
-									style={{ width: '100%!important', height: '100vh!important'}}
-									onMouseOverNode={this.props.onHoverNode}
-									onClickNode={this.props.onClickNode}
-                  onClickLink={this.props.onClickLink}
-							/>
-					)
+          console.log(this.props.isLoading);
+          if(this.props.isLoading == true) {
+            console.log("loading");
+            return <div> <DotLoader /> </div>
+          } else {
+  					return (
+  							<Graph
+  									id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+  									data={this.props.graph}
+  									config={this.setConfig(myConfig)}
+  									style={{ width: '100%!important', height: '100vh!important'}}
+  									onMouseOverNode={this.props.onHoverNode}
+  									onClickNode={this.props.onClickNode}
+                    onClickLink={this.props.onClickLink}
+  							/>
+  					)
+          }
 			}
     }
 

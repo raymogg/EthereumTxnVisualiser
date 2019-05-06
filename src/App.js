@@ -52,6 +52,7 @@ class App extends Component {
     dataSet: false,
 		/* object with 'nodes' and 'links' properties */
     graph: emptyGraph,
+		isLoading: true
   }
 
   componentDidMount = async () => {
@@ -66,14 +67,16 @@ class App extends Component {
 
 
   searchHandler = async (address) => {
+		this.setState({isLoading: true});
 		this.fetchTransactionsThenUpdateGraph(address)
-			.catch(err => console.log('App.searchHandler ERROR:', err))
+			.catch(err => console.log('App.searchHandler ERROR:', err));
   }
 
 
   onClickNode = async (accountAddress) => {
+		this.setState({isLoading: true});
 		this.fetchTransactionsThenUpdateGraph(accountAddress)
-			.catch(err => console.log('App.onClickNode ERROR:', err))
+			.catch(err => console.log('App.onClickNode ERROR:', err));
 	}
 
 	onClickLink = async (source, target) => {
@@ -99,7 +102,7 @@ class App extends Component {
 		}
 
 		// This triggers update/re-render so changes reflected in graph sub-component
-		this.setState({ graph: graphData, dataSet: true })
+		this.setState({ graph: graphData, dataSet: true, isLoading: false })
 	}
 
 
@@ -110,7 +113,7 @@ class App extends Component {
           style={mainContainerStyle}>
 					<div className="legend">
 									<span>Transactions</span>
-					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'square'}}>
+					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'none'}}>
 					 				<li style={{background:'red'}}>10 -20</li>
 									<li style={{background: 'green'}}>20 - 30</li>
 								</ul>
@@ -124,10 +127,8 @@ class App extends Component {
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
 											 onHover={this.onMouseOverNode}
-											 onClickLink={this.onClickLink}/>
-
-
-
+											 onClickLink={this.onClickLink}
+											 isLoading={this.state.isLoading}/>
         </div>
       </div>
     );
