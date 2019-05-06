@@ -49,6 +49,13 @@ const noNodeSelected = {
     numTo: 0,
     numFrom: 0,
     netValue: 0
+};
+
+const noLinkSelected = {
+    source: "No source",
+    destination: "No destination",
+    number: 0,
+    value: 0
 }
 
 
@@ -240,7 +247,7 @@ class App extends Component {
                             <div><h4>{this.state.selectedNode.id}</h4></div>
                         </div>
                         <div class="row">
-                            <div>Transactions Incoming</div>
+                            <div>Transactions In</div>
                             <div>{this.state.selectedNode.numFrom}</div>
                         </div>
                         <div class="row">
