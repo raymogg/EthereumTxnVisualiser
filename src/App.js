@@ -104,9 +104,7 @@ class App extends Component {
 
         // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
-
-        console.log('config', this.state.graph)
-
+        
         // after this is done, where do we find how the fuck to write for when we stop hovering
     }
 
