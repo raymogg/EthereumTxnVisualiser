@@ -60,10 +60,20 @@
   margin: 0;
 }
 
-.selected-node div {
+.selected-node .row {
   padding: 5px;
 }
 
 .selected-node div:first-of-type {
   padding-top: 0;
+}
+
+.selected-node > .row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+}
+
+.selected-node > .row > div {
+  height: auto;
 }
