@@ -19,7 +19,7 @@ const myConfig = {
     height: '1000',
     nodeHighlightBehavior: true,
     linkHighlightBehavior: true,
-    directed: true,
+    //directed: true,
     node: {
         color: 'lightgreen',
         highlightStrokeColor: 'blue',
