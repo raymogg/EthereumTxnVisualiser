@@ -107,9 +107,12 @@ class App extends Component {
         // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
 
-        console.log('config', this.state.graph)
-
         // after this is done, where do we find how the fuck to write for when we stop hovering
+    }
+
+    onMouseOutNode = () => {
+        // Update the selected node property of state to update div
+        this.setState({selectedNode: noNodeSelected});
     }
 
 
@@ -161,15 +164,15 @@ class App extends Component {
                     <div className="selected-node">
                         <h4>{this.state.selectedNode.id}</h4>
                         <div class="row">
-                            <div>Transactions In</div>
+                            <div>Outgoing Transactions</div>
                             <div>{this.state.selectedNode.numFrom}</div>
                         </div>
                         <div class="row">
-                            <div>Transactions Out</div>
+                            <div>Ingoing Transaction</div>
                             <div>{this.state.selectedNode.numTo}</div>
                         </div>
                         <div class="row">
-                            <div>Net Transfer Value</div>
+                            <div>Node Net Value</div>
                             <div>{this.state.selectedNode.netValue}</div>
                         </div>
                     </div>
@@ -179,6 +182,7 @@ class App extends Component {
                                  dataSet={this.state.dataSet}
                                  onClickNode={this.onClickNode}
                                  onHoverNode={this.onMouseOverNode}
+                                 offHoverNode={this.onMouseOutNode}
                                  onClickLink={this.onClickLink}
 																 isLoading={this.state.isLoading}/>
                 </div>

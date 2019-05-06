@@ -87,6 +87,7 @@ class CustomGraph extends Component {
   									config={this.setConfig(myConfig)}
   									style={{ width: '100%!important', height: '100vh!important'}}
   									onMouseOverNode={this.props.onHoverNode}
+                                    onMouseOutNode={this.props.offHoverNode}
   									onClickNode={this.props.onClickNode}
                     onClickLink={this.props.onClickLink}
   							/>
