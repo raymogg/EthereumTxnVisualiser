@@ -15,7 +15,6 @@ import {
 const mainContainerStyle = {
     height: "100vh",
     // marginTop: "5px",
-    display: 'block',
     width: '100%',
     backgroundColor: "#241e56",
     textAlign: "center",
@@ -109,6 +108,9 @@ class App extends Component {
 					 				<li style={{background:'red'}}>10 -20</li>
 									<li style={{background: 'green'}}>20 - 30</li>
 								</ul>
+					</div>
+					<div className="nodeInformation">
+
 					</div>
 					<AddressEntry searchHandler={this.searchHandler}/>
 					<CustomGraph graph={this.state.graph}
