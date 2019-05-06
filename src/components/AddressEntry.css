@@ -15,6 +15,11 @@
   margin: 5px;
 }
 
+.landingPage ::selection {
+  color: #241e56;
+  background: #fff;
+}
+
 .landingPage h2 {
   margin: 5px;
 }
@@ -41,7 +46,6 @@
 }
 
 .search-button {
-  background-color: cyan;
   margin-left: 10px;
   flex-direction: column;
   justify-content:center;
@@ -56,10 +60,15 @@
 
 .search-button button {
   padding: 8px;
+  border-radius: 10px;
+  background: none;
+  color: #fff;
+  border: 1px solid #fff;
 }
 
 .search-button button:hover{
-  background-color: green;
+  color: #241e56;
+  background-color: #fff;
 }
 
 .search > div > * {
