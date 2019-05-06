@@ -15,7 +15,6 @@ import {
 const mainContainerStyle = {
     height: "100vh",
     // marginTop: "5px",
-    display: 'block',
     width: '100%',
     backgroundColor: "#241e56",
     textAlign: "center",
@@ -79,12 +78,6 @@ class App extends Component {
 
 	onClickLink = async (source, target) => {
 		const link = getLink(source, target, this.state.graph.links)
-		link.renderLabel = true
-		const graphData = {
-			nodes: this.state.graph.nodes,
-			links: this.state.graph.links,
-		}
-		this.setState({ graph: graphData, dataSet: true })
 		//link.labelProperty = `Link between ${link.source} and ${link.target}`
 		console.log(`Clicked link, the number of transactions is ${link.occurences}`)
 	}
@@ -121,6 +114,9 @@ class App extends Component {
 					 				<li style={{background:'red'}}>10 -20</li>
 									<li style={{background: 'green'}}>20 - 30</li>
 								</ul>
+					</div>
+					<div className="nodeInformation">
+
 					</div>
 					<AddressEntry searchHandler={this.searchHandler}/>
 					<CustomGraph graph={this.state.graph}

@@ -18,20 +18,20 @@ export function containsEdge(edges, edge) {
 
 function numberToColor(number) {
 	if (number < 5) {
-		//Dark red
-		return "#8e1c05"
+		// blue 6c757d
+		return "#007bff";
 	} else if (number < 15) {
-		//Red
-		return "#ef2c04"
+		// green
+		return "#28a745";
 	} else if (number < 30) {
-		//Orange
-		return "#d8822b"
+		// yellow
+		return "#ffc107";
 	} else if (number < 50) {
-		//Dark green
-		return "#1c6602"
+		// red
+		return "#dc3545";
 	} else {
-		//Green
-		return "#40f700"
+		// grey
+		return "#6c757d";
 	}
 }
 
@@ -127,11 +127,18 @@ export function addressTransactionCount(transactions, addresses) {
 	addresses.forEach(function (address) {
 		let addressCount = 0;
 
-		for (const transaction in transactions) {
-			if (transactions[transaction].from === address || transactions[transaction].to === address) {
+		// updated version of check
+		transactions.forEach(function (transaction) {
+			if (transaction.to === address || transaction.from === address) {
 				addressCount++;
 			}
-		}
+		});
+
+		// for (const transaction in transactions) {
+		// 	if (transactions[transaction].from === address || transactions[transaction].to === address) {
+		// 		addressCount++;
+		// 	}
+		// }
 
 		addressFrequencies.push({
 			id: address,
