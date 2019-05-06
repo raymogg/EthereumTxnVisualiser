@@ -49,6 +49,13 @@ const noNodeSelected = {
     numTo: 0,
     numFrom: 0,
     netValue: 0
+};
+
+const noLinkSelected = {
+    source: "No source",
+    destination: "No destination",
+    number: 0,
+    value: 0
 }
 
 

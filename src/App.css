@@ -77,3 +77,7 @@
 .selected-node > .row > div {
   height: auto;
 }
+
+.selected-node > .row > div:first-of-type {
+  text-align: right;
+}
