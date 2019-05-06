@@ -80,6 +80,10 @@
   border: 1px solid #fff;
 }
 
+.search-button button:focus {
+  outline: none;
+}
+
 .search-button button:hover{
   color: #241e56;
   background-color: #fff;
