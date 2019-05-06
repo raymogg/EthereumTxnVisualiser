@@ -168,7 +168,7 @@ class App extends Component {
                             <div>{this.state.selectedNode.numFrom}</div>
                         </div>
                         <div class="row">
-                            <div>Incoming Transaction</div>
+                            <div>Incoming Transactions</div>
                             <div>{this.state.selectedNode.numTo}</div>
                         </div>
                         <div class="row">
