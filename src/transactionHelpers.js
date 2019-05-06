@@ -219,6 +219,7 @@ export function transactionsForAccount(accountAddress, transactions) {
 
 	// TODO returning the transactions to and from the account of interest as a
 	//  single list - however they could be returned as separate lists.
-	//  eg. return { fromAccount: transactionsFromAccount, toAccount: transactionsToAccount }
-	return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
+	//  eg.
+	return { fromAddress: transactionsFromAccount, toAddress: transactionsToAccount }
+	//return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
 }
