@@ -151,12 +151,6 @@ class App extends Component {
                         <div>To: {this.state.selectedNode.numTo}</div>
                         <div>Net Value: {this.state.selectedNode.netValue}</div>
                     </div>
-                    <div className="node-info">
-                        <span>Node</span>
-                        <ul style={{padding: '0px', margin: '0px', listStyleType: 'square'}}>
-
-                        </ul>
-                    </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
                                  style={{backgroundColor: "black",}}
