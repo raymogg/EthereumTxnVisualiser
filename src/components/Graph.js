@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import { Graph } from 'react-d3-graph';
 import { DotLoader } from 'react-spinners';
+import Particles from 'react-particles-js';
+
+
 
 import windowSize from 'react-window-size';
 import "./AddressEntry.css";
@@ -73,10 +76,38 @@ class CustomGraph extends Component {
             );
         } else {
 					return (
+            <div>
+              <div className="particles">
+              <Particles
+                params={{
+                  "particles": {
+                      "number": {
+                          "value": 100
+                      },
+                      "size": {
+                          "value": 3
+                      }
+                  },
+                  "interactivity": {
+                      "events": {
+                          "onhover": {
+                              "enable": true,
+                              "mode": "repulse"
+                          }
+                      }
+                  }
+              }}
+              width={this.props.windowWidth}
+              height={this.props.windowHeight}
+              style={{zIndex:1}}/>
+              </div>
               <div className="landingPage">
+
                 <h1>Ethereum Visualizer</h1>
                 <h2>Search an Eth Address and trace its transactions</h2>
+
               </div>
+            </div>
             );
           }
 			} else {

@@ -1,3 +1,10 @@
+.particles {
+  display: block;
+  z-index: 1;
+  height: 100vh;
+  top: 0;
+}
+
 .landingPage {
   display: flex;
   flex-direction: column;
@@ -5,14 +12,18 @@
   align-items: center;
   justify-content: center;
   align-content: center;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
   top: 0;
+  z-index: 2;
+  position: absolute;
 }
 
 .landingPage h1 {
   font-size: 50px;
   font-weight: bold;
   margin: 5px;
+  z-index: 2;
 }
 
 .landingPage ::selection {
