@@ -19,6 +19,8 @@ const myConfig = {
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,
+    linkHighlightBehavior: true,
+    //directed: true,
     node: {
         color: 'lightgreen',
         highlightStrokeColor: 'blue',
@@ -28,7 +30,8 @@ const myConfig = {
     },
     link: {
         highlightColor: 'lightblue',
-        renderLabel: true
+        renderLabel: true,
+        fontColor: "white",
     }
 };
 
@@ -81,17 +84,24 @@ class CustomGraph extends Component {
                                 params={{
                                     "particles": {
                                         "number": {
-                                            "value": 100
+                                            "value": 130
                                         },
                                         "size": {
                                             "value": 3
+                                        },
+                                        "color": {
+                                          "value": "#90EE90"
                                         }
                                     },
                                     "interactivity": {
                                         "events": {
                                             "onhover": {
                                                 "enable": true,
-                                                "mode": "repulse"
+                                                "mode": "grab"
+                                            },
+                                            "onclick": {
+                                                "enable": true,
+                                                "node": "push"
                                             }
                                         }
                                     }
@@ -114,6 +124,7 @@ class CustomGraph extends Component {
                     config={this.setConfig(myConfig)}
                     style={{width: '100%!important', height: '100vh!important'}}
                     onMouseOverNode={this.props.onHoverNode}
+                    onClickGraph={this.props.onClickGraph}
                     onClickNode={this.props.onClickNode}
                     onClickLink={this.props.onClickLink}
                 />
