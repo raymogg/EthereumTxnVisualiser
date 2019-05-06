@@ -45,7 +45,7 @@ const emptyGraph = {
 }
 
 const noNodeSelected = {
-    id: "None Selected",
+    id: "Hover over node",
     numTo: 0,
     numFrom: 0,
     netValue: 0
@@ -158,9 +158,7 @@ class App extends Component {
                 <div className="mainContainer"
                      style={mainContainerStyle}>
                     <div className="selected-node">
-                        <div class="row">
-                            <div><h4>{this.state.selectedNode.id}</h4></div>
-                        </div>
+                        <h4>{this.state.selectedNode.id}</h4>
                         <div class="row">
                             <div>Outgoing Transactions</div>
                             <div>{this.state.selectedNode.numFrom}</div>
@@ -186,11 +184,6 @@ class App extends Component {
             </div>
         );
     }
-}
-
-
-function accountHashToAccountNode(accountHash) {
-    return {id: accountHash}
 }
 
 
