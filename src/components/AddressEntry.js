@@ -28,17 +28,19 @@ class AddressEntry extends Component {
     render() {
         return (
             <div>
-                <div style={{alignItems: 'center', justifyContent: 'center',zIndex:'1'}}>
+                <div style={{position:'relative', top:'10px', margin:'auto'}}>
                     <TextField
                         id="address-entry"
                         label="Start Address"
                         value={this.state.address}
                         onChange={this.handleChange}
+                        autoFocus={true}
+                        style={{backgroundColor:'white', width:'380px'}}
                     />
 									<Button
 										variant="contained"
 										color="primary"
-										style={{marginLeft: '10px', zIndex: "4"}}
+										style={{marginLeft: '10px', padding: '10px'}}
 										onClick={this.onSearch}>
 										Search
 									</Button>

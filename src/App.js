@@ -20,6 +20,7 @@ const mainContainerStyle = {
     backgroundColor: "#241e56",
     textAlign: "center",
     color: "white",
+		position:'relative'
 };
 
 const theme = createMuiTheme({
@@ -50,7 +51,7 @@ class App extends Component {
 		transactions: [],
 		/* Whether the graph has gone through the initial load yet */
         dataSet: false,
-		/* object with 'nodes' and 'links' properties */
+    	/* object with 'nodes' and 'links' properties */
         graph: emptyGraph,
   }
 
@@ -59,10 +60,18 @@ class App extends Component {
 
 
   onMouseOverNode = (accountAddress) => {
-  	    // Display the accountId metadata on mouse hover
+  	    // Display the accountId and number of transactions involved with
+        // this address
 		const transactions = transactionsForAccount(accountAddress, this.state.transactions)
 		console.log(`Transactions for account (hover) ${accountAddress}:`, transactions)
-        //this.state.graph.nodes
+
+        // var hoveredNode =
+
+        // const from_address = transactions.fromAccount.length;
+        // const to_address = transactions.toAccount.length;
+        // const accountID = accountAddress;
+        // console.log(accountID, number_of_transactions)
+        console.log('config', this.state.graph.update)
   }
 
 
@@ -89,7 +98,7 @@ class App extends Component {
 		const accountHashes = uniqueAccountAddresses(this.state.transactions)
 		const accountLinks = uniqueAccountLinks(this.state.transactions)
 		const graphData = {
-			nodes: accountHashes.map(accountHashToAccountNode),
+			nodes: accountHashes,
 			links: accountLinks,
 		}
 
@@ -101,23 +110,22 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-
-
         <div className="mainContainer"
           style={mainContainerStyle}>
-					<div style={{right:'5px', top: '5px', padding: '30px', backgroundColor: 'white'
-												, poistion:'absolute', float:"right", marginTop:'30px', marginRight:'20px'}}>
-								<span>Legend</span>
+					<div className="legend">
+									<span>Transactions</span>
+					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'square'}}>
+					 				<li style={{background:'red'}}>10 -20</li>
+									<li style={{background: 'green'}}>20 - 30</li>
+								</ul>
 					</div>
-          <AddressEntry searchHandler={this.searchHandler}
-					style={{backgroundColor:"white"}}/>
+					<AddressEntry searchHandler={this.searchHandler}/>
 					<CustomGraph graph={this.state.graph}
-											 style={{backgroundColor: "black", zIndex:2}}
-											 dataSet={this.state.dataSet}
-											 onClickNode={this.onClickNode}
-											 onHoverNode={this.onMouseOverNode}/>
+								 style={{backgroundColor: "black",}}
+								 dataSet={this.state.dataSet}
+								 onClickNode={this.onClickNode}
+								 onHoverNode={this.onMouseOverNode}/>
         </div>
-
       </div>
     );
   }
