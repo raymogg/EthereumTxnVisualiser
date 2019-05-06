@@ -54,7 +54,7 @@ export function uniqueAccountLinks(transactions) {
 			target: transaction.to,
 			occurences: 1,
 			strokeWidth: 1,
-			color: numberToColor(1)
+			color: numberToColor(1),
 		}
 
 		//Check if this edge is already in the edges array
@@ -72,6 +72,23 @@ export function uniqueAccountLinks(transactions) {
 	}
 	return edges
 }
+
+/**
+ * Finds the number of transaction occurences between a source and a target
+ *
+ * @param source - source address
+ * @param target - target address
+ * @param accountLinks - list of all unique account links
+ */
+ export function linkOccurences(source, target, accountLinks) {
+	 var count = accountLinks.length
+	 for(var i = 0; i < count; i++) {
+		 var link = accountLinks[i];
+		 if (link.source == source && link.target == target) {
+			 return link.occurences
+		 }
+	 }
+ }
 
 
 /**
@@ -92,7 +109,38 @@ export function uniqueAccountAddresses(transactions) {
 			accountAddresses.push(transaction.to)
 		}
 	}
-	return accountAddresses
+
+	// unique addresses with their relative frequencies
+	const nodeDetails = addressTransactionCount(transactions, accountAddresses);
+	return nodeDetails;
+}
+
+/**
+ * For each unique address, sum the number of transactions that they are involved in
+ * This determines the size of their node on the screen
+ *
+ * @param transactions
+ * @param addresses
+ */
+export function addressTransactionCount(transactions, addresses) {
+	let addressFrequencies = [];
+
+	addresses.forEach(function (address) {
+		let addressCount = 0;
+
+		for (const transaction in transactions) {
+			if (transactions[transaction].from === address || transactions[transaction].to === address) {
+				addressCount++;
+			}
+		}
+
+		addressFrequencies.push({
+			id: address,
+			size: addressCount * 50
+		});
+	});
+
+	return addressFrequencies;
 }
 
 

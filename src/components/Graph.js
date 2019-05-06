@@ -9,9 +9,6 @@ const containerStyles = {
 }
 
 
-
-
-
 const myConfig = {
     width: '1000',
     height: '1000',
@@ -53,16 +50,18 @@ class CustomGraph extends Component {
 
     getGraphRender = () => {
 			if (!this.props.dataSet) {
-					return <h1>No Graph Data Yet</h1>
+					return <div style={{margin:'auto', fontSize: '30px',
+                    height: '90px', lineHeight:'98px', verticalAlign: 'middle'}}>No Graph Yet</div>
 			} else {
 					return (
 							<Graph
 									id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
 									data={this.props.graph}
 									config={this.setConfig(myConfig)}
-									style={{ width: '100%!important', height: '100vh!important' }}
+									style={{ width: '100%!important', height: '100vh!important'}}
 									onMouseOverNode={this.props.onHover}
 									onClickNode={this.props.onClickNode}
+                  onClickLink={this.props.onClickLink}
 							/>
 					)
 			}
