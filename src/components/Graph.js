@@ -74,9 +74,9 @@ class CustomGraph extends Component {
     render() {
 
         return (
-            <Paper style={paperStyle}>
+            <div style={paperStyle}>
                 {this.getGraphRender()}
-            </Paper>
+            </div>
         )
     }
 }

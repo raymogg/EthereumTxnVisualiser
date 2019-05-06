@@ -65,18 +65,17 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <AppBar position="static" color='primary'>
+      <div className="App" style={{backgroundColor: "#241e56"}}>
+        <AppBar position="static" style={{backgroundColor: "#241e56"}}>
           <Toolbar>
             <Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
               Transaction Visualizer
 						</Typography>
+            <AddressEntry searchHandler={this.searchHandler} />
           </Toolbar>
         </AppBar>
 
-        <div className="mainContainer"
-          style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
-          <AddressEntry searchHandler={this.searchHandler} />
+        <div className="mainContainer">
           <CustomGraph style={{backgroundColor: "black"}} graph={this.state.graph} dataSet={this.state.dataSet}/>
         </div>
 

@@ -55,6 +55,7 @@ class AddressEntry extends Component {
                         label="Start Address"
                         value={this.state.address}
                         onChange={this.handleChange}
+                        style={{color: "#ffffff"}}
                     />
                     <Button variant="contained" color="primary" style={{ marginLeft: '10px' }}
                         onClick={this.onSearch}> Search </Button>
