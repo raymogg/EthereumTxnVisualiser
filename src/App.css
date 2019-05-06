@@ -8,6 +8,18 @@
   pointer-events: none;
 }
 
+.legend {
+  right: 5px;
+  padding: 5px;
+  background-color: #dbbbf7;
+  color: black;
+  position:absolute;
+  margin-right: 20px;
+  float: right;
+  margin-top: 20px;
+}
+
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;

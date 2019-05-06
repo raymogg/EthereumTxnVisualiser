@@ -20,6 +20,7 @@ const mainContainerStyle = {
     backgroundColor: "#241e56",
     textAlign: "center",
     color: "white",
+		position:'relative'
 };
 
 const theme = createMuiTheme({
@@ -100,23 +101,25 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-
-
         <div className="mainContainer"
           style={mainContainerStyle}>
-					<div style={{right:'5px', top: '5px', padding: '30px', backgroundColor: 'white'
-												, poistion:'absolute', float:"right", marginTop:'30px', marginRight:'20px'}}>
-								<span>Legend</span>
+					<div className="legend">
+									<span>Transactions</span>
+					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'square'}}>
+					 				<li style={{background:'red'}}>10 -20</li>
+									<li style={{background: 'green'}}>20 - 30</li>
+								</ul>
 					</div>
-          <AddressEntry searchHandler={this.searchHandler}
-					style={{backgroundColor:"white"}}/>
+					<AddressEntry searchHandler={this.searchHandler}/>
 					<CustomGraph graph={this.state.graph}
-											 style={{backgroundColor: "black", zIndex:2}}
+											 style={{backgroundColor: "black",}}
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
 											 onHover={this.onMouseOverNode}/>
-        </div>
 
+
+
+        </div>
       </div>
     );
   }
