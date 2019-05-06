@@ -8,8 +8,8 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-    uniqueAccountAddresses,
-    uniqueAccountLinks, transactionsForAccount, addNewTransactions
+	uniqueAccountAddresses, linkOccurences,
+	uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -76,6 +76,12 @@ class App extends Component {
 			.catch(err => console.log('App.onClickNode ERROR:', err))
 	}
 
+	onClickLink = async (source, target) => {
+		const accountLinks = uniqueAccountLinks(this.state.transactions)
+		const occurences = linkOccurences(source, target, accountLinks)
+		console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
+	}
+
 
 	fetchTransactionsThenUpdateGraph = async (accountAddress) => {
 		console.log('Finding transactions for accountAddress:', accountAddress)
@@ -117,7 +123,8 @@ class App extends Component {
 											 style={{backgroundColor: "black",}}
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
-											 onHover={this.onMouseOverNode}/>
+											 onHover={this.onMouseOverNode}
+											 onClickLink={this.onClickLink}/>
 
 
 
