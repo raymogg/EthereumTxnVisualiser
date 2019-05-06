@@ -19,7 +19,7 @@ const myConfig = {
         highlightStrokeColor: 'blue',
         renderLabel: false,
         //svg: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg'
-        symbolType: 'diamond'
+        //symbolType: 'diamond'
     },
     link: {
         highlightColor: 'lightblue'
