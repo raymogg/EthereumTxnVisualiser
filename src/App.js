@@ -8,7 +8,7 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-	uniqueAccountAddresses, getLink,
+	uniqueAccountAddresses, containsEdge,
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
@@ -125,16 +125,21 @@ class App extends Component {
     }
 
     onClickLink = async (source, target) => {
-        const link = getLink(source, target, this.state.graph.links)
+				var edge = {
+					source: source,
+					target: target
+				}
+        const link = containsEdge(this.state.graph.links, edge)
 				const myLink = {
 					source: link.source,
 					destination: link.target,
 					number: link.occurences,
 					value: link.value,
 				}
+				console.log(myLink)
 				// Update the selected node property of state to update div
-				this.setState({selectedLink: myLink);
-				console.log('config', this.state.graph)
+				//this.setState({selectedLink: myLink);
+				//console.log('config', this.state.graph)
     }
 
 

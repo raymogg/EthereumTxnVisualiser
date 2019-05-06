@@ -6,16 +6,6 @@
 // http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7
 
 
-export function containsEdge(edges, edge) {
-	for (var i = 0; i < edges.length; i++) {
-		if (edges[i].source === edge.source && edges[i].target === edge.target) {
-			return edges[i]
-		}
-	}
-	return null
-}
-
-
 function numberToColor(number) {
 	if (number < 5) {
 		// blue 6c757d
@@ -36,6 +26,28 @@ function numberToColor(number) {
 }
 
 
+/**
+ * Returns a specific link between a source and a target address
+ *
+ * @param edges - list of all unique account links
+ * @param source - source address
+ * @param target - target address
+ */
+export function containsEdge(edges, edge) {
+	for (var i = 0; i < edges.length; i++) {
+		if (edges[i].source === source && edges[i].target === target) {
+			return edges[i]
+		}
+		//case where the transaction was sent the other direction
+		else if (edges[i].source === target && edges[i].target === source) {
+			edges[i].recv = edge.sent
+			edges[i].sent = 0
+			return edges[i]
+		}
+	}
+	return null
+}
+
 
 /**
  * Return all unique edges / links between accounts.
@@ -55,14 +67,15 @@ export function uniqueAccountLinks(transactions) {
 			occurences: 1,
 			strokeWidth: 1,
 			color: numberToColor(1),
-			value: transaction.value / Math.pow(10, 18),
+			sent: transaction.value / Math.pow(10, 18),
+			recv: 0,
 		}
 
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
 			existentEdge.occurences += 1
-			existentEdge.value += edge.value
+			existentEdge.sent += edge.sent
 			if (existentEdge.occurences < 20) {
 				existentEdge.strokeWidth += 1
 			}
@@ -74,22 +87,6 @@ export function uniqueAccountLinks(transactions) {
 	}
 	return edges
 }
-
-/**
- * Returns a specific link between a source and a target address
- *
- * @param source - source address
- * @param target - target address
- * @param accountLinks - list of all unique account links
- */
- export function getLink(source, target, accountLinks) {
-	 for(var i = 0; i < accountLinks.length; i++) {
-		 var link = accountLinks[i];
-		 if (link.source === source && link.target === target) {
-			 return link
-		 }
-	 }
- }
 
 /**
  * Accounts could be in either 'from' or 'to' fields of transactions
