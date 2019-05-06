@@ -15,6 +15,7 @@ import {
 const mainContainerStyle = {
     height: "100vh",
     // marginTop: "5px",
+    display: 'block',
     width: '100%',
     backgroundColor: "#241e56",
     textAlign: "center",
@@ -63,14 +64,11 @@ class App extends Component {
         // this address
 		const transactions = transactionsForAccount(accountAddress, this.state.transactions)
 		console.log(`Transactions for account (hover) ${accountAddress}:`, transactions)
-
-        // var hoveredNode =
-
         // const from_address = transactions.fromAddress.length;
         // const to_address = transactions.toAddress.length;
         // const accountID = accountAddress;
         // console.log(accountID, number_of_transactions)
-        console.log('config', this.state.graph.update)
+        console.log('config', this.state.graph)
   }
 
 
@@ -124,8 +122,10 @@ class App extends Component {
 									<li style={{background: 'green'}}>20 - 30</li>
 								</ul>
 					</div>
-					<div className="nodeInformation">
-
+                    <div className="node-info">
+									<span>Node</span>
+    					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'square'}}>
+    								</ul>
 					</div>
 					<AddressEntry searchHandler={this.searchHandler}/>
 					<CustomGraph graph={this.state.graph}
