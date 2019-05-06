@@ -61,7 +61,6 @@ class CustomGraph extends Component {
         console.log(this.props.isLoading);
         if (!this.props.dataSet) {
             if (this.props.isLoading == true) {
-                console.log("loading");
                 // setTimeOut(function(){
                 //
                 // }, 3000);

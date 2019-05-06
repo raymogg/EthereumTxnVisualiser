@@ -5,6 +5,7 @@
   top: 0;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
 .landingPage {
   display: flex;
   flex-direction: column;
@@ -19,6 +20,7 @@
   top: calc((100vh - 70px) / 2);
   position: absolute;
   text-align: center;
+  font-family: 'Ubuntu', sans-serif;
 }
 
 .landingPage h1 {
