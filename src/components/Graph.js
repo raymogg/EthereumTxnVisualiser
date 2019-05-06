@@ -16,7 +16,6 @@ const myConfig = {
     nodeHighlightBehavior: true,
     node: {
         color: 'lightgreen',
-        size: 120,
         highlightStrokeColor: 'blue',
         renderLabel: false
     },
@@ -37,6 +36,8 @@ class CustomGraph extends Component {
         config.height = this.props.windowHeight
         return config;
     }
+
+
 
     componentDidMount = async () => {
         //this.setState({graphData: this.props.graph})
@@ -64,7 +65,7 @@ class CustomGraph extends Component {
 									data={this.props.graph}
 									config={this.setConfig(myConfig)}
 									style={{ width: '100%!important', height: '100vh!important'}}
-									onMouseOverNode={this.props.onHover}
+									onMouseOverNode={this.props.onHoverNode}
 									onClickNode={this.props.onClickNode}
                   onClickLink={this.props.onClickLink}
 							/>
