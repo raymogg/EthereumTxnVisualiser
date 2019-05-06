@@ -9,9 +9,12 @@
     "react-d3-graph": "^2.0.2",
     "react-d3-tree": "^1.12.3",
     "react-dom": "^16.8.6",
+    "react-particles-js": "^2.6.0",
     "react-scripts": "3.0.0",
     "react-sigma": "^1.2.30",
-    "react-window-size": "^1.2.2"
+    "react-spinners": "^0.5.4",
+    "react-window-size": "^1.2.2",
+    "request-promise": "^4.2.4"
   },
   "scripts": {
     "start": "react-scripts start",

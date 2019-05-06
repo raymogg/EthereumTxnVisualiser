@@ -19,6 +19,16 @@
   margin-top: 20px;
 }
 
+.loader {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  height: 100vh;
+  top: 0;
+}
 
 .App-header {
   background-color: #282c34;
@@ -42,4 +52,56 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.selected-node {
+  visibility: hidden;
+  padding: 5px;
+  position: absolute;
+  bottom: 0;
+  left:0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-node h4 {
+  padding: 0 0 5px 0;
+  margin: 0;
+}
+
+.selected-node .row {
+
+}
+
+.selected-node div:first-of-type {
+  padding-top: 0;
+}
+
+.selected-node > .row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+}
+
+.selected-node > .row > div {
+  height: auto;
+  width: 50%;
+  text-align: left;
+
+  padding: 5px;
+}
+
+.selected-node > .row > div:first-of-type {
+  text-align: right;
+  border-right: 1px solid #fff;
+}
+
+.selected-node > .row > div:nth-of-type(2) {
+  border-left: 1px solid #fff;
+}
+
+.price-hover {
+  cursor: pointer;
 }

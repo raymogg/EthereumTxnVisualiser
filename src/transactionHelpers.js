@@ -6,35 +6,74 @@
 // http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7
 
 
-export function containsEdge(edges, edge) {
-	for (var i = 0; i < edges.length; i++) {
-		if (edges[i].source === edge.source && edges[i].target === edge.target) {
-			return edges[i]
+function numberToColor(number) {
+	if (number < 5) {
+		// blue 6c757d
+		return "#007bff";
+	} else if (number < 15) {
+		// green
+		return "#28a745";
+	} else if (number < 30) {
+		// yellow
+		return "#ffc107";
+	} else if (number < 50) {
+		// red
+		return "#dc3545";
+	} else {
+		// grey
+		return "#6c757d";
+	}
+}
+
+export function colorLinkedNodes(nodeA, nodeB) {
+	//TODO: reset the other node colors
+	nodeA.color = 'white';
+	nodeB.color = 'black';
+}
+
+export function toggleLabel(link, text) {
+	if (link.label === null) {
+		link.label = text;
+	} else {
+		link.label = null;
+	};
+}
+
+/**
+ * Gets the node correseponding to an id
+ *
+ *
+ */
+export function getNode(id, nodes) {
+	for (var i = 0; i < nodes.length; i++) {
+		if (id === nodes[i].id) {
+			return nodes[i]
 		}
 	}
 	return null
 }
 
-
-function numberToColor(number) {
-	if (number < 5) {
-		//Dark red
-		return "#8e1c05"
-	} else if (number < 15) {
-		//Red
-		return "#ef2c04"
-	} else if (number < 30) {
-		//Orange
-		return "#d8822b"
-	} else if (number < 50) {
-		//Dark green
-		return "#1c6602"
-	} else {
-		//Green
-		return "#40f700"
+/**
+ * Returns a specific link between a source and a target address
+ *
+ * @param edges - list of all unique account links
+ * @param source - source address
+ * @param target - target address
+ */
+export function containsEdge(edges, edge) {
+	for (var i = 0; i < edges.length; i++) {
+		if (edges[i].source === edge.source && edges[i].target === edge.target) {
+			edges[i].direction = true
+			return edges[i]
+		}
+		//case where the transaction was sent the other direction
+		else if (edges[i].source === edge.target && edges[i].target === edge.source) {
+			edges[i].direction = false
+			return edges[i]
+		}
 	}
+	return null
 }
-
 
 
 /**
@@ -55,12 +94,25 @@ export function uniqueAccountLinks(transactions) {
 			occurences: 1,
 			strokeWidth: 1,
 			color: numberToColor(1),
+			//default direction is true source -> target
+			direction: true,
+			sent: transaction.value / Math.pow(10, 18),
+			recv: 0,
+			label: null
 		}
 
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
 			existentEdge.occurences += 1
+			//if the direction is unchanged
+			if (existentEdge.direction) {
+				existentEdge.sent += edge.sent
+			} else {
+				//this is the case where direction is flipped because
+				//the edge was found target -> source
+				existentEdge.recv += edge.sent
+			}
 			if (existentEdge.occurences < 20) {
 				existentEdge.strokeWidth += 1
 			}
@@ -72,24 +124,6 @@ export function uniqueAccountLinks(transactions) {
 	}
 	return edges
 }
-
-/**
- * Finds the number of transaction occurences between a source and a target
- *
- * @param source - source address
- * @param target - target address
- * @param accountLinks - list of all unique account links
- */
- export function linkOccurences(source, target, accountLinks) {
-	 var count = accountLinks.length
-	 for(var i = 0; i < count; i++) {
-		 var link = accountLinks[i];
-		 if (link.source == source && link.target == target) {
-			 return link.occurences
-		 }
-	 }
- }
-
 
 /**
  * Accounts could be in either 'from' or 'to' fields of transactions
@@ -128,11 +162,18 @@ export function addressTransactionCount(transactions, addresses) {
 	addresses.forEach(function (address) {
 		let addressCount = 0;
 
-		for (const transaction in transactions) {
-			if (transactions[transaction].from === address || transactions[transaction].to === address) {
+		// updated version of check
+		transactions.forEach(function (transaction) {
+			if (transaction.to === address || transaction.from === address) {
 				addressCount++;
 			}
-		}
+		});
+
+		// for (const transaction in transactions) {
+		// 	if (transactions[transaction].from === address || transactions[transaction].to === address) {
+		// 		addressCount++;
+		// 	}
+		// }
 
 		addressFrequencies.push({
 			id: address,
@@ -210,8 +251,6 @@ export function transactionsForAccount(accountAddress, transactions) {
 		}
 	}
 
-	// TODO returning the transactions to and from the account of interest as a
-	//  single list - however they could be returned as separate lists.
-	//  eg. return { fromAccount: transactionsFromAccount, toAccount: transactionsToAccount }
-	return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
+	return { fromAddress: transactionsFromAccount, toAddress: transactionsToAccount }
+	//return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
 }
