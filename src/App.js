@@ -53,95 +53,94 @@ const noNodeSelected = {
 
 
 class App extends Component {
-    state = {
-        /* cache of all the transactions that we've fetched */
-        transactions: [],
-        /* Whether the graph has gone through the initial load yet */
-        dataSet: false,
-        /* object with 'nodes' and 'links' properties */
-        graph: emptyGraph,
-        isLoading: true
-    }
+  state = {
+		/* cache of all the transactions that we've fetched */
+		transactions: [],
+		/* Whether the graph has gone through the initial load yet */
+    dataSet: false,
+		/* object with 'nodes' and 'links' properties */
+    graph: emptyGraph,
+		isLoading: true
+  }
 
-    componentDidMount = async () => {
-    }
-
-
-    onMouseOverNode = (accountAddress) => {
-        // Display the accountId metadata on mouse hover
-        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
-        console.log(`Transactions for account ${accountAddress}:`, transactions)
-    }
+  componentDidMount = async () => {
+  }
 
 
-    searchHandler = async (address) => {
-        this.setState({isLoading: true});
-        this.fetchTransactionsThenUpdateGraph(address)
-            .catch(err => console.log('App.searchHandler ERROR:', err));
-    }
+  onMouseOverNode = (accountAddress) => {
+  	// Display the accountId metadata on mouse hover
+		const transactions = transactionsForAccount(accountAddress, this.state.transactions)
+		console.log(`Transactions for account ${accountAddress}:`, transactions)
+  }
 
 
-    onClickNode = async (accountAddress) => {
-        this.setState({isLoading: true});
-        this.fetchTransactionsThenUpdateGraph(accountAddress)
-            .catch(err => console.log('App.onClickNode ERROR:', err));
-    }
-
-    onClickLink = async (source, target) => {
-        const accountLinks = uniqueAccountLinks(this.state.transactions)
-        const occurences = linkOccurences(source, target, accountLinks)
-        console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
-    }
+  searchHandler = async (address) => {
+		this.setState({isLoading: true});
+		this.fetchTransactionsThenUpdateGraph(address)
+			.catch(err => console.log('App.searchHandler ERROR:', err));
+  }
 
 
-    fetchTransactionsThenUpdateGraph = async (accountAddress) => {
-        console.log('Finding transactions for accountAddress:', accountAddress)
-        const transactions = await fetchTransactions(accountAddress)
-        console.log('Transactions for account id:', transactions)
+  onClickNode = async (accountAddress) => {
+		this.setState({isLoading: true});
+		this.fetchTransactionsThenUpdateGraph(accountAddress)
+			.catch(err => console.log('App.onClickNode ERROR:', err));
+	}
 
-        // NOTE(Loughlin): I don't think this will trigger component update?
-        addNewTransactions(this.state.transactions, transactions)
-
-        const accountHashes = uniqueAccountAddresses(this.state.transactions)
-        const accountLinks = uniqueAccountLinks(this.state.transactions)
-        const graphData = {
-            nodes: accountHashes,
-            links: accountLinks,
-        }
-
-        // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({graph: graphData, dataSet: true, isLoading: false})
-    }
+	onClickLink = async (source, target) => {
+		const accountLinks = uniqueAccountLinks(this.state.transactions)
+		const occurences = linkOccurences(source, target, accountLinks)
+		console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
+	}
 
 
-    render() {
-        return (
-            <div className="App">
-                <div className="mainContainer"
-                     style={mainContainerStyle}>
-                    <div className="legend">
-                        <span>Transactions</span>
-                        <ul style={{padding: '0px', margin: '0px', listStyleType: 'none'}}>
-                            <li style={{background: 'red'}}>10 -20</li>
-                            <li style={{background: 'green'}}>20 - 30</li>
-                        </ul>
-                    </div>
-                    <div className="nodeInformation">
+	fetchTransactionsThenUpdateGraph = async (accountAddress) => {
+		console.log('Finding transactions for accountAddress:', accountAddress)
+		const transactions = await fetchTransactions(accountAddress)
+		console.log('Transactions for account id:', transactions)
 
-                    </div>
-                    <AddressEntry searchHandler={this.searchHandler}/>
-                    <CustomGraph graph={this.state.graph}
-                                 style={{backgroundColor: "black",}}
-                                 dataSet={this.state.dataSet}
-                                 onClickNode={this.onClickNode}
-                                 onHover={this.onMouseOverNode}
-                                 onClickLink={this.onClickLink}
-                                 isLoading={this.state.isLoading}/>
-                </div>
-            </div>
-        );
-    }
+		// NOTE(Loughlin): I don't think this will trigger component update?
+		addNewTransactions(this.state.transactions, transactions)
 
+		const accountHashes = uniqueAccountAddresses(this.state.transactions)
+		const accountLinks = uniqueAccountLinks(this.state.transactions)
+		const graphData = {
+			nodes: accountHashes,
+			links: accountLinks,
+		}
+
+		// This triggers update/re-render so changes reflected in graph sub-component
+		this.setState({ graph: graphData, dataSet: true, isLoading: false })
+	}
+
+
+  render() {
+    return (
+      <div className="App">
+        <div className="mainContainer"
+          style={mainContainerStyle}>
+					<div className="legend">
+									<span>Transactions</span>
+					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'none'}}>
+					 				<li style={{background:'red'}}>10 -20</li>
+									<li style={{background: 'green'}}>20 - 30</li>
+								</ul>
+					</div>
+					<div className="nodeInformation">
+
+					</div>
+					<AddressEntry searchHandler={this.searchHandler}/>
+					<CustomGraph graph={this.state.graph}
+											 style={{backgroundColor: "black",}}
+											 dataSet={this.state.dataSet}
+											 onClickNode={this.onClickNode}
+											 onHover={this.onMouseOverNode}
+											 onClickLink={this.onClickLink}
+											 isLoading={this.state.isLoading}/>
+        </div>
+      </div>
+    );
+  }
     state = {
         /* cache of all the transactions that we've fetched */
         transactions: [],
@@ -158,23 +157,33 @@ class App extends Component {
 
 
     onMouseOverNode = (accountAddress) => {
-        // Display the accountId and number of transactions involved with
-        // this address
-        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
-        console.log(`Transactions for account (hover) ${accountAddress}:`, transactions)
-        // const from_address = transactions.fromAddress.length;
-        // const to_address = transactions.toAddress.length;
-        // const accountID = accountAddress;
-        // console.log(accountID, number_of_transactions)
+        // Display the accountId, the number of transactions from this address,
+        // the number of transactions to this address and the net value of this
+        // node
 
+        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
+        const num_from = transactions.fromAddress.length;
+        const num_to = transactions.toAddress.length;
+
+        // console.log(`Transactions for account (hover) ${accountAddress}:`, transactions);
+        var gross_from = 0;
+        var gross_to = 0;
+        for (var i = 0; i < num_from; i++) {
+    		gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
+    	};
+        for (var i = 0; i < num_to; i++) {
+    		gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
+    	};
+
+        const net_value = gross_to - gross_from;
         const myNode = {
             id: accountAddress,
-            numTo: 100, // to_address etc etc
-            numFrom: 100,
-            netValue: 100
+            numTo: num_to,
+            numFrom: num_from,
+            netValue: net_value
         };
 
-        // {graph: graphData, dataSet: true}
+        // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
 
         console.log('config', this.state.graph)
@@ -254,6 +263,11 @@ class App extends Component {
             </div>
         );
     }
+}
+
+
+function accountHashToAccountNode(accountHash) {
+    return {id: accountHash}
 }
 
 
