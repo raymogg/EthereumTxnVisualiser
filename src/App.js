@@ -8,8 +8,8 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-	uniqueAccountAddresses,
-	uniqueAccountLinks, transactionsForAccount, addNewTransactions
+    uniqueAccountAddresses,
+    uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -23,24 +23,24 @@ const mainContainerStyle = {
 };
 
 const theme = createMuiTheme({
-  palette: {
-    primary: {
-      // light: will be calculated from palette.primary.main,
-      main: '#2c254f',
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
+    palette: {
+        primary: {
+            // light: will be calculated from palette.primary.main,
+            main: '#2c254f',
+            // dark: will be calculated from palette.primary.main,
+            // contrastText: will be calculated to contrast with palette.primary.main
+        },
+        secondary: {
+            main: '#e8e8ea',
+            // dark: will be calculated from palette.secondary.main,
+        },
     },
-    secondary: {
-      main: '#e8e8ea',
-      // dark: will be calculated from palette.secondary.main,
-    },
-  },
 });
 
 
 const emptyGraph = {
-  nodes: [],
-  links: []
+    nodes: [],
+    links: []
 }
 
 
@@ -125,7 +125,7 @@ class App extends Component {
 
 
 function accountHashToAccountNode(accountHash) {
-	return { id: accountHash }
+    return {id: accountHash}
 }
 
 

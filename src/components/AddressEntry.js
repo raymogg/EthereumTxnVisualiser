@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
 
-
-
-
-
 class AddressEntry extends Component {
     state = {
         address: "0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a"
