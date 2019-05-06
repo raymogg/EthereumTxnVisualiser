@@ -55,12 +55,14 @@ export function uniqueAccountLinks(transactions) {
 			occurences: 1,
 			strokeWidth: 1,
 			color: numberToColor(1),
+			value: transaction.value / Math.pow(10, 18),
 		}
 
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
 			existentEdge.occurences += 1
+			existentEdge.value += edge.value
 			if (existentEdge.occurences < 20) {
 				existentEdge.strokeWidth += 1
 			}

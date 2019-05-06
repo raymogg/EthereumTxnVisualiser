@@ -26,8 +26,6 @@ const myConfig = {
     },
     link: {
         highlightColor: 'lightblue',
-        labelProperty: "Hello",
-        renderLabel: false
     }
 };
 
