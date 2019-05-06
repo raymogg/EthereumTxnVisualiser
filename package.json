@@ -10,7 +10,8 @@
     "react-d3-tree": "^1.12.3",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
-    "react-sigma": "^1.2.30"
+    "react-sigma": "^1.2.30",
+    "react-window-size": "^1.2.2"
   },
   "scripts": {
     "start": "react-scripts start",
