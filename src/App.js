@@ -138,16 +138,10 @@ class App extends Component {
                 <div className="mainContainer"
                      style={mainContainerStyle}>
                     <div className="selected-node">
-                        <div><h1>{this.state.selectedNode.id}</h1></div>
+                        <div><h4>{this.state.selectedNode.id}</h4></div>
                         <div>{this.state.selectedNode.numFrom}</div>
                         <div>{this.state.selectedNode.numTo}</div>
                         <div>{this.state.selectedNode.netValue}</div>
-                    </div>
-                    <div className="node-info">
-                        <span>Node</span>
-                        <ul style={{padding: '0px', margin: '0px', listStyleType: 'square'}}>
-
-                        </ul>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
