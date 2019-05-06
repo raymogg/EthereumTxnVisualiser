@@ -89,7 +89,7 @@ class App extends Component {
 		const accountHashes = uniqueAccountAddresses(this.state.transactions)
 		const accountLinks = uniqueAccountLinks(this.state.transactions)
 		const graphData = {
-			nodes: accountHashes.map(accountHashToAccountNode),
+			nodes: accountHashes,
 			links: accountLinks,
 		}
 
