@@ -9,9 +9,6 @@ const containerStyles = {
 }
 
 
-
-
-
 const myConfig = {
     width: '1000',
     height: '1000',

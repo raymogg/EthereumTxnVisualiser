@@ -92,7 +92,38 @@ export function uniqueAccountAddresses(transactions) {
 			accountAddresses.push(transaction.to)
 		}
 	}
-	return accountAddresses
+
+	// unique addresses with their relative frequencies
+	const nodeDetails = addressTransactionCount(transactions, accountAddresses);
+	return nodeDetails;
+}
+
+/**
+ * For each unique address, sum the number of transactions that they are involved in
+ * This determines the size of their node on the screen
+ *
+ * @param transactions
+ * @param addresses
+ */
+export function addressTransactionCount(transactions, addresses) {
+	let addressFrequencies = [];
+
+	addresses.forEach(function (address) {
+		let addressCount = 0;
+
+		for (const transaction in transactions) {
+			if (transactions[transaction].from === address || transactions[transaction].to === address) {
+				addressCount++;
+			}
+		}
+
+		addressFrequencies.push({
+			id: address,
+			size: addressCount * 50
+		});
+	});
+
+	return addressFrequencies;
 }
 
 
