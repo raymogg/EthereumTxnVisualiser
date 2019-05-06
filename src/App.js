@@ -12,26 +12,36 @@ import {
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
+const mainContainerStyle = {
+    height: "100vh",
+    // marginTop: "5px",
+    display: 'block',
+    width: '100%',
+    backgroundColor: "#241e56",
+    textAlign: "center",
+    color: "white",
+		position:'relative'
+};
 
 const theme = createMuiTheme({
-  palette: {
-    primary: {
-      // light: will be calculated from palette.primary.main,
-      main: '#2c254f',
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
+    palette: {
+        primary: {
+            // light: will be calculated from palette.primary.main,
+            main: '#2c254f',
+            // dark: will be calculated from palette.primary.main,
+            // contrastText: will be calculated to contrast with palette.primary.main
+        },
+        secondary: {
+            main: '#e8e8ea',
+            // dark: will be calculated from palette.secondary.main,
+        },
     },
-    secondary: {
-      main: '#e8e8ea',
-      // dark: will be calculated from palette.secondary.main,
-    },
-  },
 });
 
 
 const emptyGraph = {
-  nodes: [],
-  links: []
+    nodes: [],
+    links: []
 }
 
 
@@ -85,7 +95,7 @@ class App extends Component {
 		const accountHashes = uniqueAccountAddresses(this.state.transactions)
 		const accountLinks = uniqueAccountLinks(this.state.transactions)
 		const graphData = {
-			nodes: accountHashes.map(accountHashToAccountNode),
+			nodes: accountHashes,
 			links: accountLinks,
 		}
 
@@ -97,25 +107,31 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <AppBar position="static" color='primary'>
-          <Toolbar>
-            <Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
-              Transaction Visualizer
-						</Typography>
-          </Toolbar>
-        </AppBar>
-
         <div className="mainContainer"
-          style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
-          <AddressEntry searchHandler={this.searchHandler} />
+          style={mainContainerStyle}>
+					<div className="legend">
+									<span>Transactions</span>
+					 			<ul style={{padding:'0px', margin:'0px', listStyleType:'square'}}>
+					 				<li style={{background:'red'}}>10 -20</li>
+									<li style={{background: 'green'}}>20 - 30</li>
+								</ul>
+					</div>
+					<AddressEntry searchHandler={this.searchHandler}/>
 					<CustomGraph graph={this.state.graph}
-											 style={{backgroundColor: "black"}}
+											 style={{backgroundColor: "black",}}
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
+<<<<<<< HEAD
 											 onHover={this.onMouseOverNode}
 											 onClickLink={this.onClickLink}/>
         </div>
+=======
+											 onHover={this.onMouseOverNode}/>
+>>>>>>> 1abef8780d893e1e851001e251689fdf4a4dc788
 
+
+
+        </div>
       </div>
     );
   }
@@ -123,7 +139,7 @@ class App extends Component {
 
 
 function accountHashToAccountNode(accountHash) {
-	return { id: accountHash }
+    return {id: accountHash}
 }
 
 
