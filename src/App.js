@@ -104,7 +104,8 @@ class App extends Component {
             id: accountAddress,
             numTo: num_to,
             numFrom: num_from,
-            netValue: net_value
+            netValue: net_value,
+            currency: "E",
         };
 
         // Update the selected node property of state to update div
@@ -138,26 +139,32 @@ class App extends Component {
         console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
     }
 
+    /**
+     * Function to do the API call for AUD conversion ralue for ETH.
+     *
+     * @returns {Promise<void>}
+     */
     onValueClick = async () => {
-        // if we have native ETH Value
+        var value, currency;
+        // if we have native ETH Value in the selectedNode state object (which we always will, but just in case)
         if (this.state.selectedNode.currency === "E" || typeof this.state.currency === "undefined") {
-            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
+            const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
                 return response.json();
             }).then(function (response) {
-                const rate = parseFloat(response.AUD);
-                const ethVal = parseFloat(rate * this.state.selectedNode.netValue);
-                this.setState({netValue: ethVal, currency: "$"})
+                return parseFloat(response.AUD);
             });
-        } else {
-            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
-                return response.json();
-            }).then(function (response) {
-                const rate = parseFloat(response.AUD);
-                const AUD = parseFloat(this.state.selectedNode.netValue / rate);
-                this.setState({netValue: AUD, currency: "E"});
-            });
+
+            value = parseFloat(rate * this.state.selectedNode.netValue);
+            currency = "$";
         }
 
+        // create a new object to send back as the updated state for re-render
+        const updatedNode = this.state.selectedNode;
+        updatedNode.currency = currency;
+        updatedNode.netValue = value;
+
+        // set the state
+        this.setState({noNodeSelected: updatedNode});
     };
 
 
@@ -201,7 +208,7 @@ class App extends Component {
                         </div>
                         <div class="row">
                             <div>Node Net Value</div>
-                            <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.netValue}</div>
+                            <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                         </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
