@@ -95,9 +95,9 @@ class App extends Component {
 	}
 
 	onClickLink = async (source, target) => {
-		const accountLinks = uniqueAccountLinks(this.state.transactions)
-		const occurences = linkOccurences(source, target, accountLinks)
-		console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
+		const link = getLink(source, target, this.state.graph.links)
+		console.log(link.occurences)
+		console.log(`Clicked link between, The number of transactions between them is ${link.occurences}`)
 	}
 
 

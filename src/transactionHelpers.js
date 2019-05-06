@@ -81,11 +81,10 @@ export function uniqueAccountLinks(transactions) {
  * @param accountLinks - list of all unique account links
  */
  export function getLink(source, target, accountLinks) {
-	 var count = accountLinks.length;
-	 for(var i = 0; i < count; i++) {
+	 for(var i = 0; i < accountLinks.length; i++) {
 		 var link = accountLinks[i];
 		 if (link.source === source && link.target === target) {
-			 return link.occurences
+			 return link
 		 }
 	 }
  }
