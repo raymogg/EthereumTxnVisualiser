@@ -145,8 +145,7 @@ export function uniqueAccountAddresses(transactions) {
 	}
 
 	// unique addresses with their relative frequencies
-	const nodeDetails = addressTransactionCount(transactions, accountAddresses);
-	return nodeDetails;
+	return addressTransactionCount(transactions, accountAddresses);
 }
 
 /**
