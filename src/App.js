@@ -99,20 +99,6 @@ class App extends Component {
 
   render() {
     return (
-<<<<<<< HEAD
-      <div className="App" style={{backgroundColor: "#241e56"}}>
-        <AppBar position="static" style={{backgroundColor: "#241e56"}}>
-          <Toolbar>
-            <Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
-              Transaction Visualizer
-						</Typography>
-            <AddressEntry searchHandler={this.searchHandler} />
-          </Toolbar>
-        </AppBar>
-
-        <div className="mainContainer">
-          <CustomGraph style={{backgroundColor: "black"}} graph={this.state.graph} dataSet={this.state.dataSet}/>
-=======
       <div className="App">
 
 
@@ -129,7 +115,6 @@ class App extends Component {
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
 											 onHover={this.onMouseOverNode}/>
->>>>>>> 7774c1bbe507f425ac7b96d6b93d3324721cdcf6
         </div>
 
       </div>

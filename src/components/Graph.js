@@ -71,11 +71,7 @@ class CustomGraph extends Component {
     render() {
 
         return (
-<<<<<<< HEAD
-            <div style={paperStyle}>
-=======
             <div>
->>>>>>> 7774c1bbe507f425ac7b96d6b93d3324721cdcf6
                 {this.getGraphRender()}
             </div>
         )
