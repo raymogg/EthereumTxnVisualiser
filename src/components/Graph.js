@@ -15,6 +15,7 @@ const containerStyles = {
 
 
 const myConfig = {
+    //directed: true,
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,
@@ -29,6 +30,8 @@ const myConfig = {
     },
     link: {
         highlightColor: 'lightblue',
+        renderLabel: true,
+        fontColor: "white",
     }
 };
 
@@ -120,6 +123,7 @@ class CustomGraph extends Component {
                     config={this.setConfig(myConfig)}
                     style={{width: '100%!important', height: '100vh!important'}}
                     onMouseOverNode={this.props.onHoverNode}
+                    onClickGraph={this.props.onClickGraph}
                     onClickNode={this.props.onClickNode}
                     onClickLink={this.props.onClickLink}
                 />

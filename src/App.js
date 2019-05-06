@@ -10,7 +10,7 @@ import {fetchTransactions} from "./services/api";
 import {
 	uniqueAccountAddresses, containsEdge,
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions,
-	colorLinkedNodes, getNode
+	colorLinkedNodes, getNode, toggleLabel,
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -73,8 +73,8 @@ class App extends Component {
         graph: emptyGraph,
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
-				/* a bool that represents whether a new graph is being loaded */
-				isLoading: false
+		/* a bool that represents whether a new graph is being loaded */
+		isLoading: false
     }
 
     componentDidMount = async () => {
@@ -82,15 +82,14 @@ class App extends Component {
 
 
     onMouseOverNode = (accountAddress) => {
-        // Display the accountId, the number of transactions from this address,
-        // the number of transactions to this address and the net value of this
-        // node
+        /* Display the accountId, the number of transactions from this address,
+        the number of transactions to this address and the net value of this
+        node */
 
         const transactions = transactionsForAccount(accountAddress, this.state.transactions)
         const num_from = transactions.fromAddress.length;
         const num_to = transactions.toAddress.length;
 
-        // console.log(`Transactions for account (hover) ${accountAddress}:`, transactions);
         var gross_from = 0;
         var gross_to = 0;
         for (var i = 0; i < num_from; i++) {
@@ -111,49 +110,48 @@ class App extends Component {
 
         // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
-
-        // after this is done, where do we find how the fuck to write for when we stop hovering
     }
-
-    onMouseOutNode = () => {
-        // Update the selected node property of state to update div
-        //this.setState({selectedNode: noNodeSelected});
-    }
-
 
     searchHandler = async (address) => {
-				this.setState({isLoading: true});
+		this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
     }
 
+    onClickGraph = async () => {
+        console.log("Reset the nodes")
+    }
 
     onClickNode = async (accountAddress) => {
-				this.setState({isLoading: true});
+		this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(accountAddress)
             .catch(err => console.log('App.onClickNode ERROR:', err))
     }
 
     onClickLink = async (source, target) => {
-				var edge = {
-					source: source,
-					target: target
-				}
+		var edge = {
+			source: source,
+			target: target
+		}
         const link = containsEdge(this.state.graph.links, edge)
-				const myLink = {
-					NodeA: link.source,
-					NodeB: link.target,
-					numberTransactions: link.occurences,
-					AtoB: link.sent,
-					BtoA: link.recv,
-				}
-				const nodes = this.state.graph.nodes
-				colorLinkedNodes(getNode(source, nodes), getNode(target, nodes), )
-				console.log(myLink)
-				this.setState(this.state.graph)
-				// Update the selected node property of state to update div
-				//this.setState({selectedLink: myLink);
-				//console.log('config', this.state.graph)
+        // Toggle the label
+        //toggleLabel(link, `Sent: ${link.sent} Recv: ${link.recv}`)
+        toggleLabel(link, `#trans: ${link.occurences}`)
+
+		const myLink = {
+			NodeA: link.source,
+			NodeB: link.target,
+			numberTransactions: link.occurences,
+			AtoB: link.sent,
+			BtoA: link.recv,
+		}
+		const nodes = this.state.graph.nodes
+		colorLinkedNodes(getNode(source, nodes), getNode(target, nodes), )
+		console.log(myLink)
+		this.setState(this.state.graph)
+		// Update the selected node property of state to update div
+		//this.setState({selectedLink: myLink);
+		//console.log('config', this.state.graph)
     }
 
     /**
@@ -211,8 +209,7 @@ class App extends Component {
         }
         return (
             <div className="App">
-                <div className="mainContainer"
-                     style={mainContainerStyle}>
+                <div className="mainContainer" style={mainContainerStyle}>
                     <div className="selected-node">
                         <h4>{this.state.selectedNode.id}</h4>
                         <div class="row">
@@ -232,9 +229,9 @@ class App extends Component {
                     <CustomGraph graph={this.state.graph}
                                  style={{backgroundColor: "black"}}
                                  dataSet={this.state.dataSet}
+                                 onClickGraph={this.onClickGraph}
                                  onClickNode={this.onClickNode}
                                  onHoverNode={this.onMouseOverNode}
-                                 offHoverNode={this.onMouseOutNode}
                                  onClickLink={this.onClickLink}
                                  isLoading={this.state.isLoading}/>
                 </div>

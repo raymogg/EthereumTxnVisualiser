@@ -26,8 +26,17 @@ function numberToColor(number) {
 }
 
 export function colorLinkedNodes(nodeA, nodeB) {
-	nodeA.color = 'white'
-	nodeB.color = 'black'
+	//TODO: reset the other node colors
+	nodeA.color = 'white';
+	nodeB.color = 'black';
+}
+
+export function toggleLabel(link, text) {
+	if (link.label === null) {
+		link.label = text;
+	} else {
+		link.label = null;
+	};
 }
 
 /**
@@ -54,6 +63,7 @@ export function getNode(id, nodes) {
 export function containsEdge(edges, edge) {
 	for (var i = 0; i < edges.length; i++) {
 		if (edges[i].source === edge.source && edges[i].target === edge.target) {
+			edges[i].direction = true
 			return edges[i]
 		}
 		//case where the transaction was sent the other direction
@@ -88,6 +98,7 @@ export function uniqueAccountLinks(transactions) {
 			direction: true,
 			sent: transaction.value / Math.pow(10, 18),
 			recv: 0,
+			label: null
 		}
 
 		//Check if this edge is already in the edges array
@@ -134,8 +145,7 @@ export function uniqueAccountAddresses(transactions) {
 	}
 
 	// unique addresses with their relative frequencies
-	const nodeDetails = addressTransactionCount(transactions, accountAddresses);
-	return nodeDetails;
+	return addressTransactionCount(transactions, accountAddresses);
 }
 
 /**
@@ -240,9 +250,6 @@ export function transactionsForAccount(accountAddress, transactions) {
 		}
 	}
 
-	// TODO returning the transactions to and from the account of interest as a
-	//  single list - however they could be returned as separate lists.
-	//  eg.
 	return { fromAddress: transactionsFromAccount, toAddress: transactionsToAccount }
 	//return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
 }
