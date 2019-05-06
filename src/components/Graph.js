@@ -36,8 +36,12 @@ class CustomGraph extends Component {
       nodeSize: 0,
     };
 
+    //This function is to set nodes to a scalable size
     setNodeSize(config) {
-      config.node.size = 5000 / this.props.graph.nodes.length;
+      if(this.props.graph.nodes.length < 10) {
+
+      }
+      config.node.size = 300;
       return config;
     }
 
@@ -61,7 +65,7 @@ class CustomGraph extends Component {
                     id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
                     data={this.props.graph}
                     config={this.setNodeSize(myConfig)}
-                    style={{width: '100%!important', height:'100vh!important'}}
+                    style={{width: '100%', height:'100vh'}}
                 />
             )
         }
