@@ -6,16 +6,6 @@
 // http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7
 
 
-export function containsEdge(edges, edge) {
-	for (var i = 0; i < edges.length; i++) {
-		if (edges[i].source === edge.source && edges[i].target === edge.target) {
-			return edges[i]
-		}
-	}
-	return null
-}
-
-
 function numberToColor(number) {
 	if (number < 5) {
 		// blue 6c757d
@@ -35,6 +25,45 @@ function numberToColor(number) {
 	}
 }
 
+export function colorLinkedNodes(nodeA, nodeB) {
+	nodeA.color = 'white'
+	nodeB.color = 'black'
+}
+
+/**
+ * Gets the node correseponding to an id
+ *
+ *
+ */
+export function getNode(id, nodes) {
+	for (var i = 0; i < nodes.length; i++) {
+		if (id === nodes[i].id) {
+			return nodes[i]
+		}
+	}
+	return null
+}
+
+/**
+ * Returns a specific link between a source and a target address
+ *
+ * @param edges - list of all unique account links
+ * @param source - source address
+ * @param target - target address
+ */
+export function containsEdge(edges, edge) {
+	for (var i = 0; i < edges.length; i++) {
+		if (edges[i].source === edge.source && edges[i].target === edge.target) {
+			return edges[i]
+		}
+		//case where the transaction was sent the other direction
+		else if (edges[i].source === edge.target && edges[i].target === edge.source) {
+			edges[i].direction = false
+			return edges[i]
+		}
+	}
+	return null
+}
 
 
 /**
@@ -55,12 +84,24 @@ export function uniqueAccountLinks(transactions) {
 			occurences: 1,
 			strokeWidth: 1,
 			color: numberToColor(1),
+			//default direction is true source -> target
+			direction: true,
+			sent: transaction.value / Math.pow(10, 18),
+			recv: 0,
 		}
 
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
 			existentEdge.occurences += 1
+			//if the direction is unchanged
+			if (existentEdge.direction) {
+				existentEdge.sent += edge.sent
+			} else {
+				//this is the case where direction is flipped because
+				//the edge was found target -> source
+				existentEdge.recv += edge.sent
+			}
 			if (existentEdge.occurences < 20) {
 				existentEdge.strokeWidth += 1
 			}
@@ -72,24 +113,6 @@ export function uniqueAccountLinks(transactions) {
 	}
 	return edges
 }
-
-/**
- * Finds the number of transaction occurences between a source and a target
- *
- * @param source - source address
- * @param target - target address
- * @param accountLinks - list of all unique account links
- */
- export function linkOccurences(source, target, accountLinks) {
-	 var count = accountLinks.length;
-	 for(var i = 0; i < count; i++) {
-		 var link = accountLinks[i];
-		 if (link.source === source && link.target === target) {
-			 return link.occurences
-		 }
-	 }
- }
-
 
 /**
  * Accounts could be in either 'from' or 'to' fields of transactions

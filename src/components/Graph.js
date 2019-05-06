@@ -18,6 +18,8 @@ const myConfig = {
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,
+    linkHighlightBehavior: true,
+    //directed: true,
     node: {
         color: 'lightgreen',
         highlightStrokeColor: 'blue',
@@ -26,7 +28,7 @@ const myConfig = {
         //symbolType: 'diamond'
     },
     link: {
-        highlightColor: 'lightblue'
+        highlightColor: 'lightblue',
     }
 };
 
@@ -79,17 +81,24 @@ class CustomGraph extends Component {
                                 params={{
                                     "particles": {
                                         "number": {
-                                            "value": 100
+                                            "value": 130
                                         },
                                         "size": {
                                             "value": 3
+                                        },
+                                        "color": {
+                                          "value": "#90EE90"
                                         }
                                     },
                                     "interactivity": {
                                         "events": {
                                             "onhover": {
                                                 "enable": true,
-                                                "mode": "repulse"
+                                                "mode": "grab"
+                                            },
+                                            "onclick": {
+                                                "enable": true,
+                                                "node": "push"
                                             }
                                         }
                                     }

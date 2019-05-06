@@ -8,8 +8,9 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-    uniqueAccountAddresses, linkOccurences,
-    uniqueAccountLinks, transactionsForAccount, addNewTransactions
+	uniqueAccountAddresses, containsEdge,
+	uniqueAccountLinks, transactionsForAccount, addNewTransactions,
+	colorLinkedNodes, getNode
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -134,9 +135,25 @@ class App extends Component {
     }
 
     onClickLink = async (source, target) => {
-        const accountLinks = uniqueAccountLinks(this.state.transactions)
-        const occurences = linkOccurences(source, target, accountLinks)
-        console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
+				var edge = {
+					source: source,
+					target: target
+				}
+        const link = containsEdge(this.state.graph.links, edge)
+				const myLink = {
+					NodeA: link.source,
+					NodeB: link.target,
+					numberTransactions: link.occurences,
+					AtoB: link.sent,
+					BtoA: link.recv,
+				}
+				const nodes = this.state.graph.nodes
+				colorLinkedNodes(getNode(source, nodes), getNode(target, nodes), )
+				console.log(myLink)
+				this.setState(this.state.graph)
+				// Update the selected node property of state to update div
+				//this.setState({selectedLink: myLink);
+				//console.log('config', this.state.graph)
     }
 
     /**
@@ -210,6 +227,12 @@ class App extends Component {
                             <div>Node Net Value</div>
                             <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                         </div>
+                    </div>
+                    <div className="node-info">
+                        <span>Node</span>
+                        <ul style={{padding: '0px', margin: '0px', listStyleType: 'square'}}>
+
+                        </ul>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
