@@ -25,6 +25,24 @@ function numberToColor(number) {
 	}
 }
 
+export function colorLinkedNodes(nodeA, nodeB) {
+	nodeA.color = 'white'
+	nodeB.color = 'black'
+}
+
+/**
+ * Gets the node correseponding to an id
+ *
+ *
+ */
+export function getNode(id, nodes) {
+	for (var i = 0; i < nodes.length; i++) {
+		if (id === nodes[i].id) {
+			return nodes[i]
+		}
+	}
+	return null
+}
 
 /**
  * Returns a specific link between a source and a target address
@@ -35,13 +53,12 @@ function numberToColor(number) {
  */
 export function containsEdge(edges, edge) {
 	for (var i = 0; i < edges.length; i++) {
-		if (edges[i].source === source && edges[i].target === target) {
+		if (edges[i].source === edge.source && edges[i].target === edge.target) {
 			return edges[i]
 		}
 		//case where the transaction was sent the other direction
-		else if (edges[i].source === target && edges[i].target === source) {
-			edges[i].recv = edge.sent
-			edges[i].sent = 0
+		else if (edges[i].source === edge.target && edges[i].target === edge.source) {
+			edges[i].direction = false
 			return edges[i]
 		}
 	}
@@ -67,6 +84,8 @@ export function uniqueAccountLinks(transactions) {
 			occurences: 1,
 			strokeWidth: 1,
 			color: numberToColor(1),
+			//default direction is true source -> target
+			direction: true,
 			sent: transaction.value / Math.pow(10, 18),
 			recv: 0,
 		}
@@ -75,7 +94,14 @@ export function uniqueAccountLinks(transactions) {
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
 			existentEdge.occurences += 1
-			existentEdge.sent += edge.sent
+			//if the direction is unchanged
+			if (existentEdge.direction) {
+				existentEdge.sent += edge.sent
+			} else {
+				//this is the case where direction is flipped because
+				//the edge was found target -> source
+				existentEdge.recv += edge.sent
+			}
 			if (existentEdge.occurences < 20) {
 				existentEdge.strokeWidth += 1
 			}
