@@ -16,6 +16,7 @@ const containerStyles = {
 
 
 const myConfig = {
+    directed: true,
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,

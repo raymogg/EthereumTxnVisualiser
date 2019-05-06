@@ -78,15 +78,14 @@ class App extends Component {
 
 
     onMouseOverNode = (accountAddress) => {
-        // Display the accountId, the number of transactions from this address,
-        // the number of transactions to this address and the net value of this
-        // node
+        /* Display the accountId, the number of transactions from this address,
+        the number of transactions to this address and the net value of this
+        node */
 
         const transactions = transactionsForAccount(accountAddress, this.state.transactions)
         const num_from = transactions.fromAddress.length;
         const num_to = transactions.toAddress.length;
 
-        // console.log(`Transactions for account (hover) ${accountAddress}:`, transactions);
         var gross_from = 0;
         var gross_to = 0;
         for (var i = 0; i < num_from; i++) {
@@ -106,12 +105,10 @@ class App extends Component {
 
         // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
-
-        // after this is done, where do we find how the fuck to write for when we stop hovering
     }
 
     searchHandler = async (address) => {
-				this.setState({isLoading: true});
+		this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
     }
@@ -153,8 +150,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <div className="mainContainer"
-                     style={mainContainerStyle}>
+                <div className="mainContainer" style={mainContainerStyle}>
                     <div className="selected-node">
                         <h4>{this.state.selectedNode.id}</h4>
                         <div class="row">
