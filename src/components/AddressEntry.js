@@ -3,14 +3,8 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
 
 
-const paperStyle = {
-    height: "100%",
-    marginTop: "5px",
-    flex: 1,
-    flexDirection: "row",
-    marginLeft: '20px',
-    marginRight: '20px',
-};
+
+
 
 class AddressEntry extends Component {
     state = {
@@ -38,7 +32,7 @@ class AddressEntry extends Component {
     render() {
         return (
             <div>
-                <div style={{ flex: 1, alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{alignItems: 'center', justifyContent: 'center',zIndex:'1'}}>
                     <TextField
                         id="address-entry"
                         label="Start Address"
@@ -48,7 +42,7 @@ class AddressEntry extends Component {
 									<Button
 										variant="contained"
 										color="primary"
-										style={{marginLeft: '10px'}}
+										style={{marginLeft: '10px', zIndex: "4"}}
 										onClick={this.onSearch}>
 										Search
 									</Button>

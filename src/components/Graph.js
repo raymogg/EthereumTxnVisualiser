@@ -9,16 +9,7 @@ const containerStyles = {
 }
 
 
-const paperStyle = {
-    height: "100vh",
-    // marginTop: "5px",
-    flex: 1,
-    flexDirection: "row",
-    width: '100%',
-    backgroundColor: "#241e56",
-    textAlign: "center",
-    color: "white"
-};
+
 
 
 const myConfig = {
@@ -80,9 +71,9 @@ class CustomGraph extends Component {
     render() {
 
         return (
-            <Paper style={paperStyle}>
+            <div>
                 {this.getGraphRender()}
-            </Paper>
+            </div>
         )
     }
 }

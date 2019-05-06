@@ -12,6 +12,15 @@ import {
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
+const mainContainerStyle = {
+    height: "100vh",
+    // marginTop: "5px",
+    display: 'block',
+    width: '100%',
+    backgroundColor: "#241e56",
+    textAlign: "center",
+    color: "white",
+};
 
 const theme = createMuiTheme({
   palette: {
@@ -91,19 +100,18 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <AppBar position="static" color='primary'>
-          <Toolbar>
-            <Typography variant="h5" color="inherit" style={{ paddingRight: "50px" }}>
-              Transaction Visualizer
-						</Typography>
-          </Toolbar>
-        </AppBar>
+
 
         <div className="mainContainer"
-          style={{ paddingLeft: '25px', paddingRight: '25px', paddingTop: '15px' }}>
-          <AddressEntry searchHandler={this.searchHandler} />
+          style={mainContainerStyle}>
+					<div style={{right:'5px', top: '5px', padding: '30px', backgroundColor: 'white'
+												, poistion:'absolute', float:"right", marginTop:'30px', marginRight:'20px'}}>
+								<span>Legend</span>
+					</div>
+          <AddressEntry searchHandler={this.searchHandler}
+					style={{backgroundColor:"white"}}/>
 					<CustomGraph graph={this.state.graph}
-											 style={{backgroundColor: "black"}}
+											 style={{backgroundColor: "black", zIndex:2}}
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
 											 onHover={this.onMouseOverNode}/>
