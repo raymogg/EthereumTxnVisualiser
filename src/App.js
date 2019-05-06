@@ -69,26 +69,34 @@ class App extends Component {
 
 
     onMouseOverNode = (accountAddress) => {
-        // Display the accountId and number of transactions involved with
-        // this address
-        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
-        console.log(`Transactions for account (hover) ${accountAddress}:`, transactions)
-        // const from_address = transactions.fromAddress.length;
-        // const to_address = transactions.toAddress.length;
-        // const accountID = accountAddress;
-        // console.log(accountID, number_of_transactions)
+        // Display the accountId, the number of transactions from this address,
+        // the number of transactions to this address and the net value of this
+        // node
 
+        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
+        const num_from = transactions.fromAddress.length;
+        const num_to = transactions.toAddress.length;
+
+        // console.log(`Transactions for account (hover) ${accountAddress}:`, transactions);
+        var gross_from = 0;
+        var gross_to = 0;
+        for (var i = 0; i < num_from; i++) {
+    		gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
+    	};
+        for (var i = 0; i < num_to; i++) {
+    		gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
+    	};
+
+        const net_value = gross_to - gross_from;
         const myNode = {
             id: accountAddress,
-            numTo: 100, // to_address etc etc
-            numFrom: 100,
-            netValue: 100
+            numTo: num_to,
+            numFrom: num_from,
+            netValue: net_value
         };
 
-        // {graph: graphData, dataSet: true}
+        // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
-
-        console.log('config', this.state.graph)
 
         // after this is done, where do we find how the fuck to write for when we stop hovering
     }
@@ -138,9 +146,9 @@ class App extends Component {
                      style={mainContainerStyle}>
                     <div className="selected-node">
                         <div><h1>{this.state.selectedNode.id}</h1></div>
-                        <div>{this.state.selectedNode.numFrom}</div>
-                        <div>{this.state.selectedNode.numTo}</div>
-                        <div>{this.state.selectedNode.netValue}</div>
+                        <div>From: {this.state.selectedNode.numFrom}</div>
+                        <div>To: {this.state.selectedNode.numTo}</div>
+                        <div>Net Value: {this.state.selectedNode.netValue}</div>
                     </div>
                     <div className="node-info">
                         <span>Node</span>
