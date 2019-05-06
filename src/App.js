@@ -121,13 +121,8 @@ class App extends Component {
 											 style={{backgroundColor: "black",}}
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
-<<<<<<< HEAD
 											 onHover={this.onMouseOverNode}
 											 onClickLink={this.onClickLink}/>
-        </div>
-=======
-											 onHover={this.onMouseOverNode}/>
->>>>>>> 1abef8780d893e1e851001e251689fdf4a4dc788
 
 
 
