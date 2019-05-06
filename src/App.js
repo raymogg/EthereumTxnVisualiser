@@ -53,7 +53,6 @@ const noNodeSelected = {
 
 
 class App extends Component {
-<<<<<<< HEAD
   state = {
 		/* cache of all the transactions that we've fetched */
 		transactions: [],
@@ -142,7 +141,6 @@ class App extends Component {
       </div>
     );
   }
-=======
     state = {
         /* cache of all the transactions that we've fetched */
         transactions: [],
@@ -244,7 +242,6 @@ class App extends Component {
             </div>
         );
     }
->>>>>>> 0e60125512c76651c99093bb966014d03da4e5b5
 }
 
 
