@@ -228,12 +228,6 @@ class App extends Component {
                             <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                         </div>
                     </div>
-                    <div className="node-info">
-                        <span>Node</span>
-                        <ul style={{padding: '0px', margin: '0px', listStyleType: 'square'}}>
-
-                        </ul>
-                    </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
                                  style={{backgroundColor: "black"}}
