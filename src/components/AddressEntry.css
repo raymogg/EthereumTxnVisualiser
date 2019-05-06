@@ -26,14 +26,15 @@
 
 .search {
   position: absolute;
-  width: 100vw;
-  margin-top: 10px;
+  width: auto;
+  top: 30px;
   height: 30px;
   display: flex;
   padding: 0px;
   align-items: center;
   justify-content: center;
   align-content: center;
+  left: calc((100% - 445px) / 2);
 }
 
 .search > div {
