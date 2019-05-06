@@ -1,6 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
+import "./AddressEntry.css";
 
 class AddressEntry extends Component {
     state = {
@@ -15,36 +16,35 @@ class AddressEntry extends Component {
     }
 
     handleChange = event => {
-        this.setState({address: event.target.value})
+        this.setState({ address: event.target.value })
     }
 
     onSearch = () => {
-        this.props.searchHandler(this.state.address)
-            .catch(function (error) {
-                console.log('AddressEntry.onSearch ERROR', error);
-            })
-    }
+			this.props.searchHandler(this.state.address)
+				.catch(function(error) {
+					console.log('AddressEntry.onSearch ERROR', error);
+				})
+		}
 
     render() {
         return (
-            <div>
-                <div style={{position: 'relative', top: '10px', margin: 'auto'}}>
-                    <TextField
+            <div className="search">
+                <div className="searchInput">
+                    <input
                         id="address-entry"
                         label="Start Address"
+                        type="text"
                         value={this.state.address}
                         onChange={this.handleChange}
                         autoFocus={true}
-                        style={{backgroundColor: 'white', width: '380px'}}
+                        style={{backgroundColor:'white', width:'380px'}}
                     />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        style={{marginLeft: '10px', padding: '10px'}}
-                        onClick={this.onSearch}>
-                        Search
-                    </Button>
+                <div className="search-button">
+									<button onClick={this.onSearch}>
+										Search
+									</button>
                 </div>
+              </div>
             </div>
         )
     }

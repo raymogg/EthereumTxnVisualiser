@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import { Graph } from 'react-d3-graph';
 import windowSize from 'react-window-size';
+import "./AddressEntry.css";
 
 const containerStyles = {
     width: '100%',
@@ -51,8 +52,12 @@ class CustomGraph extends Component {
 
     getGraphRender = () => {
 			if (!this.props.dataSet) {
-					return <div style={{margin:'auto', fontSize: '30px',
-                    height: '90px', lineHeight:'98px', verticalAlign: 'middle'}}>No Graph Yet</div>
+					return (
+              <div className="landingPage">
+                <h1>Ethereum Visualizer</h1>
+                <h2>Search an Eth Address and trace its transactions</h2>
+              </div>
+            );
 			} else {
 					return (
 							<Graph
@@ -62,6 +67,7 @@ class CustomGraph extends Component {
 									style={{ width: '100%!important', height: '100vh!important'}}
 									onMouseOverNode={this.props.onHoverNode}
 									onClickNode={this.props.onClickNode}
+                  onClickLink={this.props.onClickLink}
 							/>
 					)
 			}
