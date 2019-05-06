@@ -8,7 +8,7 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-	uniqueAccountAddresses, linkOccurences,
+	uniqueAccountAddresses, getLink,
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
@@ -78,9 +78,15 @@ class App extends Component {
 	}
 
 	onClickLink = async (source, target) => {
-		const accountLinks = uniqueAccountLinks(this.state.transactions)
-		const occurences = linkOccurences(source, target, accountLinks)
-		console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
+		const link = getLink(source, target, this.state.graph.links)
+		link.renderLabel = true
+		const graphData = {
+			nodes: this.state.graph.nodes,
+			links: this.state.graph.links,
+		}
+		this.setState({ graph: graphData, dataSet: true })
+		//link.labelProperty = `Link between ${link.source} and ${link.target}`
+		console.log(`Clicked link, the number of transactions is ${link.occurences}`)
 	}
 
 
@@ -123,9 +129,6 @@ class App extends Component {
 											 onClickNode={this.onClickNode}
 											 onHover={this.onMouseOverNode}
 											 onClickLink={this.onClickLink}/>
-
-
-
         </div>
       </div>
     );

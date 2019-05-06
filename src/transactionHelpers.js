@@ -74,22 +74,21 @@ export function uniqueAccountLinks(transactions) {
 }
 
 /**
- * Finds the number of transaction occurences between a source and a target
+ * Returns a specific link between a source and a target address
  *
  * @param source - source address
  * @param target - target address
  * @param accountLinks - list of all unique account links
  */
- export function linkOccurences(source, target, accountLinks) {
+ export function getLink(source, target, accountLinks) {
 	 var count = accountLinks.length
 	 for(var i = 0; i < count; i++) {
 		 var link = accountLinks[i];
-		 if (link.source == source && link.target == target) {
-			 return link.occurences
+		 if (link.source === source && link.target === target) {
+			 return link
 		 }
 	 }
  }
-
 
 /**
  * Accounts could be in either 'from' or 'to' fields of transactions

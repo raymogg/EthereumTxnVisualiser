@@ -13,6 +13,7 @@ const myConfig = {
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,
+    linkHighlightBehavior: true,
     node: {
         color: 'lightgreen',
         size: 120,
@@ -20,7 +21,8 @@ const myConfig = {
         renderLabel: false
     },
     link: {
-        highlightColor: 'lightblue'
+        highlightColor: 'lightblue',
+        renderLabel: true
     }
 };
 
@@ -36,6 +38,7 @@ class CustomGraph extends Component {
         config.height = this.props.windowHeight
         return config;
     }
+
 
     componentDidMount = async () => {
         //this.setState({graphData: this.props.graph})
