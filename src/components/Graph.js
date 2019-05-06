@@ -16,7 +16,6 @@ const myConfig = {
     nodeHighlightBehavior: true,
     node: {
         color: 'lightgreen',
-        size: 120,
         highlightStrokeColor: 'blue',
         renderLabel: false,
         //svg: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg'
@@ -39,6 +38,8 @@ class CustomGraph extends Component {
         config.height = this.props.windowHeight
         return config;
     }
+
+
 
     componentDidMount = async () => {
         //this.setState({graphData: this.props.graph})
