@@ -45,10 +45,17 @@ const emptyGraph = {
 }
 
 const noNodeSelected = {
-    id: "None Selected",
+    id: "Hover over node",
     numTo: 0,
     numFrom: 0,
     netValue: 0
+};
+
+const noLinkSelected = {
+    source: "No source",
+    destination: "No destination",
+    number: 0,
+    value: 0
 }
 
 
@@ -100,6 +107,8 @@ class App extends Component {
         // Update the selected node property of state to update div
         this.setState({selectedNode: myNode});
 
+        console.log('config', this.state.graph)
+
         // after this is done, where do we find how the fuck to write for when we stop hovering
     }
 
@@ -150,10 +159,19 @@ class App extends Component {
                 <div className="mainContainer"
                      style={mainContainerStyle}>
                     <div className="selected-node">
-                        <div><h1>{this.state.selectedNode.id}</h1></div>
-                        <div>From: {this.state.selectedNode.numFrom}</div>
-                        <div>To: {this.state.selectedNode.numTo}</div>
-                        <div>Net Value: {this.state.selectedNode.netValue}</div>
+                        <h4>{this.state.selectedNode.id}</h4>
+                        <div class="row">
+                            <div>Transactions In</div>
+                            <div>{this.state.selectedNode.numFrom}</div>
+                        </div>
+                        <div class="row">
+                            <div>Transactions Out</div>
+                            <div>{this.state.selectedNode.numTo}</div>
+                        </div>
+                        <div class="row">
+                            <div>Net Transfer Value</div>
+                            <div>{this.state.selectedNode.netValue}</div>
+                        </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
@@ -167,11 +185,6 @@ class App extends Component {
             </div>
         );
     }
-}
-
-
-function accountHashToAccountNode(accountHash) {
-    return {id: accountHash}
 }
 
 
