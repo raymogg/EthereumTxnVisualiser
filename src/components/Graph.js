@@ -92,7 +92,11 @@ class CustomGraph extends Component {
                       "events": {
                           "onhover": {
                               "enable": true,
-                              "mode": "repulse"
+                              "mode": "grab"
+                          },
+                          "onclick": {
+                             "enable": true,
+                             "mode": "push"
                           }
                       }
                   }
