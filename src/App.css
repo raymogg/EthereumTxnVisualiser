@@ -44,13 +44,16 @@
 }
 
 .selected-node {
+  padding: 5px;
   position: absolute;
-  top: 30px;
-  left: 10px;
-  width: 300px;
+  bottom: 0;
+  left:0;
+  width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
+  background-color: #fff;
+  color: #241e56;
 }
 
 .selected-node h4 {
@@ -59,7 +62,7 @@
 }
 
 .selected-node .row {
-  padding: 5px;
+
 }
 
 .selected-node div:first-of-type {
