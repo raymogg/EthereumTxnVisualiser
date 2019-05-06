@@ -63,8 +63,6 @@
   height: auto;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  color: #241e56;
 }
 
 .selected-node h4 {
@@ -101,4 +99,8 @@
 
 .selected-node > .row > div:nth-of-type(2) {
   border-left: 1px solid #fff;
+}
+
+.price-hover {
+  cursor: pointer;
 }
