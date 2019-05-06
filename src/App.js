@@ -49,9 +49,9 @@ class App extends Component {
 		/* cache of all the transactions that we've fetched */
 		transactions: [],
 		/* Whether the graph has gone through the initial load yet */
-    dataSet: false,
+        dataSet: false,
 		/* object with 'nodes' and 'links' properties */
-    graph: emptyGraph,
+        graph: emptyGraph,
   }
 
   componentDidMount = async () => {
@@ -59,9 +59,10 @@ class App extends Component {
 
 
   onMouseOverNode = (accountAddress) => {
-  	// Display the accountId metadata on mouse hover
+  	    // Display the accountId metadata on mouse hover
 		const transactions = transactionsForAccount(accountAddress, this.state.transactions)
-		console.log(`Transactions for account ${accountAddress}:`, transactions)
+		console.log(`Transactions for account (hover) ${accountAddress}:`, transactions)
+        //this.state.graph.nodes
   }
 
 
@@ -114,7 +115,7 @@ class App extends Component {
 											 style={{backgroundColor: "black", zIndex:2}}
 											 dataSet={this.state.dataSet}
 											 onClickNode={this.onClickNode}
-											 onHover={this.onMouseOverNode}/>
+											 onHoverNode={this.onMouseOverNode}/>
         </div>
 
       </div>
