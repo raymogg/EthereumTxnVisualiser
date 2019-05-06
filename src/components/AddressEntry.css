@@ -12,11 +12,13 @@
   align-items: center;
   justify-content: center;
   align-content: center;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  z-index: 2;
+  height: 100px;
+  width: 600px;
+  left: calc((100vw - 600px) / 2);
+  overflow: hidden;
+  top: calc((100vh - 70px) / 2);
   position: absolute;
+  text-align: center;
 }
 
 .landingPage h1 {
