@@ -79,17 +79,24 @@ class CustomGraph extends Component {
                                 params={{
                                     "particles": {
                                         "number": {
-                                            "value": 100
+                                            "value": 130
                                         },
                                         "size": {
                                             "value": 3
+                                        },
+                                        "color": {
+                                          "value": "#90EE90"
                                         }
                                     },
                                     "interactivity": {
                                         "events": {
                                             "onhover": {
                                                 "enable": true,
-                                                "mode": "repulse"
+                                                "mode": "grab"
+                                            },
+                                            "onclick": {
+                                                "enable": true,
+                                                "node": "push"
                                             }
                                         }
                                     }
