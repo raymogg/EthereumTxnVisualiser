@@ -17,6 +17,8 @@ const mainContainerStyle = {
     // marginTop: "5px",
     display: 'block',
     width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
     backgroundColor: "#241e56",
     textAlign: "center",
     color: "white",
@@ -143,7 +145,7 @@ class App extends Component {
                 return response.json();
             }).then(function (response) {
                 const rate = parseFloat(response.AUD);
-                const ethVal = parseFloat(rate * state.selectedNode.netValue);
+                const ethVal = parseFloat(rate * this.state.selectedNode.netValue);
                 this.setState({netValue: ethVal, currency: "$"})
             });
         } else {
@@ -151,7 +153,7 @@ class App extends Component {
                 return response.json();
             }).then(function (response) {
                 const rate = parseFloat(response.AUD);
-                const AUD = parseFloat(state.selectedNode.netValue / rate);
+                const AUD = parseFloat(this.state.selectedNode.netValue / rate);
                 this.setState({netValue: AUD, currency: "E"});
             });
         }
@@ -180,6 +182,9 @@ class App extends Component {
 
 
     render() {
+        if (this.state.dataSet) {
+            document.querySelector(".selected-node").style.visibility = "visible";
+        }
         return (
             <div className="App">
                 <div className="mainContainer"
@@ -201,7 +206,7 @@ class App extends Component {
                     </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
-                                 style={{backgroundColor: "black",}}
+                                 style={{backgroundColor: "black"}}
                                  dataSet={this.state.dataSet}
                                  onClickNode={this.onClickNode}
                                  onHoverNode={this.onMouseOverNode}

@@ -55,6 +55,7 @@
 }
 
 .selected-node {
+  visibility: hidden;
   padding: 5px;
   position: absolute;
   bottom: 0;
