@@ -8,13 +8,8 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-<<<<<<< HEAD
 	uniqueAccountAddresses, getLink,
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions
-=======
-    uniqueAccountAddresses, linkOccurences,
-    uniqueAccountLinks, transactionsForAccount, addNewTransactions
->>>>>>> f460924cbe9c177834fe224d6abf071fa805c23b
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -111,7 +106,7 @@ class App extends Component {
     }
 
     onClickLink = async (source, target) => {
-        const occurences = linkOccurences(source, target, this.state.graph.links)
+        const occurences = getLink(source, target, this.state.graph.links)
         console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
     }
 
