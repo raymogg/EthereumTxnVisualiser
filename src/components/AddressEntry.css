@@ -1,0 +1,68 @@
+.landingPage {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  height: 100vh;
+  top: 0;
+}
+
+.landingPage h1 {
+  font-size: 50px;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.landingPage h2 {
+  margin: 5px;
+}
+
+.search {
+  position: absolute;
+  width: 100vw;
+  margin-top: 10px;
+  height: 30px;
+  display: flex;
+  padding: 0px;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.search > div {
+  height: 100%;
+  display: flex;
+  align-self: center;
+  justify-content:center;
+  align-items: center;
+  align-content: center;
+}
+
+.search-button {
+  background-color: cyan;
+  margin-left: 10px;
+  flex-direction: column;
+  justify-content:center;
+  align-items: center;
+  align-content: center;
+}
+
+.search-button input {
+  border: 2px black;
+  border-radius: 30px;
+}
+
+.search-button button {
+  padding: 8px;
+}
+
+.search-button button:hover{
+  background-color: green;
+}
+
+.search > div > * {
+  font-size: 10px;
+  height: 100%;
+}

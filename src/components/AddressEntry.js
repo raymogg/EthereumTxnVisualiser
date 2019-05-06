@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
+import "./AddressEntry.css";
 
 class AddressEntry extends Component {
     state = {
@@ -27,24 +28,23 @@ class AddressEntry extends Component {
 
     render() {
         return (
-            <div>
-                <div style={{position:'relative', top:'10px', margin:'auto'}}>
-                    <TextField
+            <div className="search">
+                <div className="searchInput">
+                    <input
                         id="address-entry"
                         label="Start Address"
+                        type="text"
                         value={this.state.address}
                         onChange={this.handleChange}
                         autoFocus={true}
                         style={{backgroundColor:'white', width:'380px'}}
                     />
-									<Button
-										variant="contained"
-										color="primary"
-										style={{marginLeft: '10px', padding: '10px'}}
-										onClick={this.onSearch}>
+                <div className="search-button">
+									<button onClick={this.onSearch}>
 										Search
-									</Button>
+									</button>
                 </div>
+              </div>
             </div>
         )
     }
