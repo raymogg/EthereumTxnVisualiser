@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField';
-import { fetchTransactions } from "../services/api.js";
-import { processTransactions, addTransactions } from "../visualisation";
 
-const paperStyle = {
-    height: "100%",
-    marginTop: "5px",
-    flex: 1,
-    flexDirection: "row",
-    marginLeft: '20px',
-    marginRight: '20px',
-};
+
+
+
 
 class AddressEntry extends Component {
     state = {
@@ -22,20 +13,9 @@ class AddressEntry extends Component {
 
     constructor(props) {
         super(props);
-        // console.log('addressentry:props:', props);
     }
 
-    componentDidMount = async (input) => {
-        console.log('addressentry:input:', input);
-        // fetchTransactions(this.onComplete, this.state.address)
-        // 	.then(function(transactions) {
-        // 		return processTransactions(transactions)
-        // 	}).then(function({nodes, edges}) {
-        //
-        // 	})
-
-        let transactions = await fetchTransactions(this.state.address)
-        let graph = processTransactions(transactions)
+    componentDidMount = async () => {
     }
 
     handleChange = event => {
@@ -43,13 +23,16 @@ class AddressEntry extends Component {
     }
 
     onSearch = () => {
-        this.props.searchHandler(this.state.address)
-    }
+			this.props.searchHandler(this.state.address)
+				.catch(function(error) {
+					console.log('AddressEntry.onSearch ERROR', error);
+				})
+		}
 
     render() {
         return (
             <div>
-                <div style={{ flex: 1, alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{alignItems: 'center', justifyContent: 'center',zIndex:'1'}}>
                     <TextField
                         id="address-entry"
                         label="Start Address"
@@ -57,8 +40,13 @@ class AddressEntry extends Component {
                         onChange={this.handleChange}
                         style={{color: "#ffffff"}}
                     />
-                    <Button variant="contained" color="primary" style={{ marginLeft: '10px' }}
-                        onClick={this.onSearch}> Search </Button>
+									<Button
+										variant="contained"
+										color="primary"
+										style={{marginLeft: '10px', zIndex: "4"}}
+										onClick={this.onSearch}>
+										Search
+									</Button>
                 </div>
             </div>
         )
