@@ -55,10 +55,12 @@
 }
 
 .selected-node {
+  visibility: hidden;
+  padding: 5px;
   position: absolute;
-  top: 30px;
-  left: 10px;
-  width: 300px;
+  bottom: 0;
+  left:0;
+  width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -70,7 +72,7 @@
 }
 
 .selected-node .row {
-  padding: 5px;
+
 }
 
 .selected-node div:first-of-type {
@@ -98,4 +100,8 @@
 
 .selected-node > .row > div:nth-of-type(2) {
   border-left: 1px solid #fff;
+}
+
+.price-hover {
+  cursor: pointer;
 }

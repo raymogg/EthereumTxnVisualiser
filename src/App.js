@@ -17,6 +17,8 @@ const mainContainerStyle = {
     // marginTop: "5px",
     display: 'block',
     width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
     backgroundColor: "#241e56",
     textAlign: "center",
     color: "white",
@@ -48,7 +50,8 @@ const noNodeSelected = {
     id: "Hover over node",
     numTo: 0,
     numFrom: 0,
-    netValue: 0
+    netValue: 0,
+    currency: "E"
 };
 
 const noLinkSelected = {
@@ -107,6 +110,12 @@ class App extends Component {
         this.setState({selectedNode: myNode});
     }
 
+    onMouseOutNode = () => {
+        // Update the selected node property of state to update div
+        //this.setState({selectedNode: noNodeSelected});
+    }
+
+
     searchHandler = async (address) => {
 		this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(address)
@@ -125,6 +134,28 @@ class App extends Component {
         const occurences = linkOccurences(source, target, accountLinks)
         console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
     }
+
+    onValueClick = async () => {
+        // if we have native ETH Value
+        if (this.state.selectedNode.currency === "E" || typeof this.state.currency === "undefined") {
+            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                const rate = parseFloat(response.AUD);
+                const ethVal = parseFloat(rate * this.state.selectedNode.netValue);
+                this.setState({netValue: ethVal, currency: "$"})
+            });
+        } else {
+            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                const rate = parseFloat(response.AUD);
+                const AUD = parseFloat(this.state.selectedNode.netValue / rate);
+                this.setState({netValue: AUD, currency: "E"});
+            });
+        }
+
+    };
 
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
@@ -148,6 +179,9 @@ class App extends Component {
 
 
     render() {
+        if (this.state.dataSet) {
+            document.querySelector(".selected-node").style.visibility = "visible";
+        }
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
@@ -163,17 +197,18 @@ class App extends Component {
                         </div>
                         <div class="row">
                             <div>Node Net Value</div>
-                            <div>{this.state.selectedNode.netValue}</div>
+                            <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.netValue}</div>
                         </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler}/>
                     <CustomGraph graph={this.state.graph}
-                                 style={{backgroundColor: "black",}}
+                                 style={{backgroundColor: "black"}}
                                  dataSet={this.state.dataSet}
                                  onClickNode={this.onClickNode}
                                  onHoverNode={this.onMouseOverNode}
+                                 offHoverNode={this.onMouseOutNode}
                                  onClickLink={this.onClickLink}
-								 isLoading={this.state.isLoading}/>
+                                 isLoading={this.state.isLoading}/>
                 </div>
             </div>
         );
