@@ -61,7 +61,9 @@ class App extends Component {
         /* object with 'nodes' and 'links' properties */
         graph: emptyGraph,
         /* empty node placeholder for the node details on hover */
-        selectedNode: noNodeSelected
+        selectedNode: noNodeSelected,
+				/* a bool that represents whether a new graph is being loaded */
+				isLoading: false
     }
 
     componentDidMount = async () => {
@@ -103,12 +105,14 @@ class App extends Component {
 
 
     searchHandler = async (address) => {
+				this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
     }
 
 
     onClickNode = async (accountAddress) => {
+				this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(accountAddress)
             .catch(err => console.log('App.onClickNode ERROR:', err))
     }
@@ -136,7 +140,7 @@ class App extends Component {
         }
 
         // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({graph: graphData, dataSet: true})
+        this.setState({graph: graphData, dataSet: true, isLoading: false})
     }
 
 
@@ -157,7 +161,8 @@ class App extends Component {
                                  dataSet={this.state.dataSet}
                                  onClickNode={this.onClickNode}
                                  onHoverNode={this.onMouseOverNode}
-                                 onClickLink={this.onClickLink}/>
+                                 onClickLink={this.onClickLink}
+																 isLoading={this.state.isLoading}/>
                 </div>
             </div>
         );

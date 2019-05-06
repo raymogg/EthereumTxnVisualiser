@@ -28,7 +28,6 @@ const myConfig = {
     }
 };
 
-
 class CustomGraph extends Component {
     state = {
         nodeSize: 0,
@@ -54,22 +53,35 @@ class CustomGraph extends Component {
         // console.log(this.props.graph.edges)
     }
 
+
     getGraphRender = () => {
+      console.log(this.props.isLoading);
 			if (!this.props.dataSet) {
+        if(this.props.isLoading == true) {
+          console.log("loading");
+          // setTimeOut(function(){
+          //
+          // }, 3000);
+          return (
+              <div className="loader">
+                <DotLoader
+                  sizeUnit={"px"}
+                  size={200}
+                  color={'lightgreen'}
+                  loading={this.props.isLoading}/>
+              </div>
+            );
+        } else {
 					return (
               <div className="landingPage">
                 <h1>Ethereum Visualizer</h1>
                 <h2>Search an Eth Address and trace its transactions</h2>
               </div>
             );
+          }
 			} else {
-          console.log(this.props.isLoading);
-          if(this.props.isLoading == true) {
-            console.log("loading");
-            return <div> <DotLoader /> </div>
-          } else {
-  					return (
-  							<Graph
+  		    return (
+  				      <Graph
   									id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
   									data={this.props.graph}
   									config={this.setConfig(myConfig)}
@@ -79,8 +91,7 @@ class CustomGraph extends Component {
                     onClickLink={this.props.onClickLink}
   							/>
   					)
-          }
-			}
+        }
     }
 
     render() {
