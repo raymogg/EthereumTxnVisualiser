@@ -19,7 +19,6 @@
   margin-top: 20px;
 }
 
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -42,4 +41,29 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.selected-node {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  width: 300px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-node h4 {
+  padding: 0;
+  margin: 0;
+}
+
+.selected-node div {
+  padding: 5px;
+}
+
+.selected-node div:first-of-type {
+  padding-top: 0;
 }
