@@ -54,7 +54,7 @@ export function uniqueAccountLinks(transactions) {
 			target: transaction.to,
 			occurences: 1,
 			strokeWidth: 1,
-			color: numberToColor(1)
+			color: numberToColor(1),
 		}
 
 		//Check if this edge is already in the edges array
@@ -72,6 +72,23 @@ export function uniqueAccountLinks(transactions) {
 	}
 	return edges
 }
+
+/**
+ * Finds the number of transaction occurences between a source and a target
+ *
+ * @param source - source address
+ * @param target - target address
+ * @param accountLinks - list of all unique account links
+ */
+ export function linkOccurences(source, target, accountLinks) {
+	 var count = accountLinks.length
+	 for(var i = 0; i < count; i++) {
+		 var link = accountLinks[i];
+		 if (link.source == source && link.target == target) {
+			 return link.occurences
+		 }
+	 }
+ }
 
 
 /**
@@ -195,7 +212,7 @@ export function transactionsForAccount(accountAddress, transactions) {
 
 	// TODO returning the transactions to and from the account of interest as a
 	//  single list - however they could be returned as separate lists.
-	//  eg. 
-	return { fromAccount: transactionsFromAccount, toAccount: transactionsToAccount }
+	//  eg.
+	return { fromAddress: transactionsFromAccount, toAddress: transactionsToAccount }
 	//return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
 }

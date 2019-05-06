@@ -8,8 +8,8 @@ import AddressEntry from './components/AddressEntry';
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchTransactions} from "./services/api";
 import {
-    uniqueAccountAddresses,
-    uniqueAccountLinks, transactionsForAccount, addNewTransactions
+	uniqueAccountAddresses, linkOccurences,
+	uniqueAccountLinks, transactionsForAccount, addNewTransactions
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -67,8 +67,8 @@ class App extends Component {
 
         // var hoveredNode =
 
-        // const from_address = transactions.fromAccount.length;
-        // const to_address = transactions.toAccount.length;
+        // const from_address = transactions.fromAddress.length;
+        // const to_address = transactions.toAddress.length;
         // const accountID = accountAddress;
         // console.log(accountID, number_of_transactions)
         console.log('config', this.state.graph.update)
@@ -84,6 +84,12 @@ class App extends Component {
   onClickNode = async (accountAddress) => {
 		this.fetchTransactionsThenUpdateGraph(accountAddress)
 			.catch(err => console.log('App.onClickNode ERROR:', err))
+	}
+
+	onClickLink = async (source, target) => {
+		const accountLinks = uniqueAccountLinks(this.state.transactions)
+		const occurences = linkOccurences(source, target, accountLinks)
+		console.log(`Clicked link between ${source} and ${target}\nThe number of transactions between them is ${occurences}`)
 	}
 
 
@@ -124,7 +130,8 @@ class App extends Component {
 								 style={{backgroundColor: "black",}}
 								 dataSet={this.state.dataSet}
 								 onClickNode={this.onClickNode}
-								 onHoverNode={this.onMouseOverNode}/>
+								 onHoverNode={this.onMouseOverNode}
+                                 onClickLink={this.onClickLink}/>
         </div>
       </div>
     );
