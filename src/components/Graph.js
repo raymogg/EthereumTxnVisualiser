@@ -15,7 +15,7 @@ const containerStyles = {
 
 
 const myConfig = {
-    directed: true,
+    //directed: true,
     width: '1000',
     height: '1000',
     nodeHighlightBehavior: true,
@@ -27,7 +27,8 @@ const myConfig = {
         //symbolType: 'diamond'
     },
     link: {
-        highlightColor: 'lightblue'
+        highlightColor: 'lightblue',
+        renderLabel: true
     }
 };
 

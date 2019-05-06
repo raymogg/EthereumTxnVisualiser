@@ -55,6 +55,8 @@ export function uniqueAccountLinks(transactions) {
 			occurences: 1,
 			strokeWidth: 1,
 			color: numberToColor(1),
+			label: "-->",
+			fontColor: "white"
 		}
 
 		//Check if this edge is already in the edges array
