@@ -82,7 +82,7 @@ export function containsEdge(edges, edge) {
  * @param transactions - all known transactions
  * @returns {Array} edges between accounts determined by transactions.
  */
-export function uniqueAccountLinks(transactions) {
+export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 	//TODO Weight graph edges by number of transactions between each account
 	var edges = []
 	for (var i = 0; i < transactions.length; i++) {
@@ -104,7 +104,9 @@ export function uniqueAccountLinks(transactions) {
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
+			//Update the occurences and the total edge value
 			existentEdge.occurences += 1
+			existentEdge.sent += transaction.value / Math.pow(10, 18)
 			//if the direction is unchanged
 			if (existentEdge.direction) {
 				existentEdge.sent += edge.sent
@@ -113,12 +115,28 @@ export function uniqueAccountLinks(transactions) {
 				//the edge was found target -> source
 				existentEdge.recv += edge.sent
 			}
-			if (existentEdge.occurences < 20) {
-				existentEdge.strokeWidth += 1
+			if (scaleByTxnValue === false) {
+				//Limit edge scaling to a max of 20 transactions between accounts
+				if (existentEdge.occurences < 20) {
+					existentEdge.strokeWidth += 1
+				}
+			} else if (scaleByTxnValue === true) {
+				//Limit edge scaling to a max of 20ETH worth of value
+				if (existentEdge.sent < 20) {
+					existentEdge.strokeWidth += (existentEdge.sent / 2)
+				}
 			}
 			existentEdge.color = numberToColor(existentEdge.strokeWidth)
 		} else {
 			//Otherwise simply add the edge
+			//If the edges are being scaled by transaction value make sure to set edge stroke width
+			if (scaleByTxnValue === true) {
+				var scaledValue = (edge.sent / 2)
+				if (scaledValue < 1) {
+					scaledValue = 1
+				}
+				edge.strokeWidth = scaledValue
+			}
 			edges.push(edge)
 		}
 	}

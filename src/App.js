@@ -74,7 +74,10 @@ class App extends Component {
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
 		/* a bool that represents whether a new graph is being loaded */
-		isLoading: false
+        isLoading: false,
+        //Bool representating whether edges should be scaled by transaction value (when true)
+        //or by transaciont count (when false)
+        scaleByTransactionValue: false
     }
 
     componentDidMount = async () => {
@@ -116,6 +119,16 @@ class App extends Component {
 		this.setState({isLoading: true});
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
+    }
+
+    onUpdateEdgeScaling = (newEdgeScaling) => {
+        console.log("Updating Edge Scale Type in app")
+        console.log(newEdgeScaling)
+        if (newEdgeScaling == "Transaction Value") {
+            this.setState({scaleByTransactionValue: true})
+        } else if (newEdgeScaling == "Transaction Count") {
+            this.setState({scaleByTransactionValue: false})
+        }
     }
 
     onClickGraph = async () => {
@@ -192,7 +205,7 @@ class App extends Component {
         addNewTransactions(this.state.transactions, transactions)
 
         const accountHashes = uniqueAccountAddresses(this.state.transactions)
-        const accountLinks = uniqueAccountLinks(this.state.transactions)
+        const accountLinks = uniqueAccountLinks(this.state.transactions, this.state.scaleByTransactionValue)
         const graphData = {
             nodes: accountHashes,
             links: accountLinks,
@@ -225,7 +238,7 @@ class App extends Component {
                             <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                         </div>
                     </div>
-                    <AddressEntry searchHandler={this.searchHandler}/>
+                    <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}/>
                     <CustomGraph graph={this.state.graph}
                                  style={{backgroundColor: "black"}}
                                  dataSet={this.state.dataSet}

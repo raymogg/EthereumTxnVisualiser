@@ -20,7 +20,13 @@ const myConfig = {
     height: '1000',
     nodeHighlightBehavior: true,
     linkHighlightBehavior: true,
+    automaticRearrangeAfterDropNode: true,
+    //staticGraph: true,
     //directed: true,
+    d3: {
+        gravity: -200,
+        linkStrength: 3
+    },
     node: {
         color: 'lightgreen',
         highlightStrokeColor: 'blue',
