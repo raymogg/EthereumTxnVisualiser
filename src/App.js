@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
-import {createMuiTheme} from '@material-ui/core/styles';
-import {fetchTransactions} from "./services/api";
+import { createMuiTheme } from '@material-ui/core/styles';
+import { fetchTransactions } from "./services/api";
 import {
-	uniqueAccountAddresses, containsEdge,
-	uniqueAccountLinks, transactionsForAccount, addNewTransactions,
-	colorLinkedNodes, getNode, toggleLabel,
+    uniqueAccountAddresses, containsEdge,
+    uniqueAccountLinks, transactionsForAccount, addNewTransactions,
+    colorLinkedNodes, getNode, toggleLabel,
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -73,11 +73,13 @@ class App extends Component {
         graph: emptyGraph,
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
-		/* a bool that represents whether a new graph is being loaded */
+        /* a bool that represents whether a new graph is being loaded */
         isLoading: false,
         //Bool representating whether edges should be scaled by transaction value (when true)
         //or by transaciont count (when false)
-        scaleByTransactionValue: false
+        scaleByTransactionValue: true,
+        //Address that was first searched for in this query (used when the graph needs to re render with new scaling)
+        initialAddress: ""
     }
 
     componentDidMount = async () => {
@@ -96,11 +98,11 @@ class App extends Component {
         var gross_from = 0;
         var gross_to = 0;
         for (var i = 0; i < num_from; i++) {
-    		gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
-    	};
+            gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
+        };
         for (var i = 0; i < num_to; i++) {
-    		gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
-    	};
+            gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
+        };
 
         const net_value = gross_to - gross_from;
         const myNode = {
@@ -112,22 +114,43 @@ class App extends Component {
         };
 
         // Update the selected node property of state to update div
-        this.setState({selectedNode: myNode});
+        this.setState({ selectedNode: myNode });
     }
 
     searchHandler = async (address) => {
-		this.setState({isLoading: true});
+        this.setState({ isLoading: true, initialAddress: address });
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
+    }
+
+    /** Function used to clear all data
+     * Needed as part of the switch from scaling via transaction count to scaling via
+     * transaction value
+     */
+    resetData = (onComplete) => {
+        this.setState({
+            transactions: [],
+            dataSet: false,
+            graph: emptyGraph,
+            selectedNode: noNodeSelected,
+            isLoading: true,
+        }, onComplete)
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
         console.log("Updating Edge Scale Type in app")
         console.log(newEdgeScaling)
         if (newEdgeScaling == "Transaction Value") {
-            this.setState({scaleByTransactionValue: true})
+            this.setState({ scaleByTransactionValue: true }, () => {
+                this.resetData(() => {
+                    this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                }
+                )
+            })
         } else if (newEdgeScaling == "Transaction Count") {
-            this.setState({scaleByTransactionValue: false})
+            this.setState({ scaleByTransactionValue: false }, () => {
+                this.resetData(() => { this.fetchTransactionsThenUpdateGraph(this.state.initialAddress) })
+            })
         }
     }
 
@@ -136,35 +159,35 @@ class App extends Component {
     }
 
     onClickNode = async (accountAddress) => {
-		this.setState({isLoading: true});
+        this.setState({ isLoading: true });
         this.fetchTransactionsThenUpdateGraph(accountAddress)
             .catch(err => console.log('App.onClickNode ERROR:', err))
     }
 
     onClickLink = async (source, target) => {
-		var edge = {
-			source: source,
-			target: target
-		}
+        var edge = {
+            source: source,
+            target: target
+        }
         const link = containsEdge(this.state.graph.links, edge)
         // Toggle the label
         //toggleLabel(link, `Sent: ${link.sent} Recv: ${link.recv}`)
         toggleLabel(link, `#trans: ${link.occurences}`)
 
-		const myLink = {
-			NodeA: link.source,
-			NodeB: link.target,
-			numberTransactions: link.occurences,
-			AtoB: link.sent,
-			BtoA: link.recv,
-		}
-		const nodes = this.state.graph.nodes
-		colorLinkedNodes(getNode(source, nodes), getNode(target, nodes), )
-		console.log(myLink)
-		this.setState(this.state.graph)
-		// Update the selected node property of state to update div
-		//this.setState({selectedLink: myLink);
-		//console.log('config', this.state.graph)
+        const myLink = {
+            NodeA: link.source,
+            NodeB: link.target,
+            numberTransactions: link.occurences,
+            AtoB: link.sent,
+            BtoA: link.recv,
+        }
+        const nodes = this.state.graph.nodes
+        colorLinkedNodes(getNode(source, nodes), getNode(target, nodes))
+        console.log(myLink)
+        this.setState(this.state.graph)
+        // Update the selected node property of state to update div
+        //this.setState({selectedLink: myLink);
+        //console.log('config', this.state.graph)
     }
 
     /**
@@ -192,7 +215,7 @@ class App extends Component {
         updatedNode.netValue = value;
 
         // set the state
-        this.setState({noNodeSelected: updatedNode});
+        this.setState({ noNodeSelected: updatedNode });
     };
 
 
@@ -212,7 +235,7 @@ class App extends Component {
         }
 
         // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({graph: graphData, dataSet: true, isLoading: false})
+        this.setState({ graph: graphData, dataSet: true, isLoading: false })
     }
 
 
@@ -238,15 +261,15 @@ class App extends Component {
                             <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                         </div>
                     </div>
-                    <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}/>
+                    <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling} />
                     <CustomGraph graph={this.state.graph}
-                                 style={{backgroundColor: "black"}}
-                                 dataSet={this.state.dataSet}
-                                 onClickGraph={this.onClickGraph}
-                                 onClickNode={this.onClickNode}
-                                 onHoverNode={this.onMouseOverNode}
-                                 onClickLink={this.onClickLink}
-                                 isLoading={this.state.isLoading}/>
+                        style={{ backgroundColor: "black" }}
+                        dataSet={this.state.dataSet}
+                        onClickGraph={this.onClickGraph}
+                        onClickNode={this.onClickNode}
+                        onHoverNode={this.onMouseOverNode}
+                        onClickLink={this.onClickLink}
+                        isLoading={this.state.isLoading} />
                 </div>
             </div>
         );
