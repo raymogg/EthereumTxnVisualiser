@@ -146,17 +146,21 @@ class App extends Component {
 			source: source,
 			target: target
 		}
-		const nodes = this.state.graph.nodes
-    const link = containsEdge(this.state.graph.links, edge)
-    highlightLink(link, getNode(source, nodes), getNode(target, nodes))
-		const linkInfo = {
+        const link = containsEdge(this.state.graph.links, edge)
+        // Toggle the label
+        //toggleLabel(link, `Sent: ${link.sent} Recv: ${link.recv}`)
+        toggleLabel(link, `#trans: ${link.occurences}`)
+
+		const myLink = {
 			NodeA: link.source,
 			NodeB: link.target,
 			numberTransactions: link.occurences,
 			AtoB: link.sent,
 			BtoA: link.recv,
 		}
-		console.log(linkInfo)
+		const nodes = this.state.graph.nodes
+		highlightLink(myLink, getNode(source, nodes), getNode(target, nodes), )
+		console.log(myLink)
 		this.setState(this.state.graph)
 		// Update the selected node property of state to update div
 		//this.setState({selectedLink: myLink);

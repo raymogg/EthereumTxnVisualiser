@@ -125,7 +125,9 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 			} else if (scaleByTxnValue === true) {
 				//Limit edge scaling to a max of 20ETH worth of value
 				if (existentEdge.sent < 20) {
-					existentEdge.strokeWidth += (existentEdge.sent / 2)
+					existentEdge.strokeWidth += (edge.sent / 2)
+				} else if (existentEdge.strokeWidth > 20) {
+					existentEdge.strokeWidth = 20
 				}
 			}
 			existentEdge.color = numberToColor(existentEdge.strokeWidth)
@@ -136,6 +138,8 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 				var scaledValue = (edge.sent / 2)
 				if (scaledValue < 1) {
 					scaledValue = 1
+				} else if (scaledValue > 20) {
+					scaledValue = 20
 				}
 				edge.strokeWidth = scaledValue
 			}
