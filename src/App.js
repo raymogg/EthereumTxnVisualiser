@@ -55,11 +55,13 @@ const noNodeSelected = {
     currency: "E"
 };
 
+
 const noLinkSelected = {
-    source: "No source",
-    destination: "No destination",
-    number: 0,
-    value: 0
+    nodeA: "No Node A",
+    nodeB: "No Node B",
+    aToB: 0,
+    bToA: 0,
+		numSent: 0
 }
 
 
@@ -73,7 +75,9 @@ class App extends Component {
         graph: emptyGraph,
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
-		/* a bool that represents whether a new graph is being loaded */
+				/* empty link placeholder for the link details on click */
+				selectedLink: noLinkSelected,
+				/* a bool that represents whether a new graph is being loaded */
         isLoading: false,
         //Bool representating whether edges should be scaled by transaction value (when true)
         //or by transaciont count (when false)
@@ -152,16 +156,14 @@ class App extends Component {
         toggleLabel(link, `#trans: ${link.occurences}`)
 
 		const myLink = {
-			NodeA: link.source,
-			NodeB: link.target,
-			numberTransactions: link.occurences,
-			AtoB: link.sent,
-			BtoA: link.recv,
+			nodeA: link.source,
+			nodeB: link.target,
+			aToB: link.sent,
+			bToA: link.recv,
+			numSent: link.occurences,
 		}
-		const nodes = this.state.graph.nodes
-		highlightLink(myLink, getNode(source, nodes), getNode(target, nodes), )
+		this.setState({selectedLink: myLink});
 		console.log(myLink)
-		this.setState(this.state.graph)
 		// Update the selected node property of state to update div
 		//this.setState({selectedLink: myLink);
 		//console.log('config', this.state.graph)
@@ -219,11 +221,12 @@ class App extends Component {
     render() {
         if (this.state.dataSet) {
             document.querySelector(".selected-node").style.visibility = "visible";
+						document.querySelector(".selected-link").style.visibility = "visible";
         }
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
-                    <div className="selected-node">
+										<div className="selected-node">
                         <h4>{this.state.selectedNode.id}</h4>
                         <div class="row">
                             <div>Outgoing Transactions</div>
@@ -236,6 +239,29 @@ class App extends Component {
                         <div class="row">
                             <div>Node Net Value</div>
                             <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
+                        </div>
+                    </div>
+										<div className="selected-link">
+                        <h4>{"Link Selected"}</h4>
+                        <div class="row">
+                            <div>Node A ID</div>
+                            <div>{this.state.selectedLink.nodeA}</div>
+                        </div>
+                        <div class="row">
+														<div>Node B ID</div>
+														<div>{this.state.selectedLink.nodeB}</div>
+                        </div>
+                        <div class="row">
+                            <div>Amount sent from A to B</div>
+														<div>{this.state.selectedLink.aToB}</div>
+                        </div>
+												<div class="row">
+                            <div>Amount sent from B to A</div>
+														<div>{this.state.selectedLink.bToA}</div>
+                        </div>
+												<div class="row">
+                            <div>Total Number of Transactions</div>
+														<div>{this.state.selectedLink.numSent}</div>
                         </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}/>
