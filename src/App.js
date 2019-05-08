@@ -10,7 +10,7 @@ import {fetchTransactions} from "./services/api";
 import {
 	uniqueAccountAddresses, containsEdge,
 	uniqueAccountLinks, transactionsForAccount, addNewTransactions,
-	colorLinkedNodes, getNode, toggleLabel,
+	highlightLink, getNode, toggleLabel,
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -146,21 +146,17 @@ class App extends Component {
 			source: source,
 			target: target
 		}
-        const link = containsEdge(this.state.graph.links, edge)
-        // Toggle the label
-        //toggleLabel(link, `Sent: ${link.sent} Recv: ${link.recv}`)
-        toggleLabel(link, `#trans: ${link.occurences}`)
-
-		const myLink = {
+		const nodes = this.state.graph.nodes
+    const link = containsEdge(this.state.graph.links, edge)
+    highlightLink(link, getNode(source, nodes), getNode(target, nodes))
+		const linkInfo = {
 			NodeA: link.source,
 			NodeB: link.target,
 			numberTransactions: link.occurences,
 			AtoB: link.sent,
 			BtoA: link.recv,
 		}
-		const nodes = this.state.graph.nodes
-		colorLinkedNodes(getNode(source, nodes), getNode(target, nodes), )
-		console.log(myLink)
+		console.log(linkInfo)
 		this.setState(this.state.graph)
 		// Update the selected node property of state to update div
 		//this.setState({selectedLink: myLink);

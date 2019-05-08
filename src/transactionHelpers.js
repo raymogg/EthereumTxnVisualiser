@@ -25,10 +25,12 @@ function numberToColor(number) {
 	}
 }
 
-export function colorLinkedNodes(nodeA, nodeB) {
+export function highlightLink(link, nodeA, nodeB) {
 	//TODO: reset the other node colors
-	nodeA.color = 'white';
-	nodeB.color = 'black';
+	link.color = 'lightblue'
+	nodeA.color = 'lightblue'
+	nodeB.color = 'lightblue'
+	link.directed = true
 }
 
 export function toggleLabel(link, text) {
