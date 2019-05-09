@@ -148,3 +148,50 @@
 .selected-link > .row > div:nth-of-type(2) {
   border-left: 1px solid #fff;
 }
+
+/*TODO fix up this css*/
+.key-tooltip {
+  padding: 5px;
+  position: absolute;
+  bottom: 1;
+  right:0;
+  width: 30%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.key-tooltip h4 {
+  padding: 10px 0 5px 0;
+  margin: 5;
+}
+
+.key-tooltip .row {
+
+}
+
+.key-tooltip div:first-of-type {
+  padding-top: 0;
+}
+
+.key-tooltip > .row {
+  display: flex;
+  width: 50%;
+  flex-direction: row;
+}
+
+.key-tooltip > .row > div {
+  height: auto;
+  width: 50%;
+  text-align: left;
+  padding: 5px;
+}
+
+.key-tooltip > .row > div:first-of-type {
+  text-align: right;
+  border-right: 1px solid #fff;
+}
+
+.key-tooltip > .row > div:nth-of-type(2) {
+  border-left: 1px solid #fff;
+}

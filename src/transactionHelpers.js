@@ -6,7 +6,7 @@
 // http://api.etherscan.io/api?module=account&action=txlist&address=0xddbd2b932c763ba5b1b7ae3b362eac3e8d40121a&startblock=0&endblock=99999999&sort=asc&apikey=FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7
 
 
-function numberToColor(number) {
+function numberToColorCount(number) {
 	if (number < 5) {
 		// blue 6c757d
 		return "#007bff";
@@ -17,6 +17,25 @@ function numberToColor(number) {
 		// yellow
 		return "#ffc107";
 	} else if (number < 50) {
+		// red
+		return "#dc3545";
+	} else {
+		// grey
+		return "#6c757d";
+	}
+}
+
+function numberToColorValue(number) {
+	if (number < 1) {
+		// blue 6c757d
+		return "#007bff";
+	} else if (number < 5) {
+		// green
+		return "#28a745";
+	} else if (number < 50) {
+		// yellow
+		return "#ffc107";
+	} else if (number < 100) {
 		// red
 		return "#dc3545";
 	} else {
@@ -95,7 +114,7 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 			target: transaction.to,
 			occurences: 1,
 			strokeWidth: 1,
-			color: numberToColor(1),
+			color: numberToColorCount(1),
 			//default direction is true source -> target
 			direction: true,
 			sent: transaction.value / Math.pow(10, 18),
@@ -119,18 +138,23 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 			}
 			if (scaleByTxnValue === false) {
 				//Limit edge scaling to a max of 20 transactions between accounts
-				if (existentEdge.occurences < 20) {
+				if (existentEdge.occurences < 10) {
 					existentEdge.strokeWidth += 1
 				}
+				existentEdge.color = numberToColorCount(existentEdge.occurences)
 			} else if (scaleByTxnValue === true) {
 				//Limit edge scaling to a max of 20ETH worth of value
-				if (existentEdge.sent < 20) {
+				if (existentEdge.sent < 10) {
 					existentEdge.strokeWidth += (edge.sent / 2)
-				} else if (existentEdge.strokeWidth > 20) {
-					existentEdge.strokeWidth = 20
+				} 
+				
+				if (existentEdge.strokeWidth > 10) {
+					existentEdge.strokeWidth = 10
 				}
+
+				existentEdge.color = numberToColorValue(parseInt(existentEdge.sent) + parseInt(existentEdge.recv))
 			}
-			existentEdge.color = numberToColor(existentEdge.strokeWidth)
+			//existentEdge.color = numberToColor(existentEdge.strokeWidth)
 		} else {
 			//Otherwise simply add the edge
 			//If the edges are being scaled by transaction value make sure to set edge stroke width
@@ -138,10 +162,11 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 				var scaledValue = (edge.sent / 2)
 				if (scaledValue < 1) {
 					scaledValue = 1
-				} else if (scaledValue > 20) {
-					scaledValue = 20
+				} else if (scaledValue > 10) {
+					scaledValue = 10
 				}
 				edge.strokeWidth = scaledValue
+				edge.color = numberToColorValue(parseInt(edge.sent) + parseInt(edge.recv))
 			}
 			edges.push(edge)
 		}
