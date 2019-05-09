@@ -81,7 +81,9 @@ class App extends Component {
         isLoading: false,
         //Bool representating whether edges should be scaled by transaction value (when true)
         //or by transaciont count (when false)
-        scaleByTransactionValue: false
+        scaleByTransactionValue: false,
+        //Holder for the address first searched for - used when reseting the graph
+        initialAddress: ""
     }
 
     componentDidMount = async () => {
@@ -120,18 +122,47 @@ class App extends Component {
     }
 
     searchHandler = async (address) => {
-		this.setState({isLoading: true});
+		this.setState({isLoading: true, initialAddress: address});
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
+    }
+
+    resetData = (onComplete) => {
+        this.setState({
+            transactions: [],
+            dataSet: false,
+            graph: emptyGraph,
+            selectedNode: noNodeSelected,
+            isLoading: true
+        }, onComplete)
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
         console.log("Updating Edge Scale Type in app")
         console.log(newEdgeScaling)
+        //If no account has been searched for, change the setting but dont re pull graph data
+        if (this.state.initialAddress === "") {
+            if (newEdgeScaling == "Transaction Value") {
+                this.setState({scaleByTransactionValue: true})
+            } else {
+                this.setState({scaleByTransactionValue: false})
+            }
+            return;
+        }
+
+        //Account has already been searched for - update scaling and re pull data
         if (newEdgeScaling == "Transaction Value") {
-            this.setState({scaleByTransactionValue: true})
+            this.setState({scaleByTransactionValue: true}, () => {
+                this.resetData(() => {
+                    this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                })
+            })
         } else if (newEdgeScaling == "Transaction Count") {
-            this.setState({scaleByTransactionValue: false})
+            this.setState({scaleByTransactionValue: false}, () => {
+                this.resetData(() => {
+                    this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                })
+            })
         }
     }
 
