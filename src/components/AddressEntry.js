@@ -30,6 +30,7 @@ class AddressEntry extends Component {
         open: false,
         edgeScaleSetting: "Transaction Count",
         showKey: true,
+        network: "mainnet"
     };
 
     constructor(props) {
@@ -61,6 +62,12 @@ class AddressEntry extends Component {
     handleShowKeyChange = event => {
         console.log("Updating setting to show key")
         this.setState({showKey: event.target.value})
+    }
+
+    handleNetworkChange = event => {
+        console.log("Updating setting for network selector")
+        this.setState({network: event.target.value})
+        this.props.onNetworkChange(event.target.value)
     }
 
     onSearch = () => {
@@ -149,6 +156,20 @@ class AddressEntry extends Component {
                         >
                             <MenuItem value={true}>Yes</MenuItem>
                             <MenuItem value={false}>No</MenuItem>
+                        </Select>
+                    </DialogContent>
+                    <DialogContent>
+                        <InputLabel htmlFor="edge-scale">Network</InputLabel>
+                        <Select
+                            value={this.state.network}
+                            onChange={this.handleNetworkChange}
+                            inputProps={{
+                                name: 'Select network',
+                                id: 'select-network',
+                            }}
+                        >
+                            <MenuItem value={"mainnet"}>Ethereum Main Network</MenuItem>
+                            <MenuItem value={"testnet"}>Ethereum Ropsten Test Network</MenuItem>
                         </Select>
                     </DialogContent>
                     <Button onClick={this.onClose} style={{ flex: 1, flexDirection: 'row', alignContent: 'center' }}> Close </Button>

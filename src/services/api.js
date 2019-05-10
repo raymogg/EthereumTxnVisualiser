@@ -15,16 +15,32 @@ function removeTransactionsWithInvalidAddresses(transactions) {
 }
 
 
-export function fetchTransactions(address) {
-	return fetch('http://api.etherscan.io/api?module=account&action=txlist&address=' + address +'&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
-		.then(function(response) {
-			return response.json();
-		})
-		//Handling data here
-		.then(function(data) {
-			return data.result;
-		})
-		.then(function(transactions) {
-			return removeTransactionsWithInvalidAddresses(transactions)
-		})
+export function fetchTransactions(address, network) {
+	if (network === "testnet") {
+		console.log("Getting testnet transactions")
+		return fetch('http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
+			.then(function (response) {
+				return response.json();
+			})
+			//Handling data here
+			.then(function (data) {
+				return data.result;
+			})
+			.then(function (transactions) {
+				return removeTransactionsWithInvalidAddresses(transactions)
+			})
+	} else {
+		console.log("Getting mainnet transactions")
+		return fetch('http://api.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
+			.then(function (response) {
+				return response.json();
+			})
+			//Handling data here
+			.then(function (data) {
+				return data.result;
+			})
+			.then(function (transactions) {
+				return removeTransactionsWithInvalidAddresses(transactions)
+			})
+	}
 }

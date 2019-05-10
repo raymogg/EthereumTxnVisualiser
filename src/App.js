@@ -80,7 +80,9 @@ class App extends Component {
         //or by transaciont count (when false)
         scaleByTransactionValue: false,
         //Holder for the address first searched for - used when reseting the graph
-        initialAddress: ""
+        initialAddress: "",
+        //Sets what network to pull the transactions from
+        network: "mainnet"
     }
 
     componentDidMount = async () => {
@@ -165,6 +167,13 @@ class App extends Component {
         }
     }
 
+    onNetworkChange = (newNetwork) => {
+        this.setState({ network: newNetwork },
+            this.resetData(() => {
+                this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+            }))
+    }
+
     onClickGraph = async () => {
         console.log("Reset the nodes")
     }
@@ -230,7 +239,7 @@ class App extends Component {
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
         console.log('Finding transactions for accountAddress:', accountAddress)
-        const transactions = await fetchTransactions(accountAddress)
+        const transactions = await fetchTransactions(accountAddress, this.state.network)
         console.log('Transactions for account id:', transactions)
 
         // NOTE(Loughlin): I don't think this will trigger component update?
@@ -297,7 +306,8 @@ class App extends Component {
                             <div>{this.state.selectedLink.numSent}</div>
                         </div>
                     </div>
-                    <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling} />
+                    <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
+                        onNetworkChange={this.onNetworkChange} />
                     <CustomGraph graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
                         dataSet={this.state.dataSet}
