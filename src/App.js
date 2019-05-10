@@ -82,7 +82,9 @@ class App extends Component {
         //Holder for the address first searched for - used when reseting the graph
         initialAddress: "",
         //Sets what network to pull the transactions from
-        network: "mainnet"
+        network: "mainnet",
+        //Show a nice little error message if something goes wrong
+        error: false,
     }
 
     componentDidMount = async () => {
@@ -134,7 +136,8 @@ class App extends Component {
             dataSet: false,
             graph: emptyGraph,
             selectedNode: noNodeSelected,
-            isLoading: true
+            isLoading: true,
+            error: false
         }, onComplete)
     }
 
@@ -169,9 +172,15 @@ class App extends Component {
 
     onNetworkChange = (newNetwork) => {
         this.setState({ network: newNetwork },
-            this.resetData(() => {
-                this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
-            }))
+            () => {
+                if (this.state.initialAddress === "") {
+                    return;
+                } else {
+                    this.resetData(() => {
+                        this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                    })
+                }
+            })
     }
 
     onClickGraph = async () => {
@@ -242,6 +251,12 @@ class App extends Component {
         const transactions = await fetchTransactions(accountAddress, this.state.network)
         console.log('Transactions for account id:', transactions)
 
+        // This is just a catch if there is no transactiosn for this account, show this as a little something something
+        if (transactions.length == 0) {
+            this.setState({error: true, isLoading: false})
+            return
+        }
+
         // NOTE(Loughlin): I don't think this will trigger component update?
         addNewTransactions(this.state.transactions, transactions)
 
@@ -262,6 +277,7 @@ class App extends Component {
             document.querySelector(".selected-node").style.visibility = "visible";
             document.querySelector(".selected-link").style.visibility = "visible";
         }
+
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
@@ -315,7 +331,8 @@ class App extends Component {
                         onClickNode={this.onClickNode}
                         onHoverNode={this.onMouseOverNode}
                         onClickLink={this.onClickLink}
-                        isLoading={this.state.isLoading} />
+                        isLoading={this.state.isLoading}
+                        error={this.state.error} />
                 </div>
             </div>
         );

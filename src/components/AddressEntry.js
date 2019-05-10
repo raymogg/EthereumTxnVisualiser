@@ -11,7 +11,6 @@ import Paper from '@material-ui/core/Paper';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
-
 const paperStyle = {
     height: "100%",
     width: "100%",
@@ -159,7 +158,7 @@ class AddressEntry extends Component {
                         </Select>
                     </DialogContent>
                     <DialogContent>
-                        <InputLabel htmlFor="edge-scale">Network</InputLabel>
+                        <InputLabel htmlFor="select-network">Network </InputLabel>
                         <Select
                             value={this.state.network}
                             onChange={this.handleNetworkChange}

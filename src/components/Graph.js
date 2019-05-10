@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import {Graph} from 'react-d3-graph';
 import {DotLoader} from 'react-spinners';
 import Particles from 'react-particles-js';
-
+import sadFace from "../img/sad.png"
 
 import windowSize from 'react-window-size';
 import "./AddressEntry.css";
@@ -68,6 +68,14 @@ class CustomGraph extends Component {
 
     getGraphRender = () => {
         console.log(this.props.isLoading);
+        if (this.props.error) {
+            return (
+                <div className="loader">
+                    <img src={sadFace} alt="Uh Oh" style={{width: '50px', height: '50px'}}/>
+                    <h2> This account has no transactions </h2>
+                </div> 
+            )
+        }
         if (!this.props.dataSet) {
             if (this.props.isLoading == true) {
                 // setTimeOut(function(){
