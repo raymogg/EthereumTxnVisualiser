@@ -141,6 +141,13 @@ class App extends Component {
         }, onComplete)
     }
 
+    onDirectionChange = (directed) => {
+      console.log("Updating graph direction feature")
+      console.log(this.state.graph.directed)
+      this.state.graph.directed = directed
+      this.setState(this.state)
+    }
+
     onUpdateEdgeScaling = (newEdgeScaling) => {
         console.log("Updating Edge Scale Type in app")
         console.log(newEdgeScaling)
@@ -323,7 +330,7 @@ class App extends Component {
                         </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
-                        onNetworkChange={this.onNetworkChange} />
+                        onNetworkChange={this.onNetworkChange} onDirectionChange={this.onDirectionChange}/>
                     <CustomGraph graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
                         dataSet={this.state.dataSet}

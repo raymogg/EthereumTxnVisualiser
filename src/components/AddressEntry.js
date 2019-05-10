@@ -5,6 +5,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Select from '@material-ui/core/Select';
+import Toggle from 'react-toggle'
+import "react-toggle/style.css"
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
@@ -30,6 +32,7 @@ class AddressEntry extends Component {
         open: false,
         edgeScaleSetting: "Transaction Count",
         showKey: true,
+        directionKey: false,
         network: "mainnet"
     };
 
@@ -70,7 +73,13 @@ class AddressEntry extends Component {
 
     handleShowKeyChange = event => {
         console.log("Updating setting to show key")
-        this.setState({ showKey: event.target.value })
+        this.setState({showKey: event.target.checked})
+    }
+
+    handleDirectionChange = event => {
+      console.log("Updating the direction value of the graph")
+      this.state.directionKey = event.target.checked
+      this.props.onDirectionChange(event.target.checked)
     }
 
     handleNetworkChange = event => {
@@ -119,6 +128,7 @@ class AddressEntry extends Component {
 
     render() {
         var key;
+        var ToggleButton = require('react-toggle-button')
         if (this.state.showKey == true) {
             if (this.state.edgeScaleSetting == "Transaction Value") {
                 key = <div style={{ marginLeft: '5px' }}>
@@ -186,17 +196,21 @@ class AddressEntry extends Component {
                     </DialogContent>
                     <DialogContent>
                         <InputLabel htmlFor="edge-scale">Show Scale Key </InputLabel>
-                        <Select
-                            value={this.state.showKey}
+                        <label>
+                          <Toggle
+                            defaultChecked={this.state.showKey}
                             onChange={this.handleShowKeyChange}
-                            inputProps={{
-                                name: 'Scale Edges by...',
-                                id: 'edge-scale',
-                            }}
-                        >
-                            <MenuItem value={true}>Yes</MenuItem>
-                            <MenuItem value={false}>No</MenuItem>
-                        </Select>
+                          />
+                        </label>
+                    </DialogContent>
+                    <DialogContent>
+                        <InputLabel htmlFor="edge-scale">Show Graph Direction </InputLabel>
+                        <label>
+                          <Toggle
+                            defaultChecked={this.state.directionKey}
+                            onChange={this.handleDirectionChange}
+                          />
+                        </label>
                     </DialogContent>
                     <DialogContent>
                         <InputLabel htmlFor="select-network">Network </InputLabel>

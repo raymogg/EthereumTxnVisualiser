@@ -13,6 +13,8 @@
     "react-scripts": "3.0.0",
     "react-sigma": "^1.2.30",
     "react-spinners": "^0.5.4",
+    "react-toggle": "^4.0.2",
+    "react-toggle-button": "^2.2.0",
     "react-window-size": "^1.2.2",
     "request-promise": "^4.2.4",
     "web3-utils": "^1.0.0-beta.55"

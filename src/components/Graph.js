@@ -22,7 +22,7 @@ const myConfig = {
     linkHighlightBehavior: true,
     automaticRearrangeAfterDropNode: true,
     //staticGraph: true,
-    //directed: true,
+    directed: false,
     d3: {
         gravity: -200,
         linkStrength: 3
@@ -48,6 +48,7 @@ class CustomGraph extends Component {
 
     setConfig(config) {
         config.node.size = 5000 / this.props.graph.nodes.length;
+        config.directed = this.props.graph.directed
         config.width = this.props.windowWidth
         config.height = this.props.windowHeight
         return config;
@@ -73,7 +74,7 @@ class CustomGraph extends Component {
                 <div className="loader">
                     <img src={sadFace} alt="Uh Oh" style={{width: '50px', height: '50px'}}/>
                     <h2> This account has no transactions </h2>
-                </div> 
+                </div>
             )
         }
         if (!this.props.dataSet) {
