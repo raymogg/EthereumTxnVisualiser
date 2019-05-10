@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { SHA3 } from 'sha3';
+import { isAddress } from 'web3-utils';
 
 const paperStyle = {
     height: "100%",
@@ -80,7 +80,7 @@ class AddressEntry extends Component {
     }
 
     onSearch = () => {
-        if (!this.addressValidator(this.state.address)) {
+        if (!isAddress(this.state.address)) {
             //Show not a valid address popup
             this.setState({addressError: true})
             return;
@@ -92,30 +92,30 @@ class AddressEntry extends Component {
     }
 
 
-    addressValidator = (address) => {
-        if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
-            // check if it has the basic requirements of an address
-            return false;
-        } else if (/^(0x)?[0-9a-f]{40}$/.test(address) || /^(0x)?[0-9A-F]{40}$/.test(address)) {
-            // If it's all small caps or all all caps, return true
-            return true;
-        } else {
-            // Otherwise check each case
-            return this.addressChecksumValidator(address);
-        }
-    }
+    // addressValidator = (address) => {
+    //     if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+    //         // check if it has the basic requirements of an address
+    //         return false;
+    //     } else if (/^(0x)?[0-9a-f]{40}$/.test(address) || /^(0x)?[0-9A-F]{40}$/.test(address)) {
+    //         // If it's all small caps or all all caps, return true
+    //         return true;
+    //     } else {
+    //         // Otherwise check each case
+    //         return this.addressChecksumValidator(address);
+    //     }
+    // }
 
-    addressChecksumValidator = (address) => {
-        address = address.replace('0x', '');
-        var addressHash = SHA3(address.toLowerCase());
-        for (var i = 0; i < 40; i++) {
-            // the nth letter should be uppercase if the nth digit of casemap is 1
-            if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) || (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
+    // addressChecksumValidator = (address) => {
+    //     address = address.replace('0x', '');
+    //     var addressHash = SHA3(address.toLowerCase());
+    //     for (var i = 0; i < 40; i++) {
+    //         // the nth letter should be uppercase if the nth digit of casemap is 1
+    //         if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) || (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
 
     render() {
         var key;
