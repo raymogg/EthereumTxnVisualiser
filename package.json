@@ -14,7 +14,8 @@
     "react-sigma": "^1.2.30",
     "react-spinners": "^0.5.4",
     "react-window-size": "^1.2.2",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.4",
+    "sha3": "^2.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
