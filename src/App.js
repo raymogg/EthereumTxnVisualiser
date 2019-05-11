@@ -3,7 +3,7 @@ import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import { createMuiTheme } from '@material-ui/core/styles';
-import { fetchTransactions } from "./services/api";
+import { fetchTransactions, fetchERC20Transactions } from "./services/api";
 import {
     uniqueAccountAddresses, containsEdge,
     uniqueAccountLinks, transactionsForAccount, addNewTransactions,
@@ -85,6 +85,8 @@ class App extends Component {
         network: "mainnet",
         //Show a nice little error message if something goes wrong
         error: false,
+        //What token does the user want to show transactions for (note this is the tokens contract address)
+        tokenAddress: "0x0"
     }
 
     componentDidMount = async () => {
@@ -190,6 +192,19 @@ class App extends Component {
             })
     }
 
+    onTokenChange = (newToken) => {
+        this.setState({ tokenAddress: newToken },
+            () => {
+                if (this.state.initialAddress === "") {
+                    return;
+                } else {
+                    this.resetData(() => {
+                        this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                    })
+                }
+            })
+    }
+
     onClickGraph = async () => {
         console.log("Reset the nodes")
     }
@@ -255,9 +270,17 @@ class App extends Component {
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
         console.log('Finding transactions for accountAddress:', accountAddress)
-        const transactions = await fetchTransactions(accountAddress, this.state.network)
-        console.log('Transactions for account id:', transactions)
 
+        //TODO Check if we are getting transactions for Ether or for an ERC20 Token
+        var transactions;
+        if (this.state.tokenAddress === "0x0") {
+            transactions = await fetchTransactions(accountAddress, this.state.network)
+        } else {
+            console.log("Getting Token transactions")
+            transactions = await fetchERC20Transactions(accountAddress, this.state.tokenAddress)
+        }
+
+        console.log('Transactions for account id:', transactions)
         // This is just a catch if there is no transactiosn for this account, show this as a little something something
         if (transactions.length == 0) {
             this.setState({error: true, isLoading: false})
@@ -330,7 +353,8 @@ class App extends Component {
                         </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
-                        onNetworkChange={this.onNetworkChange} onDirectionChange={this.onDirectionChange}/>
+                        onNetworkChange={this.onNetworkChange} onDirectionChange={this.onDirectionChange}
+                        onTokenChange={this.onTokenChange}/>
                     <CustomGraph graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
                         dataSet={this.state.dataSet}

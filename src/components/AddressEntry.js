@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import { Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { isAddress } from 'web3-utils';
+import { getTokens } from "./TokenRegistry.js";
 
 const paperStyle = {
     height: "100%",
@@ -33,7 +34,8 @@ class AddressEntry extends Component {
         edgeScaleSetting: "Transaction Count",
         showKey: true,
         directionKey: false,
-        network: "mainnet"
+        network: "mainnet",
+        selectedToken: "0x0"
     };
 
     constructor(props) {
@@ -49,11 +51,11 @@ class AddressEntry extends Component {
     }
 
     onCloseError = () => {
-        this.setState({addressError: false})
+        this.setState({ addressError: false })
     }
 
     onOpenError = () => {
-        this.setState({addressError: true})
+        this.setState({ addressError: true })
     }
 
     componentDidMount = async () => {
@@ -73,13 +75,13 @@ class AddressEntry extends Component {
 
     handleShowKeyChange = event => {
         console.log("Updating setting to show key")
-        this.setState({showKey: event.target.checked})
+        this.setState({ showKey: event.target.checked })
     }
 
     handleDirectionChange = event => {
-      console.log("Updating the direction value of the graph")
-      this.state.directionKey = event.target.checked
-      this.props.onDirectionChange(event.target.checked)
+        console.log("Updating the direction value of the graph")
+        this.state.directionKey = event.target.checked
+        this.props.onDirectionChange(event.target.checked)
     }
 
     handleNetworkChange = event => {
@@ -91,13 +93,26 @@ class AddressEntry extends Component {
     onSearch = () => {
         if (!isAddress(this.state.address)) {
             //Show not a valid address popup
-            this.setState({addressError: true})
+            this.setState({ addressError: true })
             return;
         }
         this.props.searchHandler(this.state.address)
             .catch(function (error) {
                 console.log('AddressEntry.onSearch ERROR', error);
             })
+    }
+
+    getTokenMenuItems = () => {
+        var tokens = getTokens()
+        return tokens.map((token, i) => {
+            return <MenuItem value={token.address}> {token.name} </MenuItem>
+        })
+    }
+
+    handleTokenChange = (event) => {
+        console.log("Token change")
+        this.setState({selectedToken: event.target.value})
+        this.props.onTokenChange(event.target.value)
     }
 
 
@@ -197,19 +212,19 @@ class AddressEntry extends Component {
                     <DialogContent>
                         <InputLabel htmlFor="edge-scale">Show Scale Key </InputLabel>
                         <label>
-                          <Toggle
-                            defaultChecked={this.state.showKey}
-                            onChange={this.handleShowKeyChange}
-                          />
+                            <Toggle
+                                defaultChecked={this.state.showKey}
+                                onChange={this.handleShowKeyChange}
+                            />
                         </label>
                     </DialogContent>
                     <DialogContent>
                         <InputLabel htmlFor="edge-scale">Show Graph Direction </InputLabel>
                         <label>
-                          <Toggle
-                            defaultChecked={this.state.directionKey}
-                            onChange={this.handleDirectionChange}
-                          />
+                            <Toggle
+                                defaultChecked={this.state.directionKey}
+                                onChange={this.handleDirectionChange}
+                            />
                         </label>
                     </DialogContent>
                     <DialogContent>
@@ -224,6 +239,19 @@ class AddressEntry extends Component {
                         >
                             <MenuItem value={"mainnet"}>Ethereum Main Network</MenuItem>
                             <MenuItem value={"testnet"}>Ethereum Ropsten Test Network</MenuItem>
+                        </Select>
+                    </DialogContent>
+                    <DialogContent>
+                        <InputLabel htmlFor="select-token">Token </InputLabel>
+                        <Select
+                            value={this.state.selectedToken}
+                            onChange={this.handleTokenChange}
+                            inputProps={{
+                                name: 'Select a token',
+                                id: 'select-token',
+                            }}
+                        >
+                            {this.getTokenMenuItems()}
                         </Select>
                     </DialogContent>
                     <Button onClick={this.onClose} style={{ flex: 1, flexDirection: 'row', alignContent: 'center' }}> Close </Button>

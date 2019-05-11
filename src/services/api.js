@@ -44,3 +44,23 @@ export function fetchTransactions(address, network) {
 			})
 	}
 }
+
+export function fetchERC20Transactions(address, tokenAddress) {
+	console.log("Getting mainnet ERC20 transactions")
+	console.log(tokenAddress)
+	return fetch('http://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' + tokenAddress +
+		'&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
+		.then(function (response) {
+			console.log(response)
+			return response.json();
+		})
+		//Handling data here
+		.then(function (data) {
+			console.log(data)
+			return data.result;
+		})
+		.then(function (transactions) {
+			console.log(transactions)
+			return removeTransactionsWithInvalidAddresses(transactions)
+		})
+}
