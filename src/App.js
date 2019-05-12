@@ -66,6 +66,11 @@ const noLinkSelected = {
 }
 
 
+function isBoolean(maybeBool) {
+  return maybeBool === true || maybeBool === false
+}
+
+
 class App extends Component {
     state = {
         /* cache of all the transactions that we've fetched */
@@ -165,7 +170,8 @@ class App extends Component {
         // and is what causes the nodes to move around when you hover.
         // Reason is updating the 'selectedNode' state seems to trigger the `Graph` component
         // to update as well.
-        this.setState({ selectedNode: node })
+        // this 'wasGraphUpdate' property is a bit of a hack
+        this.setState({ selectedNode: node, wasGraphUpdate: false })
     }
 
 
@@ -190,11 +196,12 @@ class App extends Component {
     }
 
     onDirectionChange = (directed) => {
-      console.log(`Updating graph direction feature: old directed = ${this.state.graph.directed}, new directed = ${directed}`)
-			this.setState(currentState => {
-				const graph = Object.assign(currentState.graph, { directed })
-				return { graph }
-			})
+        console.log(`Updating graph direction feature: old directed = ${this.state.graph.directed}, new directed = ${directed}`)
+
+        this.setState(currentState => {
+            const graph = Object.assign(currentState.graph, {directed})
+            return {graph}
+        })
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
@@ -350,7 +357,12 @@ class App extends Component {
         }
 
         // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({ graph: graphData, dataSet: true, isLoading: false })
+        this.setState({
+            graph: graphData,
+            dataSet: true,
+            isLoading: false,
+            wasGraphUpdate: true,
+        })
     }
 
 
@@ -363,9 +375,6 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
-                    {/* <div className="key-tooltip">
-                        <h4>Key</h4>
-                    </div> */}
                     <div className="selected-container">
                         <div className="selected-node">
                             <h4>{this.state.selectedNode.id}</h4>
@@ -382,6 +391,7 @@ class App extends Component {
                                 <div className="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                             </div>
                         </div>
+
                         <div className="selected-link">
                             <h4>{"Link Selected"}</h4>
                             <div className="row">
@@ -406,11 +416,15 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
+
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
                         onNetworkChange={this.onNetworkChange} onDirectionChange={this.onDirectionChange}
                         onTokenChange={this.onTokenChange}/>
+
                     <CustomGraph graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
+                        // If the boolean `wasGraphUpdate` flag is not set default to `true`.
+                        shouldUpdateGraph={isBoolean(this.state.wasGraphUpdate) ? this.state.wasGraphUpdate : true}
                         dataSet={this.state.dataSet}
                         onClickGraph={this.onClickGraph}
                         onClickNode={this.onClickNode}

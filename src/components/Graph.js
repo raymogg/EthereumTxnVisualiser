@@ -7,6 +7,12 @@ import sadFace from "../img/sad.png"
 import windowSize from 'react-window-size';
 import "./AddressEntry.css";
 
+
+function isBoolean(bool) {
+  return bool === true || bool === false
+}
+
+
 const containerStyles = {
     width: '100%',
     height: '80vh',
@@ -61,6 +67,10 @@ class CustomGraph extends Component {
       console.log('Graph componentDidUpdate')
     }
 
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        // if prop 'shouldUpdateGraph' not set default to 'true' as that's react's default behaviour
+        return isBoolean(nextProps.shouldUpdateGraph) ? nextProps.shouldUpdateGraph : true
+    }
 
     getGraphRender = () => {
         console.log('Graph:getGraphRender: this.props.isLoading =', this.props.isLoading);
