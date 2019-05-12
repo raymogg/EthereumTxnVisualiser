@@ -104,12 +104,12 @@ class App extends Component {
 
         var gross_from = 0;
         var gross_to = 0;
-        for (var i = 0; i < num_from; i++) {
+        for (let i = 0; i < num_from; i++) {
             gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
-        };
-        for (var i = 0; i < num_to; i++) {
+        }
+        for (let i = 0; i < num_to; i++) {
             gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
-        };
+        }
 
         const net_value = gross_to - gross_from;
         const myNode = {
@@ -144,10 +144,11 @@ class App extends Component {
     }
 
     onDirectionChange = (directed) => {
-      console.log("Updating graph direction feature")
-      console.log(this.state.graph.directed)
-      this.state.graph.directed = directed
-      this.setState(this.state)
+      console.log(`Updating graph direction feature: old directed = ${this.state.graph.directed}, new directed = ${directed}`)
+			this.setState(currentState => {
+				const graph = Object.assign(currentState.graph, { directed })
+				return { graph }
+			})
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
@@ -155,7 +156,7 @@ class App extends Component {
         console.log(newEdgeScaling)
         //If no account has been searched for, change the setting but dont re pull graph data
         if (this.state.initialAddress === "") {
-            if (newEdgeScaling == "Transaction Value") {
+            if (newEdgeScaling === "Transaction Value") {
                 this.setState({ scaleByTransactionValue: true })
             } else {
                 this.setState({ scaleByTransactionValue: false })
@@ -164,13 +165,13 @@ class App extends Component {
         }
 
         //Account has already been searched for - update scaling and re pull data
-        if (newEdgeScaling == "Transaction Value") {
+        if (newEdgeScaling === "Transaction Value") {
             this.setState({ scaleByTransactionValue: true }, () => {
                 this.resetData(() => {
                     this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
                 })
             })
-        } else if (newEdgeScaling == "Transaction Count") {
+        } else if (newEdgeScaling === "Transaction Count") {
             this.setState({ scaleByTransactionValue: false }, () => {
                 this.resetData(() => {
                     this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
@@ -282,7 +283,7 @@ class App extends Component {
 
         console.log('Transactions for account id:', transactions)
         // This is just a catch if there is no transactiosn for this account, show this as a little something something
-        if (transactions.length == 0) {
+        if (transactions.length === 0) {
             this.setState({error: true, isLoading: false})
             return
         }
@@ -314,41 +315,41 @@ class App extends Component {
                     {/* <div className="key-tooltip">
                         <h4>Key</h4>
                     </div> */}
-                    <div class="selected-container">
+                    <div className="selected-container">
                         <div className="selected-node">
                             <h4>{this.state.selectedNode.id}</h4>
-                            <div class="row">
+                            <div className="row">
                                 <div>Outgoing Transactions</div>
                                 <div>{this.state.selectedNode.numFrom}</div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div>Incoming Transactions</div>
                                 <div>{this.state.selectedNode.numTo}</div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div>Node Net Value</div>
-                                <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
+                                <div className="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
                             </div>
                         </div>
                         <div className="selected-link">
                             <h4>{"Link Selected"}</h4>
-                            <div class="row">
+                            <div className="row">
                                 <div>Node A ID</div>
                                 <div>{this.state.selectedLink.nodeA}</div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div>Node B ID</div>
                                 <div>{this.state.selectedLink.nodeB}</div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div>Amount sent: A to B</div>
                                 <div>{this.state.selectedLink.aToB}</div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div>Amount sent: B to A</div>
                                 <div>{this.state.selectedLink.bToA}</div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div>Total Number of Transactions</div>
                                 <div>{this.state.selectedLink.numSent}</div>
                             </div>

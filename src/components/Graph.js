@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Paper from '@material-ui/core/Paper';
 import {Graph} from 'react-d3-graph';
 import {DotLoader} from 'react-spinners';
 import Particles from 'react-particles-js';
@@ -38,7 +37,8 @@ const myConfig = {
         renderLabel: true,
         fontColor: "white",
     }
-};
+}
+
 
 class CustomGraph extends Component {
     state = {
@@ -67,7 +67,7 @@ class CustomGraph extends Component {
 
 
     getGraphRender = () => {
-        console.log(this.props.isLoading);
+        console.log('Graph:getGraphRender: this.props.isLoading =', this.props.isLoading);
         if (this.props.error) {
             return (
                 <div className="loader">
@@ -77,10 +77,7 @@ class CustomGraph extends Component {
             )
         }
         if (!this.props.dataSet) {
-            if (this.props.isLoading == true) {
-                // setTimeOut(function(){
-                //
-                // }, 3000);
+            if (this.props.isLoading === true) {
                 return (
                     <div className="loader">
                         <DotLoader
