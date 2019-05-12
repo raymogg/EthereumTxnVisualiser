@@ -1,13 +1,17 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
-import { createMuiTheme } from '@material-ui/core/styles';
-import { fetchTransactions, fetchERC20Transactions } from "./services/api";
+import {createMuiTheme} from '@material-ui/core/styles';
+import {fetchERC20Transactions, fetchTransactions} from "./services/api";
 import {
-    uniqueAccountAddresses, containsEdge,
-    uniqueAccountLinks, transactionsForAccount, addNewTransactions,
-    highlightLink, getNode, toggleLabel,
+    accountTransactionsToNodes,
+    addNewTransactions,
+    addNewTxns,
+    containsEdge,
+    toggleLabel,
+    uniqueAccountLinks,
+    updateAccountTransactions,
 } from "./transactionHelpers";
 
 const mainContainerStyle = {
@@ -66,6 +70,12 @@ class App extends Component {
     state = {
         /* cache of all the transactions that we've fetched */
         transactions: [],
+
+        txns: {},
+
+        /* cache of 'account addresses' to { from => Set {transaction hashes}, to => Set{transaction hashes} } */
+        accountTxns: [],
+
         /* Whether the graph has gone through the initial load yet */
         dataSet: false,
         /* object with 'nodes' and 'links' properties */
@@ -89,14 +99,16 @@ class App extends Component {
         tokenAddress: "0x0"
     }
 
+
     componentDidMount = async () => {
     }
 
 
+    /*
     onMouseOverNode = (accountAddress) => {
-        /* Display the accountId, the number of transactions from this address,
+        /!* Display the accountId, the number of transactions from this address,
         the number of transactions to this address and the net value of this
-        node */
+        node *!/
 
         const transactions = transactionsForAccount(accountAddress, this.state.transactions)
         const num_from = transactions.fromAddress.length;
@@ -123,6 +135,39 @@ class App extends Component {
         // Update the selected node property of state to update div
         this.setState({ selectedNode: myNode });
     }
+    */
+
+    onMouseOverNode = (accountAddress) => {
+        const txns = this.state.accountTxns[accountAddress]
+        console.log(`Mouse over node: address = ${accountAddress}, transactions =`, txns)
+
+        let grossFrom = 0
+        for (const hash of txns.from) {
+            // console.log('from txn hash:', hash)
+            grossFrom += this.state.txns[hash].value / Math.pow(10, 18)
+        }
+
+        let grossTo = 0
+        for (const hash of txns.to) {
+            // console.log('to txn hash:  ', hash)
+            grossTo += this.state.txns[hash].value / Math.pow(10, 18)
+        }
+
+        const node = {
+            id: accountAddress,
+            numTo: txns.to.size,
+            numFrom: txns.from.size,
+            netValue: grossTo - grossFrom,
+            currency: 'E',
+        }
+
+        //TODO: this is a large performance hit!!
+        // and is what causes the nodes to move around when you hover.
+        // Reason is updating the 'selectedNode' state seems to trigger the `Graph` component
+        // to update as well.
+        this.setState({ selectedNode: node })
+    }
+
 
     searchHandler = async (address) => {
         //Reset the state first
@@ -131,6 +176,7 @@ class App extends Component {
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
     }
+
 
     resetData = (onComplete) => {
         this.setState({
@@ -169,12 +215,14 @@ class App extends Component {
             this.setState({ scaleByTransactionValue: true }, () => {
                 this.resetData(() => {
                     this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                        .catch(err => console.log('onUpdateEdgeScaling ERROR', err))
                 })
             })
         } else if (newEdgeScaling === "Transaction Count") {
             this.setState({ scaleByTransactionValue: false }, () => {
                 this.resetData(() => {
                     this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                        .catch(err => console.log('onUpdateEdgeScaling ERROR', err))
                 })
             })
         }
@@ -183,11 +231,10 @@ class App extends Component {
     onNetworkChange = (newNetwork) => {
         this.setState({ network: newNetwork },
             () => {
-                if (this.state.initialAddress === "") {
-                    return;
-                } else {
+                if (this.state.initialAddress !== "") {
                     this.resetData(() => {
                         this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                            .catch(err => console.log('onNetworkChange ERROR', err))
                     })
                 }
             })
@@ -201,6 +248,7 @@ class App extends Component {
                 } else {
                     this.resetData(() => {
                         this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                            .catch(err => console.log('onTokenChange ERROR', err))
                     })
                 }
             })
@@ -217,13 +265,11 @@ class App extends Component {
     }
 
     onClickLink = async (source, target) => {
-        var edge = {
+        const edge = {
             source: source,
             target: target
         }
         const link = containsEdge(this.state.graph.links, edge)
-        // Toggle the label
-        //toggleLabel(link, `Sent: ${link.sent} Recv: ${link.recv}`)
         toggleLabel(link, `#trans: ${link.occurences}`)
 
         const myLink = {
@@ -234,7 +280,8 @@ class App extends Component {
             numSent: link.occurences,
         }
         this.setState({ selectedLink: myLink });
-        console.log(myLink)
+        console.log('onClickLink myLink =', myLink)
+
         // Update the selected node property of state to update div
         //this.setState({selectedLink: myLink);
         //console.log('config', this.state.graph)
@@ -270,31 +317,35 @@ class App extends Component {
 
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
-        console.log('Finding transactions for accountAddress:', accountAddress)
+        console.log('Fetching transactions for accountAddress:', accountAddress)
 
-        //TODO Check if we are getting transactions for Ether or for an ERC20 Token
-        var transactions;
-        if (this.state.tokenAddress === "0x0") {
-            transactions = await fetchTransactions(accountAddress, this.state.network)
-        } else {
-            console.log("Getting Token transactions")
-            transactions = await fetchERC20Transactions(accountAddress, this.state.tokenAddress)
-        }
+        // Check if we are getting transactions for Ether or for an ERC20 Token
+        const transactions = await (this.state.tokenAddress === '0x0'
+            ? fetchTransactions(accountAddress, this.state.network)
+            : fetchERC20Transactions(accountAddress, this.state.tokenAddress))
 
         console.log('Transactions for account id:', transactions)
-        // This is just a catch if there is no transactiosn for this account, show this as a little something something
+
+        // This is just a catch if there is no transactions for this account, show this as a little something something
         if (transactions.length === 0) {
             this.setState({error: true, isLoading: false})
             return
         }
 
-        // NOTE(Loughlin): I don't think this will trigger component update?
+        // NOTE(Loughlin): I don't think this will trigger component update.
+        // DEPRECATED - this state will be removed eventually.
         addNewTransactions(this.state.transactions, transactions)
 
-        const accountHashes = uniqueAccountAddresses(this.state.transactions)
+        addNewTxns(this.state.txns, transactions)
+        updateAccountTransactions(this.state.accountTxns, transactions)
+
+        const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
         const accountLinks = uniqueAccountLinks(this.state.transactions, this.state.scaleByTransactionValue)
+        console.log('account nodes:', accountNodes)
+        console.log('account links:', accountLinks)
+
         const graphData = {
-            nodes: accountHashes,
+            nodes: accountNodes,
             links: accountLinks,
         }
 

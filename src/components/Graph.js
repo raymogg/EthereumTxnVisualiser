@@ -55,14 +55,10 @@ class CustomGraph extends Component {
 
 
     componentDidMount = async () => {
-        //this.setState({graphData: this.props.graph})
-        // console.log(this.props.graph.nodes)
-        // console.log(this.props.graph.edges)
     }
 
     componentDidUpdate = async () => {
-        // console.log(this.props.graph.nodes)
-        // console.log(this.props.graph.edges)
+      console.log('Graph componentDidUpdate')
     }
 
 

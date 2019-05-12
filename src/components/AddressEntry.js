@@ -140,7 +140,7 @@ class AddressEntry extends Component {
 
     render() {
         var key;
-        var ToggleButton = require('react-toggle-button')
+        // var ToggleButton = require('react-toggle-button')
         if (this.state.showKey === true) {
             if (this.state.edgeScaleSetting === "Transaction Value") {
                 key = <div style={{ marginLeft: '5px' }}>
