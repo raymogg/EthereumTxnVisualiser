@@ -341,11 +341,11 @@ class App extends Component {
                                 <div>{this.state.selectedLink.nodeB}</div>
                             </div>
                             <div class="row">
-                                <div>Amount sent from A to B</div>
+                                <div>Amount sent: A to B</div>
                                 <div>{this.state.selectedLink.aToB}</div>
                             </div>
                             <div class="row">
-                                <div>Amount sent from B to A</div>
+                                <div>Amount sent: B to A</div>
                                 <div>{this.state.selectedLink.bToA}</div>
                             </div>
                             <div class="row">
