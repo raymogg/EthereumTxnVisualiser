@@ -86,7 +86,8 @@ class App extends Component {
         //Show a nice little error message if something goes wrong
         error: false,
         //What token does the user want to show transactions for (note this is the tokens contract address)
-        tokenAddress: "0x0"
+        tokenAddress: "0x0",
+        directed: false
     }
 
     componentDidMount = async () => {
@@ -149,6 +150,7 @@ class App extends Component {
 				const graph = Object.assign(currentState.graph, { directed })
 				return { graph }
 			})
+      this.state.directed = directed
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
@@ -296,10 +298,10 @@ class App extends Component {
         const graphData = {
             nodes: accountHashes,
             links: accountLinks,
+            directed: this.state.directed,
         }
-
         // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({ graph: graphData, dataSet: true, isLoading: false })
+        this.setState({ graph: graphData, dataSet: true, isLoading: false})
     }
 
 
