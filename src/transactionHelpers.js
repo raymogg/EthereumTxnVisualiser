@@ -217,21 +217,55 @@ export function addressTransactionCount(transactions, addresses) {
 			}
 		});
 
-		// for (const transaction in transactions) {
-		// 	if (transactions[transaction].from === address || transactions[transaction].to === address) {
-		// 		addressCount++;
-		// 	}
-		// }
-
-		addressFrequencies.push({
+		const newNode = {
 			id: address,
-			size: addressCount * 50
-		});
+			size: getScaledNodeSize(addressCount)
+		};
+
+		if (parseInt(newNode.size) >= 110) {
+			newNode.color = getNodeColour(parseInt(newNode.size));
+		} else {
+			newNode.color = "#6c757d";
+		}
+
+		addressFrequencies.push(newNode);
 	});
 
 	return addressFrequencies;
 }
 
+/**
+ * Function to scale the nodes with a max value that then takes into account colour
+ * @param count
+ */
+function getScaledNodeSize(count) {
+	// block for fairly small transaction counts
+	if (count < 10) {
+		return 100;
+	} else if (count < 20) {
+		return 300;
+	} else if (count < 30) {
+		return 500;
+	} else {
+		return 700;
+	}
+}
+
+function getNodeColour(size) {
+	if (size < 120) {
+		// green
+		return "#28a745";
+	} else if (size < 140) {
+		// blue
+        return "#007bff";
+	} else if (size < 160) {
+		// yellow
+        return "#ffc107";
+	} else {
+		// HUGE and red
+        return "#dc3545";
+	}
+}
 
 /**
  * Equality between transactions can be determined by their hashes.

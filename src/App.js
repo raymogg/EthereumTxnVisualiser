@@ -314,42 +314,44 @@ class App extends Component {
                     {/* <div className="key-tooltip">
                         <h4>Key</h4>
                     </div> */}
-                    <div className="selected-node">
-                        <h4>{this.state.selectedNode.id}</h4>
-                        <div class="row">
-                            <div>Outgoing Transactions</div>
-                            <div>{this.state.selectedNode.numFrom}</div>
+                    <div class="selected-container">
+                        <div className="selected-node">
+                            <h4>{this.state.selectedNode.id}</h4>
+                            <div class="row">
+                                <div>Outgoing Transactions</div>
+                                <div>{this.state.selectedNode.numFrom}</div>
+                            </div>
+                            <div class="row">
+                                <div>Incoming Transactions</div>
+                                <div>{this.state.selectedNode.numTo}</div>
+                            </div>
+                            <div class="row">
+                                <div>Node Net Value</div>
+                                <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div>Incoming Transactions</div>
-                            <div>{this.state.selectedNode.numTo}</div>
-                        </div>
-                        <div class="row">
-                            <div>Node Net Value</div>
-                            <div class="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
-                        </div>
-                    </div>
-                    <div className="selected-link">
-                        <h4>{"Link Selected"}</h4>
-                        <div class="row">
-                            <div>Node A ID</div>
-                            <div>{this.state.selectedLink.nodeA}</div>
-                        </div>
-                        <div class="row">
-                            <div>Node B ID</div>
-                            <div>{this.state.selectedLink.nodeB}</div>
-                        </div>
-                        <div class="row">
-                            <div>Amount sent from A to B</div>
-                            <div>{this.state.selectedLink.aToB}</div>
-                        </div>
-                        <div class="row">
-                            <div>Amount sent from B to A</div>
-                            <div>{this.state.selectedLink.bToA}</div>
-                        </div>
-                        <div class="row">
-                            <div>Total Number of Transactions</div>
-                            <div>{this.state.selectedLink.numSent}</div>
+                        <div className="selected-link">
+                            <h4>{"Link Selected"}</h4>
+                            <div class="row">
+                                <div>Node A ID</div>
+                                <div>{this.state.selectedLink.nodeA}</div>
+                            </div>
+                            <div class="row">
+                                <div>Node B ID</div>
+                                <div>{this.state.selectedLink.nodeB}</div>
+                            </div>
+                            <div class="row">
+                                <div>Amount sent from A to B</div>
+                                <div>{this.state.selectedLink.aToB}</div>
+                            </div>
+                            <div class="row">
+                                <div>Amount sent from B to A</div>
+                                <div>{this.state.selectedLink.bToA}</div>
+                            </div>
+                            <div class="row">
+                                <div>Total Number of Transactions</div>
+                                <div>{this.state.selectedLink.numSent}</div>
+                            </div>
                         </div>
                     </div>
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}

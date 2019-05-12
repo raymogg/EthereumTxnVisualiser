@@ -28,7 +28,6 @@ const myConfig = {
         linkStrength: 3
     },
     node: {
-        color: 'lightgreen',
         highlightStrokeColor: 'blue',
         renderLabel: false,
         //svg: 'https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg'
