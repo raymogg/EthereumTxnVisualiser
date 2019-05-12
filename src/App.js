@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
+import AccountInfo from './components/AccountInfo'
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchERC20Transactions, fetchTransactions} from "./services/api";
 import {
@@ -13,6 +14,7 @@ import {
     uniqueAccountLinks,
     updateAccountTransactions,
 } from "./transactionHelpers";
+import SimpleStream from "./stream";
 
 const mainContainerStyle = {
     height: "100vh",
@@ -50,8 +52,8 @@ const emptyGraph = {
 
 const noNodeSelected = {
     id: "Hover over node",
-    numTo: 0,
-    numFrom: 0,
+    transactionsToCount: 0,
+    transactionsFromCount: 0,
     netValue: 0,
     currency: "E"
 };
@@ -101,46 +103,12 @@ class App extends Component {
         //Show a nice little error message if something goes wrong
         error: false,
         //What token does the user want to show transactions for (note this is the tokens contract address)
-        tokenAddress: "0x0"
+        tokenAddress: "0x0",
+
+        /* Whenever the user 'hovers' over a node, the node / account info should be
+        * published to this stream. */
+        mouseOverNodeStream: SimpleStream(),
     }
-
-
-    componentDidMount = async () => {
-    }
-
-
-    /*
-    onMouseOverNode = (accountAddress) => {
-        /!* Display the accountId, the number of transactions from this address,
-        the number of transactions to this address and the net value of this
-        node *!/
-
-        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
-        const num_from = transactions.fromAddress.length;
-        const num_to = transactions.toAddress.length;
-
-        var gross_from = 0;
-        var gross_to = 0;
-        for (let i = 0; i < num_from; i++) {
-            gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
-        }
-        for (let i = 0; i < num_to; i++) {
-            gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
-        }
-
-        const net_value = gross_to - gross_from;
-        const myNode = {
-            id: accountAddress,
-            numTo: num_to,
-            numFrom: num_from,
-            netValue: net_value,
-            currency: "E",
-        };
-
-        // Update the selected node property of state to update div
-        this.setState({ selectedNode: myNode });
-    }
-    */
 
     onMouseOverNode = (accountAddress) => {
         const txns = this.state.accountTxns[accountAddress]
@@ -160,20 +128,14 @@ class App extends Component {
 
         const node = {
             id: accountAddress,
-            numTo: txns.to.size,
-            numFrom: txns.from.size,
+            transactionsToCount: txns.to.size,
+            transactionsFromCount: txns.from.size,
             netValue: grossTo - grossFrom,
             currency: 'E',
         }
 
-        //TODO: this is a large performance hit!!
-        // and is what causes the nodes to move around when you hover.
-        // Reason is updating the 'selectedNode' state seems to trigger the `Graph` component
-        // to update as well.
-        // this 'wasGraphUpdate' property is a bit of a hack
-        this.setState({ selectedNode: node, wasGraphUpdate: false })
+        this.state.mouseOverNodeStream.pub(node)
     }
-
 
     searchHandler = async (address) => {
         //Reset the state first
@@ -360,8 +322,7 @@ class App extends Component {
         this.setState({
             graph: graphData,
             dataSet: true,
-            isLoading: false,
-            wasGraphUpdate: true,
+            isLoading: false
         })
     }
 
@@ -376,21 +337,8 @@ class App extends Component {
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
                     <div className="selected-container">
-                        <div className="selected-node">
-                            <h4>{this.state.selectedNode.id}</h4>
-                            <div className="row">
-                                <div>Outgoing Transactions</div>
-                                <div>{this.state.selectedNode.numFrom}</div>
-                            </div>
-                            <div className="row">
-                                <div>Incoming Transactions</div>
-                                <div>{this.state.selectedNode.numTo}</div>
-                            </div>
-                            <div className="row">
-                                <div>Node Net Value</div>
-                                <div className="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
-                            </div>
-                        </div>
+
+                        <AccountInfo nodes={this.state.mouseOverNodeStream}/>
 
                         <div className="selected-link">
                             <h4>{"Link Selected"}</h4>
@@ -423,8 +371,6 @@ class App extends Component {
 
                     <CustomGraph graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
-                        // If the boolean `wasGraphUpdate` flag is not set default to `true`.
-                        shouldUpdateGraph={isBoolean(this.state.wasGraphUpdate) ? this.state.wasGraphUpdate : true}
                         dataSet={this.state.dataSet}
                         onClickGraph={this.onClickGraph}
                         onClickNode={this.onClickNode}
