@@ -180,6 +180,8 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
  *
  * @param transactions - all known transactions
  * @returns {Array<String>} array of account addresses
+ *
+ * TODO: DEPRECATED - REMOVE THIS
  */
 export function uniqueAccountAddresses(transactions) {
 	const accountAddresses = []
@@ -197,12 +199,15 @@ export function uniqueAccountAddresses(transactions) {
 	return addressTransactionCount(transactions, accountAddresses);
 }
 
+
 /**
  * For each unique address, sum the number of transactions that they are involved in
  * This determines the size of their node on the screen
  *
  * @param transactions
  * @param addresses
+ *
+ * TODO: DEPRECATED - REMOVE THIS
  */
 export function addressTransactionCount(transactions, addresses) {
 	let addressFrequencies = [];
@@ -233,6 +238,23 @@ export function addressTransactionCount(transactions, addresses) {
 
 	return addressFrequencies;
 }
+
+
+/**
+ * For each unique address, sum the number of transactions that they are involved in
+ * This determines the size of their node on the screen
+ *
+ * @return {{size: number, color: (string|string), id: string}[]}
+ */
+export function accountTransactionsToNodes(accountTxns) {
+    return Object.entries(accountTxns).map(([address, transactions]) => {
+        const { from, to } = transactions
+        const size = getScaledNodeSize(from.size + to.size)
+        const color = getNodeColour(size) || "#6c757d" // the 'or' is for the default case.
+        return { id: address, size, color }
+    })
+}
+
 
 /**
  * Function to scale the nodes with a max value that then takes into account colour
@@ -313,13 +335,22 @@ export function addNewTransactions(existingTransactions, transactionsToAdd) {
 }
 
 
+export function addNewTxns(existingTxns, transactions) {
+    for (const txn of transactions) {
+        if (!existingTxns[txn.hash]) {
+            existingTxns[txn.hash] = txn
+        }
+    }
+}
+
+
 /**
  * Return all transactions associated with an account.
  * The account could be either sending of receiving ETH.
  *
  * @param accountAddress - the (hash) address of the account of interest
  * @param transactions - all known transactions
- * @returns {*[]}
+ * @returns {{fromAddress: Array, toAddress: Array}}
  */
 export function transactionsForAccount(accountAddress, transactions) {
 	const transactionsFromAccount = []
@@ -334,5 +365,25 @@ export function transactionsForAccount(accountAddress, transactions) {
 	}
 
 	return { fromAddress: transactionsFromAccount, toAddress: transactionsToAccount }
-	//return transactionsFromAccount.concat(transactionsToAccount) // concat just joins the two lists together
 }
+
+
+export function updateAccountTransactions(accountTransactionsCache, transactions) {
+    for (const txn of transactions) {
+        // TODO(loughlin) do we need to check for when from/to aren't correct?
+        //  or have incorrect txns already been filtered out.
+        const {from, to} = txn
+
+        // If accounts not previously seen, set transactions an empty array
+        if (!accountTransactionsCache[from]) {
+            accountTransactionsCache[from] = {from: new Set(), to: new Set()}
+        }
+        if (!accountTransactionsCache[to]) {
+            accountTransactionsCache[to] = {from: new Set(), to: new Set()}
+        }
+
+        accountTransactionsCache[from].from.add(txn.hash)
+        accountTransactionsCache[to].to.add(txn.hash)
+    }
+}
+

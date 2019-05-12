@@ -1,14 +1,20 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
-import { createMuiTheme } from '@material-ui/core/styles';
-import { fetchTransactions, fetchERC20Transactions } from "./services/api";
+import AccountInfo from './components/AccountInfo'
+import {createMuiTheme} from '@material-ui/core/styles';
+import {fetchERC20Transactions, fetchTransactions} from "./services/api";
 import {
-    uniqueAccountAddresses, containsEdge,
-    uniqueAccountLinks, transactionsForAccount, addNewTransactions,
-    highlightLink, getNode, toggleLabel,
+    accountTransactionsToNodes,
+    addNewTransactions,
+    addNewTxns,
+    containsEdge,
+    toggleLabel,
+    uniqueAccountLinks,
+    updateAccountTransactions,
 } from "./transactionHelpers";
+import SimpleStream from "./stream";
 
 const mainContainerStyle = {
     height: "100vh",
@@ -46,8 +52,8 @@ const emptyGraph = {
 
 const noNodeSelected = {
     id: "Hover over node",
-    numTo: 0,
-    numFrom: 0,
+    transactionsToCount: 0,
+    transactionsFromCount: 0,
     netValue: 0,
     currency: "E"
 };
@@ -62,10 +68,21 @@ const noLinkSelected = {
 }
 
 
+function isBoolean(maybeBool) {
+  return maybeBool === true || maybeBool === false
+}
+
+
 class App extends Component {
     state = {
         /* cache of all the transactions that we've fetched */
         transactions: [],
+
+        txns: {},
+
+        /* cache of 'account addresses' to { from => Set {transaction hashes}, to => Set{transaction hashes} } */
+        accountTxns: [],
+
         /* Whether the graph has gone through the initial load yet */
         dataSet: false,
         /* object with 'nodes' and 'links' properties */
@@ -87,42 +104,40 @@ class App extends Component {
         error: false,
         //What token does the user want to show transactions for (note this is the tokens contract address)
         tokenAddress: "0x0",
-        directed: false
+        //Holder for the direction of the graph
+        directed: false,
     }
 
-    componentDidMount = async () => {
+        /* Whenever the user 'hovers' over a node, the node / account info should be
+        * published to this stream. */
+        mouseOverNodeStream: SimpleStream(),
     }
-
 
     onMouseOverNode = (accountAddress) => {
-        /* Display the accountId, the number of transactions from this address,
-        the number of transactions to this address and the net value of this
-        node */
+        const txns = this.state.accountTxns[accountAddress]
+        console.log(`Mouse over node: address = ${accountAddress}, transactions =`, txns)
 
-        const transactions = transactionsForAccount(accountAddress, this.state.transactions)
-        const num_from = transactions.fromAddress.length;
-        const num_to = transactions.toAddress.length;
-
-        var gross_from = 0;
-        var gross_to = 0;
-        for (let i = 0; i < num_from; i++) {
-            gross_from += transactions.fromAddress[i].value / Math.pow(10, 18);
-        }
-        for (let i = 0; i < num_to; i++) {
-            gross_to += transactions.toAddress[i].value / Math.pow(10, 18);
+        let grossFrom = 0
+        for (const hash of txns.from) {
+            // console.log('from txn hash:', hash)
+            grossFrom += this.state.txns[hash].value / Math.pow(10, 18)
         }
 
-        const net_value = gross_to - gross_from;
-        const myNode = {
+        let grossTo = 0
+        for (const hash of txns.to) {
+            // console.log('to txn hash:  ', hash)
+            grossTo += this.state.txns[hash].value / Math.pow(10, 18)
+        }
+
+        const node = {
             id: accountAddress,
-            numTo: num_to,
-            numFrom: num_from,
-            netValue: net_value,
-            currency: "E",
-        };
+            transactionsToCount: txns.to.size,
+            transactionsFromCount: txns.from.size,
+            netValue: grossTo - grossFrom,
+            currency: 'E',
+        }
 
-        // Update the selected node property of state to update div
-        this.setState({ selectedNode: myNode });
+        this.state.mouseOverNodeStream.pub(node)
     }
 
     searchHandler = async (address) => {
@@ -132,6 +147,7 @@ class App extends Component {
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
     }
+
 
     resetData = (onComplete) => {
         this.setState({
@@ -146,11 +162,11 @@ class App extends Component {
 
     onDirectionChange = (directed) => {
       console.log(`Updating graph direction feature: old directed = ${this.state.graph.directed}, new directed = ${directed}`)
-			this.setState(currentState => {
+      this.state.directed = directed
+      this.setState(currentState => {
 				const graph = Object.assign(currentState.graph, { directed })
 				return { graph }
 			})
-      this.state.directed = directed
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
@@ -171,12 +187,14 @@ class App extends Component {
             this.setState({ scaleByTransactionValue: true }, () => {
                 this.resetData(() => {
                     this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                        .catch(err => console.log('onUpdateEdgeScaling ERROR', err))
                 })
             })
         } else if (newEdgeScaling === "Transaction Count") {
             this.setState({ scaleByTransactionValue: false }, () => {
                 this.resetData(() => {
                     this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                        .catch(err => console.log('onUpdateEdgeScaling ERROR', err))
                 })
             })
         }
@@ -185,11 +203,10 @@ class App extends Component {
     onNetworkChange = (newNetwork) => {
         this.setState({ network: newNetwork },
             () => {
-                if (this.state.initialAddress === "") {
-                    return;
-                } else {
+                if (this.state.initialAddress !== "") {
                     this.resetData(() => {
                         this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                            .catch(err => console.log('onNetworkChange ERROR', err))
                     })
                 }
             })
@@ -203,6 +220,7 @@ class App extends Component {
                 } else {
                     this.resetData(() => {
                         this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
+                            .catch(err => console.log('onTokenChange ERROR', err))
                     })
                 }
             })
@@ -219,13 +237,11 @@ class App extends Component {
     }
 
     onClickLink = async (source, target) => {
-        var edge = {
+        const edge = {
             source: source,
             target: target
         }
         const link = containsEdge(this.state.graph.links, edge)
-        // Toggle the label
-        //toggleLabel(link, `Sent: ${link.sent} Recv: ${link.recv}`)
         toggleLabel(link, `#trans: ${link.occurences}`)
 
         const myLink = {
@@ -236,7 +252,8 @@ class App extends Component {
             numSent: link.occurences,
         }
         this.setState({ selectedLink: myLink });
-        console.log(myLink)
+        console.log('onClickLink myLink =', myLink)
+
         // Update the selected node property of state to update div
         //this.setState({selectedLink: myLink);
         //console.log('config', this.state.graph)
@@ -272,36 +289,44 @@ class App extends Component {
 
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
-        console.log('Finding transactions for accountAddress:', accountAddress)
+        console.log('Fetching transactions for accountAddress:', accountAddress)
 
-        //TODO Check if we are getting transactions for Ether or for an ERC20 Token
-        var transactions;
-        if (this.state.tokenAddress === "0x0") {
-            transactions = await fetchTransactions(accountAddress, this.state.network)
-        } else {
-            console.log("Getting Token transactions")
-            transactions = await fetchERC20Transactions(accountAddress, this.state.tokenAddress)
-        }
+        // Check if we are getting transactions for Ether or for an ERC20 Token
+        const transactions = await (this.state.tokenAddress === '0x0'
+            ? fetchTransactions(accountAddress, this.state.network)
+            : fetchERC20Transactions(accountAddress, this.state.tokenAddress))
 
         console.log('Transactions for account id:', transactions)
-        // This is just a catch if there is no transactiosn for this account, show this as a little something something
+
+        // This is just a catch if there is no transactions for this account, show this as a little something something
         if (transactions.length === 0) {
             this.setState({error: true, isLoading: false})
             return
         }
 
-        // NOTE(Loughlin): I don't think this will trigger component update?
+        // NOTE(Loughlin): I don't think this will trigger component update.
+        // DEPRECATED - this state will be removed eventually.
         addNewTransactions(this.state.transactions, transactions)
 
-        const accountHashes = uniqueAccountAddresses(this.state.transactions)
+        addNewTxns(this.state.txns, transactions)
+        updateAccountTransactions(this.state.accountTxns, transactions)
+
+        const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
         const accountLinks = uniqueAccountLinks(this.state.transactions, this.state.scaleByTransactionValue)
+        console.log('account nodes:', accountNodes)
+        console.log('account links:', accountLinks)
+
         const graphData = {
-            nodes: accountHashes,
+            nodes: accountNodes,
             links: accountLinks,
             directed: this.state.directed,
         }
         // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({ graph: graphData, dataSet: true, isLoading: false})
+        this.setState({
+            graph: graphData,
+            dataSet: true,
+            isLoading: false
+        })
     }
 
 
@@ -314,25 +339,10 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
-                    {/* <div className="key-tooltip">
-                        <h4>Key</h4>
-                    </div> */}
                     <div className="selected-container">
-                        <div className="selected-node">
-                            <h4>{this.state.selectedNode.id}</h4>
-                            <div className="row">
-                                <div>Outgoing Transactions</div>
-                                <div>{this.state.selectedNode.numFrom}</div>
-                            </div>
-                            <div className="row">
-                                <div>Incoming Transactions</div>
-                                <div>{this.state.selectedNode.numTo}</div>
-                            </div>
-                            <div className="row">
-                                <div>Node Net Value</div>
-                                <div className="price-hover" onClick={this.onValueClick}>{this.state.selectedNode.currency}{this.state.selectedNode.netValue}</div>
-                            </div>
-                        </div>
+
+                        <AccountInfo nodes={this.state.mouseOverNodeStream}/>
+
                         <div className="selected-link">
                             <h4>{"Link Selected"}</h4>
                             <div className="row">
@@ -357,9 +367,11 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
+
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
                         onNetworkChange={this.onNetworkChange} onDirectionChange={this.onDirectionChange}
                         onTokenChange={this.onTokenChange}/>
+
                     <CustomGraph graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
                         dataSet={this.state.dataSet}

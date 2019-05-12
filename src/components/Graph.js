@@ -7,6 +7,7 @@ import sadFace from "../img/sad.png"
 import windowSize from 'react-window-size';
 import "./AddressEntry.css";
 
+
 const containerStyles = {
     width: '100%',
     height: '80vh',
@@ -52,18 +53,9 @@ class CustomGraph extends Component {
         return config;
     }
 
-
-    componentDidMount = async () => {
-        //this.setState({graphData: this.props.graph})
-        // console.log(this.props.graph.nodes)
-        // console.log(this.props.graph.edges)
-    }
-
     componentDidUpdate = async () => {
-        // console.log(this.props.graph.nodes)
-        // console.log(this.props.graph.edges)
+      console.log('Graph componentDidUpdate')
     }
-
 
     getGraphRender = () => {
         console.log('Graph:getGraphRender: this.props.isLoading =', this.props.isLoading);
