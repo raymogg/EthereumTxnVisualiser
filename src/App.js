@@ -13,6 +13,7 @@ import {
     toggleLabel,
     uniqueAccountLinks,
     updateAccountTransactions,
+    transactionsToLinks,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
 
@@ -43,6 +44,13 @@ const theme = createMuiTheme({
         },
     },
 });
+
+
+function removeByKey(obj, ...keys) {
+    return Object.keys(obj).reduce((obj, key) =>
+        keys.includes(key) ? obj : Object.assign(obj, {[key]: obj[key]}
+    ), {})
+}
 
 
 const emptyGraph = {
@@ -82,10 +90,13 @@ class App extends Component {
 
         /* cache of 'account addresses' to { from => Set {transaction hashes}, to => Set{transaction hashes} } */
         accountTxns: [],
+        /* not being used yet - this will be a cache of the edges so they don't have to be
+        * reconstructed every time. */
+        accountLinks: {},
 
         /* Whether the graph has gone through the initial load yet */
         dataSet: false,
-        /* object with 'nodes' and 'links' properties */
+        /* object with 'nodes' and 'transactionsToLinks' properties */
         graph: emptyGraph,
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
@@ -241,18 +252,17 @@ class App extends Component {
             target: target
         }
         const link = containsEdge(this.state.graph.links, edge)
-        toggleLabel(link, `#trans: ${link.occurences}`)
+        toggleLabel(link, `#trans: ${link.occurrences}`)
 
         const myLink = {
             nodeA: link.source,
             nodeB: link.target,
             aToB: link.sent,
             bToA: link.recv,
-            numSent: link.occurences,
+            numSent: link.occurrences,
         }
         this.setState({ selectedLink: myLink });
         console.log('onClickLink myLink =', myLink)
-
         // Update the selected node property of state to update div
         //this.setState({selectedLink: myLink);
         //console.log('config', this.state.graph)
@@ -299,6 +309,7 @@ class App extends Component {
 
         // This is just a catch if there is no transactions for this account, show this as a little something something
         if (transactions.length === 0) {
+            console.error('No transactions returned for account:', accountAddress)
             this.setState({error: true, isLoading: false})
             return
         }
@@ -312,14 +323,19 @@ class App extends Component {
 
         const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
         const accountLinks = uniqueAccountLinks(this.state.transactions, this.state.scaleByTransactionValue)
-        console.log('account nodes:', accountNodes)
-        console.log('account links:', accountLinks)
+
+        // TODO(loughlin): transition to using this new way of caching links. More reliable & more perf (I think).
+        //  const links = transactionsToLinks(this.state.accountLinks, transactions)
+        // console.log('account nodes:', accountNodes)
+        // console.log('account links:', accountLinks)
+        // console.log('links        :', Object.values(links))
 
         const graphData = {
             nodes: accountNodes,
             links: accountLinks,
             directed: this.state.directed,
         }
+
         // This triggers update/re-render so changes reflected in graph sub-component
         this.setState({
             graph: graphData,

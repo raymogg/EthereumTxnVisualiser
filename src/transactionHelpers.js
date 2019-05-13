@@ -77,7 +77,7 @@ export function getNode(id, nodes) {
 /**
  * Returns a specific link between a source and a target address
  *
- * @param edges - list of all unique account links
+ * @param edges - list of all unique account transactionsToLinks
  * @param source - source address
  * @param target - target address
  */
@@ -98,9 +98,10 @@ export function containsEdge(edges, edge) {
 
 
 /**
- * Return all unique edges / links between accounts.
+ * Return all unique edges / transactionsToLinks between accounts.
  *
  * @param transactions - all known transactions
+ * @param scaleByTxnValue
  * @returns {Array} edges between accounts determined by transactions.
  */
 export function uniqueAccountLinks(transactions, scaleByTxnValue) {
@@ -112,7 +113,7 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 			id: transaction.hash,
 			source: transaction.from,
 			target: transaction.to,
-			occurences: 1,
+			occurrences: 1,
 			strokeWidth: 1,
 			color: numberToColorCount(1),
 			//default direction is true source -> target
@@ -125,7 +126,7 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 		//Check if this edge is already in the edges array
 		var existentEdge = containsEdge(edges, edge)
 		if (existentEdge !== null) {
-			//Update the occurences and the total edge value
+			//Update the occurrences and the total edge value
 			existentEdge.occurences += 1
 			existentEdge.sent += transaction.value / Math.pow(10, 18)
 			//if the direction is unchanged
@@ -138,15 +139,15 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 			}
 			if (scaleByTxnValue === false) {
 				//Limit edge scaling to a max of 20 transactions between accounts
-				if (existentEdge.occurences < 10) {
+				if (existentEdge.occurrences < 10) {
 					existentEdge.strokeWidth += 1
 				}
-				existentEdge.color = numberToColorCount(existentEdge.occurences)
+				existentEdge.color = numberToColorCount(existentEdge.occurrences)
 			} else if (scaleByTxnValue === true) {
 				//Limit edge scaling to a max of 20ETH worth of value
 				if (existentEdge.sent < 10) {
 					existentEdge.strokeWidth += (edge.sent / 2)
-				} 
+				}
 				
 				if (existentEdge.strokeWidth > 10) {
 					existentEdge.strokeWidth = 10
@@ -172,6 +173,100 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 		}
 	}
 	return edges
+}
+
+
+/**
+ * TODO replace `uniqueAccountLinks` with this.
+ *
+ * @param edges
+ * @param txns
+ * @param scaleByValue
+ */
+export function transactionsToLinks(edges, txns, scaleByValue) {
+
+    function edgeKey(address1, address2) {
+        return `${address1}+${address2}`
+    }
+
+    function containsEdge(edges, txn) {
+        let fromToKey = edgeKey(txn.from, txn.to)
+        let toFromKey = edgeKey(txn.to, txn.from)
+        if (edges[fromToKey]) {
+            return edges[fromToKey]
+        } else if (edges[toFromKey]) {
+            return edges[toFromKey]
+        } else {
+            return null
+        }
+    }
+
+    // edges is key'd by conjoining the 'from' and 'to' account hashes.
+    // e.g. `FROM_HASH+TO_HASH`
+    // depending on whether we've seen the 'from' or 'to' first / before in previous transactions.
+    // Edges `ADDRESS_A+ADDRESS_B` and `ADDRESS_B+ADDRESS_A` are the same, and `containsEdge`
+    // should take that into account.
+    // TODO remove.
+    // const edges = {}
+
+    for (const t of txns) {
+        // if the edge exists, get a reference to it and increment the occurrences.
+        let edge = containsEdge(edges, t)
+        if (edge) {
+            edge.occurrences += 1
+        } else {
+            // This is constructing the default edge object.
+            // Note that things such as values & source / target will be changed below.
+            // The edge 'key' or 'id' is made up of the 'from' and 'to' account addresses.
+            let key = edgeKey(t.from, t.to)
+            edges[key] = {
+                occurrences: 1,
+                acc1: t.from,
+                acc2: t.to,
+                source: t.from,
+                target: t.to,
+                acc1Value: 0,
+                acc2Value: 0,
+                totalValue: 0,
+            }
+            edge = edges[key]
+        }
+
+        // Values
+        // * take value away from sender & add to receiver
+        const txnValue = parseInt(t.value) / Math.pow(10, 18)
+        edge.totalValue += txnValue
+        if (t.from === edge.acc1) edge.acc1Value -= txnValue
+        if (t.from === edge.acc2) edge.acc2Value -= txnValue
+        if (t.to === edge.acc1) edge.acc1Value += txnValue
+        if (t.to === edge.acc2) edge.acc2Value += txnValue
+
+        // COLOUR
+        // If scaling is being done by occurrences, not value.
+        if (scaleByValue === false) {
+            edge.color = numberToColorCount(edge.occurrences)
+        } else {
+            edge.color = numberToColorValue(edge.totalValue)
+        }
+
+        // STROKE WIDTH
+        // the max value of the stroke width
+        // will be 10.
+        edge.strokeWidth = Math.min(10, edge.occurrences)
+
+        // SET SOURCE & TARGET
+        // * the acc with net loss will be source
+        // * acc with net profit will be target
+        if (edge.acc1Value > edge.acc2Value) {
+            edge.source = edge.acc2
+            edge.target = edge.acc1
+        } else {
+            edge.source = edge.acc1
+            edge.target = edge.acc2
+        }
+    }
+
+    return edges
 }
 
 /**
@@ -347,6 +442,8 @@ export function addNewTxns(existingTxns, transactions) {
 /**
  * Return all transactions associated with an account.
  * The account could be either sending of receiving ETH.
+ *
+ * TODO: DEPRECATED - REMOVE THIS
  *
  * @param accountAddress - the (hash) address of the account of interest
  * @param transactions - all known transactions
