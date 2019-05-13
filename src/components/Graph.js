@@ -54,11 +54,11 @@ class CustomGraph extends Component {
     }
 
     componentDidUpdate = async () => {
-      console.log('Graph componentDidUpdate')
+      // console.log('Graph componentDidUpdate')
     }
 
     getGraphRender = () => {
-        console.log('Graph:getGraphRender: this.props.isLoading =', this.props.isLoading);
+        // console.log('Graph:getGraphRender: this.props.isLoading =', this.props.isLoading);
         if (this.props.error) {
             return (
                 <div className="loader">

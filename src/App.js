@@ -3,6 +3,7 @@ import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import AccountInfo from './components/AccountInfo'
+import LinkInfo from './components/LinkInfo'
 import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchERC20Transactions, fetchTransactions} from "./services/api";
 import {
@@ -13,7 +14,6 @@ import {
     toggleLabel,
     uniqueAccountLinks,
     updateAccountTransactions,
-    transactionsToLinks,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
 
@@ -45,14 +45,6 @@ const theme = createMuiTheme({
     },
 });
 
-
-function removeByKey(obj, ...keys) {
-    return Object.keys(obj).reduce((obj, key) =>
-        keys.includes(key) ? obj : Object.assign(obj, {[key]: obj[key]}
-    ), {})
-}
-
-
 const emptyGraph = {
     nodes: [],
     links: []
@@ -73,11 +65,6 @@ const noLinkSelected = {
     aToB: 0,
     bToA: 0,
     numSent: 0
-}
-
-
-function isBoolean(maybeBool) {
-  return maybeBool === true || maybeBool === false
 }
 
 
@@ -120,12 +107,14 @@ class App extends Component {
 
         /* Whenever the user 'hovers' over a node, the node / account info should be
         * published to this stream. */
-        mouseOverNodeStream: SimpleStream()
+        mouseOverNodeStream: SimpleStream(),
+        /* Whenever the user clicks a link, the link info should be published to this stream. */
+        linkClickedStream: SimpleStream(),
     }
 
     onMouseOverNode = (accountAddress) => {
         const txns = this.state.accountTxns[accountAddress]
-        console.log(`Mouse over node: address = ${accountAddress}, transactions =`, txns)
+        // console.log(`Mouse over node: address = ${accountAddress}, transactions =`, txns)
 
         let grossFrom = 0
         for (const hash of txns.from) {
@@ -261,11 +250,8 @@ class App extends Component {
             bToA: link.recv,
             numSent: link.occurrences,
         }
-        this.setState({ selectedLink: myLink });
-        console.log('onClickLink myLink =', myLink)
-        // Update the selected node property of state to update div
-        //this.setState({selectedLink: myLink);
-        //console.log('config', this.state.graph)
+
+        this.state.linkClickedStream.pub(myLink)
     }
 
     /**
@@ -355,32 +341,8 @@ class App extends Component {
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
                     <div className="selected-container">
-
                         <AccountInfo nodes={this.state.mouseOverNodeStream}/>
-
-                        <div className="selected-link">
-                            <h4>{"Link Selected"}</h4>
-                            <div className="row">
-                                <div>Node A ID</div>
-                                <div>{this.state.selectedLink.nodeA}</div>
-                            </div>
-                            <div className="row">
-                                <div>Node B ID</div>
-                                <div>{this.state.selectedLink.nodeB}</div>
-                            </div>
-                            <div className="row">
-                                <div>Amount sent: A to B</div>
-                                <div>{this.state.selectedLink.aToB}</div>
-                            </div>
-                            <div className="row">
-                                <div>Amount sent: B to A</div>
-                                <div>{this.state.selectedLink.bToA}</div>
-                            </div>
-                            <div className="row">
-                                <div>Total Number of Transactions</div>
-                                <div>{this.state.selectedLink.numSent}</div>
-                            </div>
-                        </div>
+                        <LinkInfo links={this.state.linkClickedStream}/>
                     </div>
 
                     <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
