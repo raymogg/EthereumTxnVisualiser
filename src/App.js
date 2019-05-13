@@ -106,11 +106,10 @@ class App extends Component {
         tokenAddress: "0x0",
         //Holder for the direction of the graph
         directed: false,
-    }
 
         /* Whenever the user 'hovers' over a node, the node / account info should be
         * published to this stream. */
-        mouseOverNodeStream: SimpleStream(),
+        mouseOverNodeStream: SimpleStream()
     }
 
     onMouseOverNode = (accountAddress) => {
