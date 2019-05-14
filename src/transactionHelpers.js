@@ -230,7 +230,11 @@ export function transactionsToLinks(edges, txns, scaleByValue) {
                 source: t.from,
                 target: t.to,
                 acc1Value: 0,
-                acc2Value: 0,
+				acc2Value: 0,
+				acc1Sent: 0,
+				acc2Sent: 0,
+				acc1Recv: 0,
+				acc2Recv: 0,
                 totalValue: 0,
             }
             edge = edges[key]
@@ -240,10 +244,25 @@ export function transactionsToLinks(edges, txns, scaleByValue) {
         // * take value away from sender & add to receiver
         const txnValue = parseInt(t.value) / Math.pow(10, 18)
         edge.totalValue += txnValue
-        if (t.from === edge.acc1) edge.acc1Value -= txnValue
-        if (t.from === edge.acc2) edge.acc2Value -= txnValue
-        if (t.to === edge.acc1) edge.acc1Value += txnValue
-        if (t.to === edge.acc2) edge.acc2Value += txnValue
+        if (t.from === edge.acc1) {
+			edge.acc1Value -= txnValue
+			edge.acc2Value += txnValue
+			edge.acc1Sent += txnValue
+			edge.acc2Recv += txnValue
+		}
+        if (t.from === edge.acc2) {
+			edge.acc2Value -= txnValue
+			edge.acc1Value += txnValue
+			edge.acc2Sent += txnValue
+			edge.acc1Recv += txnValue
+		}
+		//Test and see if this simplification works
+        // if (t.to === edge.acc1) {
+		// 	edge.acc1Value += txnValue
+		// }
+        // if (t.to === edge.acc2) {
+		// 	edge.acc2Value += txnValue
+		// } 
 
         // COLOUR
         // If scaling is being done by occurrences, not value.
