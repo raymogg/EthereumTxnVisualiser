@@ -240,7 +240,7 @@ class App extends Component {
 
     onMouseOverLink = async (source, target) => {
         const link = containsLink(this.state.accountLinks, {source, target})
-        toggleLabel(link, `#trans: ${link.occurrences}`)
+        //toggleLabel(link, `#trans: ${link.occurrences}`)
 
         this.state.linkClickedStream.pub(link)
     }
