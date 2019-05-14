@@ -5,7 +5,11 @@ import AddressEntry from './components/AddressEntry';
 import AccountInfo from './components/AccountInfo'
 import LinkInfo from './components/LinkInfo'
 import {createMuiTheme} from '@material-ui/core/styles';
-import {fetchERC20Transactions, fetchTransactions} from "./services/api";
+import {
+    fetchERC20Transactions,
+    fetchTransactions,
+    fetchTxnIterable,
+} from "./services/api";
 import {
     accountTransactionsToNodes,
     updateTransactions,
@@ -14,6 +18,7 @@ import {
     updateAccountTransactions,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
+import {Button, Snackbar} from "@material-ui/core";
 
 const mainContainerStyle = {
     height: "100vh",
@@ -95,6 +100,8 @@ class App extends Component {
         mouseOverNodeStream: SimpleStream(),
         /* Whenever the user clicks a link, the link info should be published to this stream. */
         linkClickedStream: SimpleStream(),
+
+        transactionBacklogs: {},
     }
 
     onMouseOverNode = (accountAddress) => {
@@ -201,9 +208,7 @@ class App extends Component {
     onTokenChange = (newToken) => {
         this.setState({ tokenAddress: newToken },
             () => {
-                if (this.state.initialAddress === "") {
-                    return;
-                } else {
+                if (this.state.initialAddress !== "") {
                     this.resetData(() => {
                         this.fetchTransactionsThenUpdateGraph(this.state.initialAddress)
                             .catch(err => console.log('onTokenChange ERROR', err))
@@ -217,8 +222,20 @@ class App extends Component {
 
     onClickNode = async (accountAddress) => {
         this.setState({ isLoading: true });
-        this.fetchTransactionsThenUpdateGraph(accountAddress)
-            .catch(err => console.log('App.onClickNode ERROR:', err))
+        // this.fetchTransactionsThenUpdateGraph(accountAddress)
+        //     .catch(err => console.log('App.onClickNode ERROR:', err))
+
+        console.log(`onClickNode: ${accountAddress}`)
+
+        let transactionIter = await fetchTxnIterable(accountAddress, this.state.network)
+        if (transactionIter.size() > 10) {
+            this.state.transactionBacklogs[accountAddress] = transactionIter
+            const transactions = transactionIter.take(10)
+            this.updateWithTransactions(transactions)
+        } else {
+            const transactions = transactionIter.drain()
+            this.updateWithTransactions(transactions)
+        }
     }
 
     onMouseOverLink = async (source, target) => {
@@ -293,6 +310,44 @@ class App extends Component {
         })
     }
 
+    /**
+     * TODO: this should become the main update (state) function since it's used across several methods.
+     */
+    updateWithTransactions = (transactions) => {
+        updateTransactions(this.state.transactions, transactions)
+        updateAccountTransactions(this.state.accountTxns, transactions)
+        const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
+        updateAccountLinks(this.state.accountLinks, transactions, this.state.scaleByTransactionValue)
+
+        const graphData = {
+            nodes: accountNodes,
+            links: Object.values(this.state.accountLinks),
+            directed: this.state.directed,
+        }
+
+        // This triggers update/re-render so changes reflected in graph sub-component
+        this.setState({
+            graph: graphData,
+            dataSet: true,
+            isLoading: false
+        })
+    }
+
+    loadTransactionBacklog = () => {
+        let txns = Object.values(this.state.transactionBacklogs).reduce((txns, iter) => {
+            return txns.concat(iter.take(10))
+        }, [])
+        this.updateWithTransactions(txns)
+    }
+
+    isTransactionsBacklog = () => {
+        for (let iter of Object.values(this.state.transactionBacklogs)) {
+            if (!iter.isDone()) {
+                return true
+            }
+        }
+        return false
+    }
 
     render() {
         if (this.state.dataSet) {
@@ -303,16 +358,23 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
+                    {/*<div>*/}
+                    {/*    <button onClick={this.loadStreams}>LOAD STREAMS</button>*/}
+                    {/*</div>*/}
+
                     <div className="selected-container">
                         <AccountInfo nodes={this.state.mouseOverNodeStream}/>
                         <LinkInfo links={this.state.linkClickedStream}/>
                     </div>
 
-                    <AddressEntry searchHandler={this.searchHandler} onEdgeScaleChange={this.onUpdateEdgeScaling}
-                        onNetworkChange={this.onNetworkChange} onDirectionChange={this.onDirectionChange}
-                        onTokenChange={this.onTokenChange}/>
+                    <AddressEntry searchHandler={this.searchHandler}
+                                  onEdgeScaleChange={this.onUpdateEdgeScaling}
+                                  onNetworkChange={this.onNetworkChange}
+                                  onDirectionChange={this.onDirectionChange}
+                                  onTokenChange={this.onTokenChange}/>
 
-                    <CustomGraph graph={this.state.graph}
+                    <CustomGraph
+                        graph={this.state.graph}
                         style={{ backgroundColor: "black" }}
                         dataSet={this.state.dataSet}
                         onClickGraph={this.onClickGraph}
@@ -322,6 +384,25 @@ class App extends Component {
                         isLoading={this.state.isLoading}
                         error={this.state.error} />
                 </div>
+                
+                <Snackbar
+                    open={this.isTransactionsBacklog()}
+                    message={
+                        <div>
+                            <div>There were a lot of transactions received</div>
+                            <div>Would you like to continue loading them?</div>
+                        </div>
+                    }
+                    anchorOrigin={{vertical: 'top', horizontal: 'left'}}
+                    action={
+                        <Button
+                            size="small"
+                            color="primary"
+                            onClick={this.loadTransactionBacklog}>
+                            Continue
+                        </Button>
+                    }
+                />
             </div>
         );
     }

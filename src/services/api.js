@@ -1,3 +1,4 @@
+import {IterStream} from "../stream";
 
 const API_KEY = `FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7`;
 
@@ -16,51 +17,39 @@ function removeTransactionsWithInvalidAddresses(transactions) {
 
 
 export function fetchTransactions(address, network) {
-	if (network === "testnet") {
-		console.log("Getting testnet transactions")
-		return fetch('http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
-			.then(function (response) {
-				return response.json();
-			})
-			//Handling data here
-			.then(function (data) {
-				return data.result;
-			})
-			.then(function (transactions) {
-				return removeTransactionsWithInvalidAddresses(transactions)
-			})
-	} else {
-		console.log("Getting mainnet transactions")
-		return fetch('http://api.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
-			.then(function (response) {
-				return response.json();
-			})
-			//Handling data here
-			.then(function (data) {
-				return data.result;
-			})
-			.then(function (transactions) {
-				return removeTransactionsWithInvalidAddresses(transactions)
-			})
-	}
+    // if (network === 'testnet') console.log('Fetching testnet transactions')
+    // else console.log('Fetching mainnet transactions');
+
+    const url = network === 'testnet'
+        ? 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY
+        : 'http://api.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY
+
+    return fetch(url)
+        .then(response => response.json())
+        .then(data => data.result)
+        .then(transactions => removeTransactionsWithInvalidAddresses(transactions))
 }
+
 
 export function fetchERC20Transactions(address, tokenAddress) {
 	console.log("Getting mainnet ERC20 transactions. tokenAddress =", tokenAddress)
 
-	return fetch('http://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' + tokenAddress +
-		'&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY)
-		.then(function (response) {
-			console.log('fetchERC20Transactions response:', response)
-			return response.json();
-		})
-		//Handling data here
-		.then(function (data) {
-			console.log('fetchERC20Transactions data:', data)
-			return data.result;
-		})
-		.then(function (transactions) {
-			console.log('fetchERC20Transactions transactions:', transactions)
-			return removeTransactionsWithInvalidAddresses(transactions)
-		})
+    const url = 'http://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' +
+        tokenAddress +
+        '&address=' +
+        address +
+        '&startblock=0&endblock=99999999&sort=asc&apikey=' +
+        API_KEY
+
+	return fetch(url)
+		.then(response => response.json())
+		.then(data => data.result)
+		.then(transactions => removeTransactionsWithInvalidAddresses(transactions))
+}
+
+
+export function fetchTxnIterable(address, network) {
+    return fetchTransactions(address, network).then(transactions => {
+        return IterStream(transactions)
+    })
 }
