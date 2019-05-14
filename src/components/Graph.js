@@ -127,7 +127,7 @@ class CustomGraph extends Component {
                     onMouseOverNode={this.props.onHoverNode}
                     onClickGraph={this.props.onClickGraph}
                     onClickNode={this.props.onClickNode}
-                    onClickLink={this.props.onClickLink}
+                    onMouseOverLink={this.props.onMouseOverLink}
                 />
             )
         }

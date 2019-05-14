@@ -10,7 +10,7 @@ import {
     accountTransactionsToNodes,
     addNewTransactions,
     cacheNewTransactions,
-    containsEdge,
+    containsEdge, containsLink,
     toggleLabel, transactionsToLinks,
     uniqueAccountLinks,
     updateAccountTransactions,
@@ -59,15 +59,6 @@ const noNodeSelected = {
 };
 
 
-const noLinkSelected = {
-    nodeA: "No Node A",
-    nodeB: "No Node B",
-    aToB: 0,
-    bToA: 0,
-    numSent: 0
-}
-
-
 class App extends Component {
     state = {
         /* object with all fetched transactions where key is transactions hash for O(1) lookup */
@@ -81,10 +72,10 @@ class App extends Component {
         dataSet: false,
         /* object with 'nodes' and 'transactionsToLinks' properties */
         graph: emptyGraph,
+
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
-        /* empty link placeholder for the link details on click */
-        selectedLink: noLinkSelected,
+
         /* a bool that represents whether a new graph is being loaded */
         isLoading: false,
         //Bool representating whether edges should be scaled by transaction value (when true)
@@ -224,7 +215,6 @@ class App extends Component {
     }
 
     onClickGraph = async () => {
-        console.log("Reset the nodes")
     }
 
     onClickNode = async (accountAddress) => {
@@ -233,23 +223,11 @@ class App extends Component {
             .catch(err => console.log('App.onClickNode ERROR:', err))
     }
 
-    onClickLink = async (source, target) => {
-        const edge = {
-            source: source,
-            target: target
-        }
-        const link = containsEdge(this.state.graph.links, edge)
+    onMouseOverLink = async (source, target) => {
+        const link = containsLink(this.state.accountLinks, {source, target})
         toggleLabel(link, `#trans: ${link.occurrences}`)
 
-        const myLink = {
-            nodeA: link.source,
-            nodeB: link.target,
-            aToB: link.sent,
-            bToA: link.recv,
-            numSent: link.occurrences,
-        }
-
-        this.state.linkClickedStream.pub(myLink)
+        this.state.linkClickedStream.pub(link)
     }
 
     /**
@@ -342,7 +320,7 @@ class App extends Component {
                         onClickGraph={this.onClickGraph}
                         onClickNode={this.onClickNode}
                         onHoverNode={this.onMouseOverNode}
-                        onClickLink={this.onClickLink}
+                        onMouseOverLink={this.onMouseOverLink}
                         isLoading={this.state.isLoading}
                         error={this.state.error} />
                 </div>

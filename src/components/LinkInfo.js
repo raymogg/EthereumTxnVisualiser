@@ -11,7 +11,7 @@ const noneSelectedInfo = {
 
 export default class LinkInfo extends Component {
     state = {
-        selectedLink: noneSelectedInfo,
+        // selectedLink: noneSelectedInfo,
     }
 
     componentDidMount() {
@@ -21,34 +21,61 @@ export default class LinkInfo extends Component {
     }
 
     render() {
+        return this.state.selectedLink
+            ? this.renderSelectedLink()
+            : LinkInfo.renderNoneSelected()
+    }
+
+    renderSelectedLink() {
+        const { acc1, acc2, acc1Value, acc2Value } = this.state.selectedLink
         return (
             <div className="selected-link">
                 <h4>{"Link Selected"}</h4>
 
                 <div className="row">
-                    <div>Node A ID</div>
-                    <div>{this.state.selectedLink.nodeA}</div>
+                    <div>Account 1</div>
+                    <div>{acc1}</div>
                 </div>
 
                 <div className="row">
-                    <div>Node B ID</div>
-                    <div>{this.state.selectedLink.nodeB}</div>
+                    <div>Account 2</div>
+                    <div>{acc2}</div>
                 </div>
 
-                <div className="row">
-                    <div>Amount sent: A to B</div>
-                    <div>{this.state.selectedLink.aToB}</div>
-                </div>
+                {LinkInfo.sentOrRecvMessage("Account 1", acc1Value)}
+                {LinkInfo.sentOrRecvMessage("Account 2", acc2Value)}
 
                 <div className="row">
-                    <div>Amount sent: B to A</div>
-                    <div>{this.state.selectedLink.bToA}</div>
+                    <div>Total value of transactions</div>
+                    <div>{this.state.selectedLink.totalValue}</div>
                 </div>
 
                 <div className="row">
                     <div>Total Number of Transactions</div>
-                    <div>{this.state.selectedLink.numSent}</div>
+                    <div>{this.state.selectedLink.occurrences}</div>
                 </div>
+
+            </div>
+        )
+    }
+
+    static renderNoneSelected() {
+        return (
+            <div className="selected-link">
+                <div>No link selected yet</div>
+            </div>
+        )
+    }
+
+    static sentOrRecvMessage(name, value) {
+        return (
+            <div className="row">
+                {
+                    value < 0
+                        ? <div>{name} net sent</div>
+                        : <div>{name} net received</div>
+                }
+                <div>{value}</div>
             </div>
         )
     }

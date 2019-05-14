@@ -176,6 +176,27 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
 }
 
 
+function linkKey(address1, address2) {
+    return `${address1}+${address2}`
+}
+
+
+export function containsLink(links, linkOrTransaction) {
+    let source = linkOrTransaction.source || linkOrTransaction.from
+    let target = linkOrTransaction.target || linkOrTransaction.to
+
+    let sourceTargetKey = linkKey(source, target)
+    let targetSourceKey = linkKey(target, source)
+    if (links[sourceTargetKey]) {
+        return links[sourceTargetKey]
+    } else if (links[targetSourceKey]) {
+        return links[targetSourceKey]
+    } else {
+        return null
+    }
+}
+
+
 /**
  * TODO replace `uniqueAccountLinks` with this.
  *
@@ -184,41 +205,24 @@ export function uniqueAccountLinks(transactions, scaleByTxnValue) {
  * @param scaleByValue
  */
 export function transactionsToLinks(edges, txns, scaleByValue) {
-
-    function edgeKey(address1, address2) {
-        return `${address1}+${address2}`
-    }
-
-    function containsEdge(edges, txn) {
-        let fromToKey = edgeKey(txn.from, txn.to)
-        let toFromKey = edgeKey(txn.to, txn.from)
-        if (edges[fromToKey]) {
-            return edges[fromToKey]
-        } else if (edges[toFromKey]) {
-            return edges[toFromKey]
-        } else {
-            return null
-        }
-    }
-
     // edges is key'd by conjoining the 'from' and 'to' account hashes.
     // e.g. `FROM_HASH+TO_HASH`
     // depending on whether we've seen the 'from' or 'to' first / before in previous transactions.
-    // Edges `ADDRESS_A+ADDRESS_B` and `ADDRESS_B+ADDRESS_A` are the same, and `containsEdge`
+    // Edges `ADDRESS_A+ADDRESS_B` and `ADDRESS_B+ADDRESS_A` are the same, and `containsLink`
     // should take that into account.
     // TODO remove.
     // const edges = {}
 
     for (const t of txns) {
         // if the edge exists, get a reference to it and increment the occurrences.
-        let edge = containsEdge(edges, t)
+        let edge = containsLink(edges, t)
         if (edge) {
             edge.occurrences += 1
         } else {
             // This is constructing the default edge object.
             // Note that things such as values & source / target will be changed below.
             // The edge 'key' or 'id' is made up of the 'from' and 'to' account addresses.
-            let key = edgeKey(t.from, t.to)
+            let key = linkKey(t.from, t.to)
             edges[key] = {
                 occurrences: 1,
                 acc1: t.from,
