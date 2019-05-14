@@ -52,32 +52,20 @@ export function highlightLink(link, nodeA, nodeB) {
 	link.directed = true
 }
 
+
 export function toggleLabel(link, text) {
 	if (link.label === null) {
 		link.label = text;
 	} else {
 		link.label = null;
-	};
+	}
 }
 
-/**
- * Gets the node correseponding to an id
- *
- *
- */
-export function getNode(id, nodes) {
-	for (var i = 0; i < nodes.length; i++) {
-		if (id === nodes[i].id) {
-			return nodes[i]
-		}
-	}
-	return null
-}
 
 /**
  * Returns a specific link between a source and a target address
  *
- * @param edges - list of all unique account transactionsToLinks
+ * @param edges - list of all unique account updateAccountLinks
  * @param source - source address
  * @param target - target address
  */
@@ -94,85 +82,6 @@ export function containsEdge(edges, edge) {
 		}
 	}
 	return null
-}
-
-
-/**
- * Return all unique edges / transactionsToLinks between accounts.
- *
- * @param transactions - all known transactions
- * @param scaleByTxnValue
- * @returns {Array} edges between accounts determined by transactions.
- */
-export function uniqueAccountLinks(transactions, scaleByTxnValue) {
-	//TODO Weight graph edges by number of transactions between each account
-	var edges = []
-	for (var i = 0; i < transactions.length; i++) {
-		var transaction = transactions[i]
-		var edge = {
-			id: transaction.hash,
-			source: transaction.from,
-			target: transaction.to,
-			occurrences: 1,
-			strokeWidth: 1,
-			color: numberToColorCount(1),
-			//default direction is true source -> target
-			direction: true,
-			sent: transaction.value / Math.pow(10, 18),
-			recv: 0,
-			label: null
-		}
-
-		//Check if this edge is already in the edges array
-		var existentEdge = containsEdge(edges, edge)
-		if (existentEdge !== null) {
-			//Update the occurrences and the total edge value
-			existentEdge.occurences += 1
-			existentEdge.sent += transaction.value / Math.pow(10, 18)
-			//if the direction is unchanged
-			if (existentEdge.direction) {
-				existentEdge.sent += edge.sent
-			} else {
-				//this is the case where direction is flipped because
-				//the edge was found target -> source
-				existentEdge.recv += edge.sent
-			}
-			if (scaleByTxnValue === false) {
-				//Limit edge scaling to a max of 20 transactions between accounts
-				if (existentEdge.occurrences < 10) {
-					existentEdge.strokeWidth += 1
-				}
-				existentEdge.color = numberToColorCount(existentEdge.occurrences)
-			} else if (scaleByTxnValue === true) {
-				//Limit edge scaling to a max of 20ETH worth of value
-				if (existentEdge.sent < 10) {
-					existentEdge.strokeWidth += (edge.sent / 2)
-				}
-				
-				if (existentEdge.strokeWidth > 10) {
-					existentEdge.strokeWidth = 10
-				}
-
-				existentEdge.color = numberToColorValue(parseInt(existentEdge.sent) + parseInt(existentEdge.recv))
-			}
-			//existentEdge.color = numberToColor(existentEdge.strokeWidth)
-		} else {
-			//Otherwise simply add the edge
-			//If the edges are being scaled by transaction value make sure to set edge stroke width
-			if (scaleByTxnValue === true) {
-				var scaledValue = (edge.sent / 2)
-				if (scaledValue < 1) {
-					scaledValue = 1
-				} else if (scaledValue > 10) {
-					scaledValue = 10
-				}
-				edge.strokeWidth = scaledValue
-				edge.color = numberToColorValue(parseInt(edge.sent) + parseInt(edge.recv))
-			}
-			edges.push(edge)
-		}
-	}
-	return edges
 }
 
 
@@ -198,13 +107,13 @@ export function containsLink(links, linkOrTransaction) {
 
 
 /**
- * TODO replace `uniqueAccountLinks` with this.
+ * Update the object `edges` which caches all previously established links between accounts.
  *
- * @param edges
- * @param txns
- * @param scaleByValue
+ * @param edges - the edges cache object.
+ * @param newTransactions - list of new transactions (from EtherScan API).
+ * @param scaleByValue - scale by total edge transactions value, else by transaction frequency between accounts.
  */
-export function transactionsToLinks(edges, txns, scaleByValue) {
+export function updateAccountLinks(edges, newTransactions, scaleByValue) {
     // edges is key'd by conjoining the 'from' and 'to' account hashes.
     // e.g. `FROM_HASH+TO_HASH`
     // depending on whether we've seen the 'from' or 'to' first / before in previous transactions.
@@ -213,7 +122,7 @@ export function transactionsToLinks(edges, txns, scaleByValue) {
     // TODO remove.
     // const edges = {}
 
-    for (const t of txns) {
+    for (const t of newTransactions) {
         // if the edge exists, get a reference to it and increment the occurrences.
         let edge = containsLink(edges, t)
         if (edge) {
@@ -256,33 +165,23 @@ export function transactionsToLinks(edges, txns, scaleByValue) {
 			edge.acc2Sent += txnValue
 			edge.acc1Recv += txnValue
 		}
-		//Test and see if this simplification works
-        // if (t.to === edge.acc1) {
-		// 	edge.acc1Value += txnValue
-		// }
-        // if (t.to === edge.acc2) {
-		// 	edge.acc2Value += txnValue
-		// } 
 
-        // COLOUR
+        // StrokeWidth and Colour scaling
         // If scaling is being done by occurrences, not value.
         if (scaleByValue === false) {
 			edge.color = numberToColorCount(edge.occurrences)
+            // the max value of the stroke width will be 10.
 			edge.strokeWidth = Math.min(10, edge.occurrences)
         } else {
 			edge.color = numberToColorValue(edge.totalValue)
+            // the max value of the stroke width will be 10.
 			edge.strokeWidth = Math.min(10, edge.totalValue)
 		}
-		
-		//Ensure edge width is atleast one so you can see it
+
+		//Ensure edge width is at least one so you can see it
 		if (edge.strokeWidth < 1) {
 			edge.strokeWidth = 1
 		}
-
-        // STROKE WIDTH
-        // the max value of the stroke width
-        // will be 10.
-        //edge.strokeWidth = Math.min(10, edge.occurrences)
 
         // SET SOURCE & TARGET
         // * the acc with net loss will be source
@@ -297,71 +196,6 @@ export function transactionsToLinks(edges, txns, scaleByValue) {
     }
 
     return edges
-}
-
-/**
- * Accounts could be in either 'from' or 'to' fields of transactions
- * and as such only count each account once.
- *
- * @param transactions - all known transactions
- * @returns {Array<String>} array of account addresses
- *
- * TODO: DEPRECATED - REMOVE THIS
- */
-export function uniqueAccountAddresses(transactions) {
-	const accountAddresses = []
-	for (let i = 0; i < transactions.length; i++) {
-		const transaction = transactions[i]
-		if (!accountAddresses.includes(transaction.from)) {
-			accountAddresses.push(transaction.from)
-		}
-		if (!accountAddresses.includes(transaction.to)) {
-			accountAddresses.push(transaction.to)
-		}
-	}
-
-	// unique addresses with their relative frequencies
-	return addressTransactionCount(transactions, accountAddresses);
-}
-
-
-/**
- * For each unique address, sum the number of transactions that they are involved in
- * This determines the size of their node on the screen
- *
- * @param transactions
- * @param addresses
- *
- * TODO: DEPRECATED - REMOVE THIS
- */
-export function addressTransactionCount(transactions, addresses) {
-	let addressFrequencies = [];
-
-	addresses.forEach(function (address) {
-		let addressCount = 0;
-
-		// updated version of check
-		transactions.forEach(function (transaction) {
-			if (transaction.to === address || transaction.from === address) {
-				addressCount++;
-			}
-		});
-
-		const newNode = {
-			id: address,
-			size: getScaledNodeSize(addressCount)
-		};
-
-		if (parseInt(newNode.size) >= 110) {
-			newNode.color = getNodeColour(parseInt(newNode.size));
-		} else {
-			newNode.color = "#6c757d";
-		}
-
-		addressFrequencies.push(newNode);
-	});
-
-	return addressFrequencies;
 }
 
 
@@ -414,84 +248,25 @@ function getNodeColour(size) {
 	}
 }
 
-/**
- * Equality between transactions can be determined by their hashes.
- *
- * @param transaction1
- * @param transaction2
- * @returns {boolean}
- */
-function transactionsEqual(transaction1, transaction2) {
-	return transaction1.hash === transaction2.hash
-}
-
 
 /**
- * Check if `transaction` is contained in a list of `transactions`
- *
- * @param transactions
- * @param transaction
- * @returns {*|boolean}
- */
-function containsTransaction(transactions, transaction) {
-	return transactions.some(txn => transactionsEqual(txn, transaction))
-}
-
-
-/**
- * Given a list of transactions (`transactionsToAdd`) (e.g. could've just been fetched from Etherscan API)
- * add them into the list of existing transactions if and only if they've not already been added.
+ * Given a list of newTransactions (`newTransactions`) (e.g. could've just been fetched from Etherscan API)
+ * add them into the map/object of existing newTransactions if and only if they've not already been added.
  *
  * This can be important since we don't want to be processing & visualising duplicate nodes and edges.
  *
- * NOTE: this will mutate the list of existing transactions passed as a param!
+ * NOTE: this will mutate the map/object of existing newTransactions passed as a param!
  *
- * @param existingTransactions
- * @param transactionsToAdd
- * @returns {*} mutated list of existing transactions where any new one added
+ * @param {Object} existingTransactions
+ * @param {[Object]} newTransactions
+ * @returns {*} object mapping: transaction hash => transaction
  */
-export function addNewTransactions(existingTransactions, transactionsToAdd) {
-	for (const txn of transactionsToAdd) {
-		if (!containsTransaction(existingTransactions, txn)) {
-			existingTransactions.push(txn)
-		}
-	}
-	return existingTransactions
-}
-
-
-export function cacheNewTransactions(existingTxns, transactions) {
-    for (const txn of transactions) {
-        if (!existingTxns[txn.hash]) {
-            existingTxns[txn.hash] = txn
+export function updateTransactions(existingTransactions, newTransactions) {
+    for (const txn of newTransactions) {
+        if (!existingTransactions[txn.hash]) {
+            existingTransactions[txn.hash] = txn
         }
     }
-}
-
-
-/**
- * Return all transactions associated with an account.
- * The account could be either sending of receiving ETH.
- *
- * TODO: DEPRECATED - REMOVE THIS
- *
- * @param accountAddress - the (hash) address of the account of interest
- * @param transactions - all known transactions
- * @returns {{fromAddress: Array, toAddress: Array}}
- */
-export function transactionsForAccount(accountAddress, transactions) {
-	const transactionsFromAccount = []
-	const transactionsToAccount = []
-
-	for (const transaction of transactions) {
-		if (transaction.from === accountAddress) {
-			transactionsFromAccount.push(transaction)
-		} else if (transaction.to === accountAddress) {
-			transactionsToAccount.push(transaction)
-		}
-	}
-
-	return { fromAddress: transactionsFromAccount, toAddress: transactionsToAccount }
 }
 
 

@@ -1,18 +1,8 @@
 import React, {Component} from 'react';
 
 
-const noneSelectedInfo = {
-    nodeA: "No Node A",
-    nodeB: "No Node B",
-    aToB: 0,
-    bToA: 0,
-    numSent: 0
-}
-
 export default class LinkInfo extends Component {
-    state = {
-        // selectedLink: noneSelectedInfo,
-    }
+    state = {}
 
     componentDidMount() {
         this.props.links.sub(selectedLink => {
@@ -27,7 +17,7 @@ export default class LinkInfo extends Component {
     }
 
     renderSelectedLink() {
-        const { acc1, acc2, acc1Value, acc2Value, acc1Sent, acc2Sent } = this.state.selectedLink
+        const { acc1, acc2, acc1Sent, acc2Sent } = this.state.selectedLink
         return (
             <div className="selected-link">
                 <h4>{"Link Selected"}</h4>
@@ -42,8 +32,6 @@ export default class LinkInfo extends Component {
                     <div>{acc2}</div>
                 </div>
 
-                {/* {LinkInfo.sentOrRecvMessage("Account 1", acc1Value)}
-                {LinkInfo.sentOrRecvMessage("Account 2", acc2Value)} */}
                 {LinkInfo.sentMessage("Account 1", acc1Sent)}
                 {LinkInfo.sentMessage("Account 2", acc2Sent)}
 
@@ -65,32 +53,6 @@ export default class LinkInfo extends Component {
         return (
             <div className="selected-link">
                 <div>No link selected yet</div>
-            </div>
-        )
-    }
-
-    static sentOrRecvMessage(name, value) {
-        return (
-            <div className="row">
-                {
-                    value < 0
-                        ? <div>{name} net sent</div>
-                        : <div>{name} net received</div>
-                }
-                <div>{value}</div>
-            </div>
-        )
-    }
-
-    static sentOrRecvMessage(name, value) {
-        return (
-            <div className="row">
-                {
-                    value < 0
-                        ? <div>{name} net sent</div>
-                        : <div>{name} net received</div>
-                }
-                <div>{value}</div>
             </div>
         )
     }

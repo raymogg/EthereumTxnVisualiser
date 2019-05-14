@@ -8,11 +8,9 @@ import {createMuiTheme} from '@material-ui/core/styles';
 import {fetchERC20Transactions, fetchTransactions} from "./services/api";
 import {
     accountTransactionsToNodes,
-    addNewTransactions,
-    cacheNewTransactions,
-    containsEdge, containsLink,
-    toggleLabel, transactionsToLinks,
-    uniqueAccountLinks,
+    updateTransactions,
+    containsLink,
+    toggleLabel, updateAccountLinks,
     updateAccountTransactions,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
@@ -70,7 +68,7 @@ class App extends Component {
 
         /* Whether the graph has gone through the initial load yet */
         dataSet: false,
-        /* object with 'nodes' and 'transactionsToLinks' properties */
+        /* object with 'nodes' and 'updateAccountLinks' properties */
         graph: emptyGraph,
 
         /* empty node placeholder for the node details on hover */
@@ -276,10 +274,10 @@ class App extends Component {
             return
         }
 
-        cacheNewTransactions(this.state.transactions, transactions)
+        updateTransactions(this.state.transactions, transactions)
         updateAccountTransactions(this.state.accountTxns, transactions)
         const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
-        transactionsToLinks(this.state.accountLinks, transactions, this.state.scaleByTransactionValue)
+        updateAccountLinks(this.state.accountLinks, transactions, this.state.scaleByTransactionValue)
 
         const graphData = {
             nodes: accountNodes,
