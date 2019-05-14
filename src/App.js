@@ -9,9 +9,9 @@ import {fetchERC20Transactions, fetchTransactions} from "./services/api";
 import {
     accountTransactionsToNodes,
     addNewTransactions,
-    addNewTxns,
+    cacheNewTransactions,
     containsEdge,
-    toggleLabel,
+    toggleLabel, transactionsToLinks,
     uniqueAccountLinks,
     updateAccountTransactions,
 } from "./transactionHelpers";
@@ -70,15 +70,11 @@ const noLinkSelected = {
 
 class App extends Component {
     state = {
-        /* cache of all the transactions that we've fetched */
-        transactions: [],
-
-        txns: {},
-
+        /* object with all fetched transactions where key is transactions hash for O(1) lookup */
+        transactions: {},
         /* cache of 'account addresses' to { from => Set {transaction hashes}, to => Set{transaction hashes} } */
-        accountTxns: [],
-        /* not being used yet - this will be a cache of the edges so they don't have to be
-        * reconstructed every time. */
+        accountTxns: {},
+        /* cache of links between accounts (determined by transactions between accounts) */
         accountLinks: {},
 
         /* Whether the graph has gone through the initial load yet */
@@ -119,13 +115,13 @@ class App extends Component {
         let grossFrom = 0
         for (const hash of txns.from) {
             // console.log('from txn hash:', hash)
-            grossFrom += this.state.txns[hash].value / Math.pow(10, 18)
+            grossFrom += this.state.transactions[hash].value / Math.pow(10, 18)
         }
 
         let grossTo = 0
         for (const hash of txns.to) {
             // console.log('to txn hash:  ', hash)
-            grossTo += this.state.txns[hash].value / Math.pow(10, 18)
+            grossTo += this.state.transactions[hash].value / Math.pow(10, 18)
         }
 
         const node = {
@@ -150,7 +146,9 @@ class App extends Component {
 
     resetData = (onComplete) => {
         this.setState({
-            transactions: [],
+            transactions: {},
+            accountTxns: {},
+            accountLinks: {},
             dataSet: false,
             graph: emptyGraph,
             selectedNode: noNodeSelected,
@@ -300,25 +298,14 @@ class App extends Component {
             return
         }
 
-        // NOTE(Loughlin): I don't think this will trigger component update.
-        // DEPRECATED - this state will be removed eventually.
-        addNewTransactions(this.state.transactions, transactions)
-
-        addNewTxns(this.state.txns, transactions)
+        cacheNewTransactions(this.state.transactions, transactions)
         updateAccountTransactions(this.state.accountTxns, transactions)
-
         const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
-        const accountLinks = uniqueAccountLinks(this.state.transactions, this.state.scaleByTransactionValue)
-
-        // TODO(loughlin): transition to using this new way of caching links. More reliable & more perf (I think).
-        //  const links = transactionsToLinks(this.state.accountLinks, transactions)
-        // console.log('account nodes:', accountNodes)
-        // console.log('account links:', accountLinks)
-        // console.log('links        :', Object.values(links))
+        transactionsToLinks(this.state.accountLinks, transactions, false)
 
         const graphData = {
             nodes: accountNodes,
-            links: accountLinks,
+            links: Object.values(this.state.accountLinks),
             directed: this.state.directed,
         }
 

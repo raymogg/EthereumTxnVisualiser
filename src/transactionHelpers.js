@@ -430,7 +430,7 @@ export function addNewTransactions(existingTransactions, transactionsToAdd) {
 }
 
 
-export function addNewTxns(existingTxns, transactions) {
+export function cacheNewTransactions(existingTxns, transactions) {
     for (const txn of transactions) {
         if (!existingTxns[txn.hash]) {
             existingTxns[txn.hash] = txn
