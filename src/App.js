@@ -279,7 +279,7 @@ class App extends Component {
         cacheNewTransactions(this.state.transactions, transactions)
         updateAccountTransactions(this.state.accountTxns, transactions)
         const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
-        transactionsToLinks(this.state.accountLinks, transactions, false)
+        transactionsToLinks(this.state.accountLinks, transactions, this.state.scaleByTransactionValue)
 
         const graphData = {
             nodes: accountNodes,

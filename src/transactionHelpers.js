@@ -248,15 +248,22 @@ export function transactionsToLinks(edges, txns, scaleByValue) {
         // COLOUR
         // If scaling is being done by occurrences, not value.
         if (scaleByValue === false) {
-            edge.color = numberToColorCount(edge.occurrences)
+			edge.color = numberToColorCount(edge.occurrences)
+			edge.strokeWidth = Math.min(10, edge.occurrences)
         } else {
-            edge.color = numberToColorValue(edge.totalValue)
-        }
+			edge.color = numberToColorValue(edge.totalValue)
+			edge.strokeWidth = Math.min(10, edge.totalValue)
+		}
+		
+		//Ensure edge width is atleast one so you can see it
+		if (edge.strokeWidth < 1) {
+			edge.strokeWidth = 1
+		}
 
         // STROKE WIDTH
         // the max value of the stroke width
         // will be 10.
-        edge.strokeWidth = Math.min(10, edge.occurrences)
+        //edge.strokeWidth = Math.min(10, edge.occurrences)
 
         // SET SOURCE & TARGET
         // * the acc with net loss will be source
