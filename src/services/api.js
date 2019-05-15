@@ -50,6 +50,13 @@ export function fetchERC20Transactions(address, tokenAddress) {
 }
 
 
+export function fetchERC20TransactionsIter(address, tokenAddress) {
+    return fetchERC20Transactions(address, tokenAddress).then(txns => {
+        return IterStream(txns)
+    })
+}
+
+
 export function fetchTxnIterable(address, network) {
     return fetchTransactions(address, network).then(transactions => {
         return IterStream(transactions)

@@ -3,10 +3,9 @@ import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import AccountInfo from './components/AccountInfo'
+import TransactionBacklog from './components/TransactionBacklog'
 import LinkInfo from './components/LinkInfo'
 import {createMuiTheme} from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
 import {
     fetchERC20Transactions,
     fetchTransactions,
@@ -16,14 +15,12 @@ import {
     accountTransactionsToNodes,
     updateTransactions,
     containsLink,
-    toggleLabel, updateAccountLinks,
+    updateAccountLinks,
     updateAccountTransactions,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
-import {Button} from "@material-ui/core";
-import Dialog from "@material-ui/core/es/Dialog/Dialog";
-import DialogTitle from "@material-ui/core/es/DialogTitle/DialogTitle";
-import Snackbar from "@material-ui/core/es/Snackbar/Snackbar";
+import {SnackbarProvider} from 'notistack';
+
 
 const mainContainerStyle = {
     height: "100vh",
@@ -109,6 +106,10 @@ class App extends Component {
         transactionBacklogs: {},
 
         backlogSize: 0,
+
+        backlogDestroyStream: SimpleStream(),
+        backlogCreatedStream: SimpleStream(),
+        // loadBacklogNotificationStream: SimpleStream(),
     };
 
     onMouseOverNode = (accountAddress) => {
@@ -230,11 +231,6 @@ class App extends Component {
 
     onClickNode = async (accountAddress) => {
         this.setState({ isLoading: true });
-        // this.fetchTransactionsThenUpdateGraph(accountAddress)
-        //     .catch(err => console.log('App.onClickNode ERROR:', err))
-
-        console.log(`onClickNode: ${accountAddress}`)
-
         let transactionIter = await fetchTxnIterable(accountAddress, this.state.network)
         if (transactionIter.size() > 10) {
             this.state.transactionBacklogs[accountAddress] = transactionIter
@@ -242,8 +238,8 @@ class App extends Component {
             const transactions = transactionIter.take(10)
             this.updateWithTransactions(transactions)
 
+            this.state.backlogCreatedStream.pub(accountAddress)
             this.setState({backlogSize: transactionIter.size()});
-
         } else {
             const transactions = transactionIter.drain()
             this.updateWithTransactions(transactions)
@@ -253,7 +249,6 @@ class App extends Component {
     onMouseOverLink = async (source, target) => {
         const link = containsLink(this.state.accountLinks, {source, target})
         //toggleLabel(link, `#trans: ${link.occurrences}`)
-
         this.state.linkClickedStream.pub(link)
     }
 
@@ -274,23 +269,7 @@ class App extends Component {
             return
         }
 
-        updateTransactions(this.state.transactions, transactions)
-        updateAccountTransactions(this.state.accountTxns, transactions)
-        const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
-        updateAccountLinks(this.state.accountLinks, transactions, this.state.scaleByTransactionValue)
-
-        const graphData = {
-            nodes: accountNodes,
-            links: Object.values(this.state.accountLinks),
-            directed: this.state.directed,
-        }
-
-        // This triggers update/re-render so changes reflected in graph sub-component
-        this.setState({
-            graph: graphData,
-            dataSet: true,
-            isLoading: false
-        })
+        this.updateWithTransactions(transactions)
     }
 
     /**
@@ -316,31 +295,18 @@ class App extends Component {
         })
     }
 
-    loadTransactionBacklog = () => {
-        let txns = Object.values(this.state.transactionBacklogs).reduce((txns, iter) => {
-            return txns.concat(iter.take(10))
-        }, []);
-        this.setState({backlogSize: (this.state.backlogSize - txns.length)});
-        this.updateWithTransactions(txns)
-    }
-
-    isTransactionsBacklog = () => {
-        for (let iter of Object.values(this.state.transactionBacklogs)) {
-            if (!iter.isDone()) {
-                return true
-            }
+    loadTransactionBacklog = (address) => {
+        let txnsIter = this.state.transactionBacklogs[address]
+        if (!txnsIter) {
+            console.warn('No backlog found for account:', address)
+            return
         }
-        return false
+        let transactions = txnsIter.take(10)
+        if (txnsIter.isDone()) {
+            this.state.backlogDestroyStream.pub(address)
+        }
+        this.updateWithTransactions(transactions)
     }
-
-    openDialog = () => {
-        return (this.isTransactionsBacklog() && this.state.backlogSize !== 0);
-    }
-
-    closeDialog = () => {
-        this.setState({backlogSize: 0});
-    }
-
 
     render() {
         if (this.state.dataSet) {
@@ -351,9 +317,6 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
-                    {/*<div>*/}
-                    {/*    <button onClick={this.loadStreams}>LOAD STREAMS</button>*/}
-                    {/*</div>*/}
 
                     <div className="selected-container">
                         <AccountInfo nodes={this.state.mouseOverNodeStream}/>
@@ -378,20 +341,14 @@ class App extends Component {
                         error={this.state.error} />
                 </div>
 
-                <Snackbar
-                    open={this.openDialog()}
-                    message={
-                        <div>There were {this.state.backlogSize} transactions found</div>
-                    }
-                    anchorOrigin={{vertical: "top", horizontal: "left"}}
-                    action={
-                        <div>
-                            <Button size="small" color="primary" onClick={this.loadTransactionBacklog}>Continue</Button>
-                            <Button size="small" color="primary" onClick={this.closeDialog}>Cancel</Button>
-                        </div>
-                    }
-
-                />
+                <SnackbarProvider
+                    anchorOrigin={{vertical: 'top', horizontal: 'left'}}>
+                    <TransactionBacklog
+                        loadBacklogHandler={this.loadTransactionBacklog}
+                        backlogDestroyStream={this.state.backlogDestroyStream}
+                        backlogCreatedStream={this.state.backlogCreatedStream}
+                    />
+                </SnackbarProvider>
             </div>
         );
     }
