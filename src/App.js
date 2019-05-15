@@ -23,6 +23,7 @@ import SimpleStream from "./stream";
 import {Button} from "@material-ui/core";
 import Dialog from "@material-ui/core/es/Dialog/Dialog";
 import DialogTitle from "@material-ui/core/es/DialogTitle/DialogTitle";
+import Snackbar from "@material-ui/core/es/Snackbar/Snackbar";
 
 const mainContainerStyle = {
     height: "100vh",
@@ -405,16 +406,21 @@ class App extends Component {
                         isLoading={this.state.isLoading}
                         error={this.state.error} />
                 </div>
-                
-                <Dialog style={{top: "20px", left: "20px"}} open={this.openDialog()}>
-                    <DialogTitle>{this.state.backlogSize} Transactions Found</DialogTitle>
-                    <div>
-                        <List>
-                            <ListItem button onClick={this.loadTransactionBacklog}>Load More</ListItem>
-                            <ListItem button onClick={this.closeDialog}>Cancel</ListItem>
-                        </List>
-                    </div>
-                </Dialog>
+
+                <Snackbar
+                    open={this.openDialog()}
+                    message={
+                        <div>There were {this.state.backlogSize} transactions found</div>
+                    }
+                    anchorOrigin={{vertical: "top", horizontal: "left"}}
+                    action={
+                        <div>
+                            <Button size="small" color="primary" onClick={this.loadTransactionBacklog}>Continue</Button>
+                            <Button size="small" color="primary" onClick={this.closeDialog}>Cancel</Button>
+                        </div>
+                    }
+
+                />
             </div>
         );
     }
