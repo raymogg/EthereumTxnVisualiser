@@ -199,3 +199,9 @@
 .key-tooltip > .row > div:nth-of-type(2) {
   border-left: 1px solid #fff;
 }
+
+.price-hover:hover {
+  color: #241E56;
+  background-color: #fff;
+  cursor: pointer;
+}

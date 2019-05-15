@@ -18,6 +18,34 @@ export default class AccountInfo extends Component {
         })
     }
 
+    /**
+     * Function to do the API call for AUD conversion ralue for ETH.
+     *
+     * @returns {Promise<void>}
+     */
+    onValueClick = async () => {
+        var value, currency;
+        // if we have native ETH Value in the selectedNode state object (which we always will, but just in case)
+        if (this.state.selectedNode.currency === "E" || typeof this.state.currency === "undefined") {
+            const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                return parseFloat(response.AUD);
+            });
+
+            value = parseFloat(rate * this.state.selectedNode.netValue);
+            currency = "$";
+        }
+
+        // create a new object to send back as the updated state for re-render
+        const updatedNode = this.state.selectedNode;
+        updatedNode.currency = currency;
+        updatedNode.netValue = value;
+
+        // set the state
+        this.setState({ noNodeSelected: updatedNode });
+    };
+
     render() {
         return (
             <div className="selected-node">
