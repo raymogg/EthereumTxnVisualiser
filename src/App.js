@@ -5,6 +5,8 @@ import AddressEntry from './components/AddressEntry';
 import AccountInfo from './components/AccountInfo'
 import LinkInfo from './components/LinkInfo'
 import {createMuiTheme} from '@material-ui/core/styles';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
 import {
     fetchERC20Transactions,
     fetchTransactions,
@@ -18,7 +20,9 @@ import {
     updateAccountTransactions,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
-import {Button, Snackbar} from "@material-ui/core";
+import {Button} from "@material-ui/core";
+import Dialog from "@material-ui/core/es/Dialog/Dialog";
+import DialogTitle from "@material-ui/core/es/DialogTitle/DialogTitle";
 
 const mainContainerStyle = {
     height: "100vh",
@@ -102,7 +106,9 @@ class App extends Component {
         linkClickedStream: SimpleStream(),
 
         transactionBacklogs: {},
-    }
+
+        backlogSize: 0,
+    };
 
     onMouseOverNode = (accountAddress) => {
         const txns = this.state.accountTxns[accountAddress]
@@ -134,6 +140,7 @@ class App extends Component {
     searchHandler = async (address) => {
         //Reset the state first
         this.resetData();
+        this.setState({initialLoad: false});
         this.setState({ isLoading: true, initialAddress: address });
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
@@ -230,8 +237,12 @@ class App extends Component {
         let transactionIter = await fetchTxnIterable(accountAddress, this.state.network)
         if (transactionIter.size() > 10) {
             this.state.transactionBacklogs[accountAddress] = transactionIter
+
             const transactions = transactionIter.take(10)
             this.updateWithTransactions(transactions)
+
+            this.setState({backlogSize: transactionIter.size()});
+
         } else {
             const transactions = transactionIter.drain()
             this.updateWithTransactions(transactions)
@@ -336,7 +347,8 @@ class App extends Component {
     loadTransactionBacklog = () => {
         let txns = Object.values(this.state.transactionBacklogs).reduce((txns, iter) => {
             return txns.concat(iter.take(10))
-        }, [])
+        }, []);
+        this.setState({backlogSize: (this.state.backlogSize - txns.length)});
         this.updateWithTransactions(txns)
     }
 
@@ -348,6 +360,15 @@ class App extends Component {
         }
         return false
     }
+
+    openDialog = () => {
+        return (this.isTransactionsBacklog() && this.state.backlogSize !== 0);
+    }
+
+    closeDialog = () => {
+        this.setState({backlogSize: 0});
+    }
+
 
     render() {
         if (this.state.dataSet) {
@@ -385,24 +406,15 @@ class App extends Component {
                         error={this.state.error} />
                 </div>
                 
-                <Snackbar
-                    open={this.isTransactionsBacklog()}
-                    message={
-                        <div>
-                            <div>There were a lot of transactions received</div>
-                            <div>Would you like to continue loading them?</div>
-                        </div>
-                    }
-                    anchorOrigin={{vertical: 'top', horizontal: 'left'}}
-                    action={
-                        <Button
-                            size="small"
-                            color="primary"
-                            onClick={this.loadTransactionBacklog}>
-                            Continue
-                        </Button>
-                    }
-                />
+                <Dialog style={{top: "20px", left: "20px"}} open={this.openDialog()}>
+                    <DialogTitle>{this.state.backlogSize} Transactions Found</DialogTitle>
+                    <div>
+                        <List>
+                            <ListItem button onClick={this.loadTransactionBacklog}>Load More</ListItem>
+                            <ListItem button onClick={this.closeDialog}>Cancel</ListItem>
+                        </List>
+                    </div>
+                </Dialog>
             </div>
         );
     }

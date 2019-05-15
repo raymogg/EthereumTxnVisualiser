@@ -6,7 +6,9 @@ const API_KEY = `FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7`;
 function removeTransactionsWithInvalidAddresses(transactions) {
 	const validTransactions = []
 	for (const transaction of transactions) {
-		if (transaction.from.length < 1 || transaction.to.length < 1) {
+		// added check for broken records with no address defined
+		if (typeof transaction.from === "undefined" || typeof transaction.to === "undefined"
+			|| transaction.from.length < 1 || transaction.to.length < 1) {
 			console.warn("Removed transaction with invalid 'from' or 'to' address", transaction);
 		} else {
 			validTransactions.push(transaction)
