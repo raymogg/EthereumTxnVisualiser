@@ -20,7 +20,6 @@ const myConfig = {
     nodeHighlightBehavior: true,
     linkHighlightBehavior: true,
     automaticRearrangeAfterDropNode: true,
-    //staticGraph: true,
     directed: false,
     d3: {
         gravity: -200,

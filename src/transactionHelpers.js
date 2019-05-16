@@ -44,24 +44,6 @@ function numberToColorValue(number) {
 	}
 }
 
-export function highlightLink(link, nodeA, nodeB) {
-	//TODO: reset the other node colors
-	link.color = 'lightblue'
-	nodeA.color = 'lightblue'
-	nodeB.color = 'lightblue'
-	link.directed = true
-}
-
-
-export function toggleLabel(link, text) {
-	if (link.label === null) {
-		link.label = text;
-	} else {
-		link.label = null;
-	}
-}
-
-
 /**
  * Returns a specific link between a source and a target address
  *
@@ -139,12 +121,13 @@ export function updateAccountLinks(edges, newTransactions, scaleByValue) {
                 source: t.from,
                 target: t.to,
                 acc1Value: 0,
-				acc2Value: 0,
-				acc1Sent: 0,
-				acc2Sent: 0,
-				acc1Recv: 0,
-				acc2Recv: 0,
+								acc2Value: 0,
+								acc1Sent: 0,
+								acc2Sent: 0,
+								acc1Recv: 0,
+								acc2Recv: 0,
                 totalValue: 0,
+								currency: "E",
             }
             edge = edges[key]
         }
@@ -288,4 +271,3 @@ export function updateAccountTransactions(accountTransactionsCache, transactions
         accountTransactionsCache[to].to.add(txn.hash)
     }
 }
-

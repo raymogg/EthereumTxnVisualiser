@@ -60,7 +60,7 @@ const noNodeSelected = {
     transactionsToCount: 0,
     transactionsFromCount: 0,
     netValue: 0,
-    currency: "E"
+    currency: "E",
 };
 
 
@@ -80,7 +80,8 @@ class App extends Component {
 
         /* empty node placeholder for the node details on hover */
         selectedNode: noNodeSelected,
-
+        //place holder for selectedLink
+        selectedLink: "",
         /* a bool that represents whether a new graph is being loaded */
         isLoading: false,
         //Bool representating whether edges should be scaled by transaction value (when true)
@@ -96,7 +97,9 @@ class App extends Component {
         tokenAddress: "0x0",
         //Holder for the direction of the graph
         directed: false,
-
+        //Holder for the currency displayed by the graphs data
+        currency: "E",
+        currencyStream: SimpleStream(),
         /* Whenever the user 'hovers' over a node, the node / account info should be
         * published to this stream. */
         mouseOverNodeStream: SimpleStream(),
@@ -137,6 +140,7 @@ class App extends Component {
         }
 
         this.state.mouseOverNodeStream.pub(node)
+        this.state.currencyStream.pub(this.state.currency)
     }
 
     searchHandler = async (address) => {
@@ -214,6 +218,15 @@ class App extends Component {
             })
     }
 
+    onCurrencyChange = (newCurrency) => {
+      console.log(`Updating graph currency to ${newCurrency}`)
+      this.state.currency = newCurrency
+      //resend to the streams
+      this.state.linkClickedStream.pub(false)
+      this.state.currencyStream.pub(this.state.currency)
+      this.state.mouseOverNodeStream.pub(noNodeSelected)
+    }
+
     onTokenChange = (newToken) => {
         this.setState({ tokenAddress: newToken },
             () => {
@@ -248,8 +261,9 @@ class App extends Component {
 
     onMouseOverLink = async (source, target) => {
         const link = containsLink(this.state.accountLinks, {source, target})
-        //toggleLabel(link, `#trans: ${link.occurrences}`)
+        this.state.selectedLink = link
         this.state.linkClickedStream.pub(link)
+        this.state.currencyStream.pub(this.state.currency)
     }
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
@@ -285,6 +299,7 @@ class App extends Component {
             nodes: accountNodes,
             links: Object.values(this.state.accountLinks),
             directed: this.state.directed,
+            currency: this.state.currency,
         }
 
         // This triggers update/re-render so changes reflected in graph sub-component
@@ -319,15 +334,18 @@ class App extends Component {
                 <div className="mainContainer" style={mainContainerStyle}>
 
                     <div className="selected-container">
-                        <AccountInfo nodes={this.state.mouseOverNodeStream}/>
-                        <LinkInfo links={this.state.linkClickedStream}/>
+                        <AccountInfo nodes={this.state.mouseOverNodeStream}
+                                     currency={this.state.currencyStream}/>
+                        <LinkInfo links={this.state.linkClickedStream}
+                                  currency={this.state.currencyStream}/>
                     </div>
 
                     <AddressEntry searchHandler={this.searchHandler}
                                   onEdgeScaleChange={this.onUpdateEdgeScaling}
                                   onNetworkChange={this.onNetworkChange}
                                   onDirectionChange={this.onDirectionChange}
-                                  onTokenChange={this.onTokenChange}/>
+                                  onTokenChange={this.onTokenChange}
+                                  onCurrencyChange={this.onCurrencyChange}/>
 
                     <CustomGraph
                         graph={this.state.graph}

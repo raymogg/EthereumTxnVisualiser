@@ -37,6 +37,7 @@ class AddressEntry extends Component {
         network: "mainnet",
         selectedToken: "0x0",
         addressError: false,
+        currency: "E",
     };
 
     onOpen = () => {
@@ -85,6 +86,12 @@ class AddressEntry extends Component {
         console.log("Updating setting for network selector")
         this.setState({ network: event.target.value })
         this.props.onNetworkChange(event.target.value)
+    }
+
+    handleCurrencyChange = event => {
+      console.log("Updating currency selection")
+      this.setState({currency: event.target.value})
+      this.props.onCurrencyChange(event.target.value)
     }
 
     onSearch = () => {
@@ -240,6 +247,20 @@ class AddressEntry extends Component {
                 >
                   <MenuItem value={"mainnet"}>Ethereum Main Network</MenuItem>
                   <MenuItem value={"testnet"}>Ethereum Ropsten Test Network</MenuItem>
+                </Select>
+              </DialogContent>
+              <DialogContent>
+                <InputLabel htmlFor="currency">Currency </InputLabel>
+                <Select
+                  value={this.state.currency}
+                  onChange={this.handleCurrencyChange}
+                  inputProps={{
+                    name: 'Currency...',
+                    id: 'currency',
+                  }}
+                >
+                  <MenuItem value={"E"}>Eth</MenuItem>
+                  <MenuItem value={"$"}>Aud</MenuItem>
                 </Select>
               </DialogContent>
               <DialogContent>
