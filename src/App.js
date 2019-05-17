@@ -248,6 +248,10 @@ class App extends Component {
     onClickNode = async (accountAddress) => {
         this.setState({ isLoading: true });
         let transactionIter = await fetchTxnIterable(accountAddress, this.state.network)
+        //This happens for genesis or mining transactions
+        if (transactionIter.size() == 0) {
+            return
+        }
         if (transactionIter.size() > 10) {
             if (!this.state.transactionBacklogs[accountAddress]) {
                 this.state.transactionBacklogs[accountAddress] = transactionIter
