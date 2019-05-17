@@ -7,32 +7,24 @@ export default class NodeInfo extends Component {
     componentDidMount() {
         this.props.nodes.sub(selectedNode => {
             this.setState({ selectedNode })
-            this.convert_currency(selectedNode)
+            this.convertCurrency(selectedNode)
+        })
+        this.props.currencyConversionRate.sub(currencyConversionRate => {
+            this.setState({ currencyConversionRate: currencyConversionRate })
         })
         this.props.currency.sub(currency => {
             this.setState({currency: currency})
         })
     }
-    /**
-        Function which also does the api call for aud conversion value to Eth
-        Will only convert if the settings are set to aud. Otherwise default is
-        eth.
 
-        @returns {promise<void>}
-    */
-    convert_currency = async(node) => {
-      var newNetValue = node.netValue
-        //Only convert if the graph currency is $ default for nodes and links is eth
+    convertCurrency(selectedNode) {
+        var newNetValue = selectedNode.netValue
+        var rate = this.state.currencyConversionRate
         if (this.state.currency === "$") {
-            const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
-                return response.json();
-            }).then(function (response) {
-                return parseFloat(response.AUD);
-            });
-            var newNetValue = parseFloat(rate * newNetValue);
+            newNetValue = parseFloat(rate * newNetValue);
         }
         this.setState({netValue: newNetValue})
-    };
+    }
 
     render() {
       return this.state.selectedNode
