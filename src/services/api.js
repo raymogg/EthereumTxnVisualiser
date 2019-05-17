@@ -23,8 +23,8 @@ export function fetchTransactions(address, network) {
     // else console.log('Fetching mainnet transactions');
 
     const url = network === 'testnet'
-        ? 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY
-        : 'http://api.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY
+        ? 'https://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY
+        : 'https://api.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=0&endblock=99999999&sort=asc&apikey=' + API_KEY
 
     return fetch(url)
         .then(response => response.json())
@@ -36,7 +36,7 @@ export function fetchTransactions(address, network) {
 export function fetchERC20Transactions(address, tokenAddress) {
 	console.log("Getting mainnet ERC20 transactions. tokenAddress =", tokenAddress)
 
-    const url = 'http://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' +
+    const url = 'https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=' +
         tokenAddress +
         '&address=' +
         address +
