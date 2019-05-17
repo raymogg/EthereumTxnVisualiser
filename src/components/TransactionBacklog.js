@@ -13,7 +13,9 @@ class TransactionBacklog extends Component {
 
     removeNotification = (address) => {
         const key = this.state.keys[address]
-        this.props.closeSnackbar(key)
+        if (key) {
+            this.props.closeSnackbar(key)
+        }
     }
 
     addNotification = (address) => {
@@ -30,7 +32,7 @@ class TransactionBacklog extends Component {
                 <Button
                     key="close"
                     color="secondary"
-                    onClick={() => this.removeNotification(address)}>
+                    onClick={() => this.props.backlogDestroyStream.pub(address)}>
                     Close
                 </Button>
             ]
@@ -48,7 +50,6 @@ class TransactionBacklog extends Component {
             this.addNotification(address)
         })
         this.props.backlogDestroyStream.sub(address => {
-            // console.log('Backlog COMP: should destroy:', address)
             this.removeNotification(address)
         })
     }

@@ -107,6 +107,13 @@ class App extends Component {
         // loadBacklogNotificationStream: SimpleStream(),
     };
 
+    componentDidMount() {
+        this.state.backlogDestroyStream.sub(accountAddress => {
+            console.log('removing backlog for:', accountAddress)
+            this.state.transactionBacklogs[accountAddress] = undefined;
+        })
+    }
+
     onMouseOverNode = (accountAddress) => {
         const txns = this.state.accountTxns[accountAddress]
         // console.log(`Mouse over node: address = ${accountAddress}, transactions =`, txns)
