@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
 import NodeInfo from './components/NodeInfo'
 import TransactionBacklog from './components/TransactionBacklog'
 import LinkInfo from './components/LinkInfo'
-import {createMuiTheme} from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import {
     fetchERC20Transactions,
     fetchTransactions,
@@ -19,7 +19,7 @@ import {
     updateAccountTransactions,
 } from "./transactionHelpers";
 import SimpleStream from "./stream";
-import {SnackbarProvider} from 'notistack';
+import { SnackbarProvider } from 'notistack';
 
 
 const mainContainerStyle = {
@@ -137,7 +137,7 @@ class App extends Component {
     searchHandler = async (address) => {
         //Reset the state first
         this.resetData();
-        this.setState({initialLoad: false});
+        this.setState({ initialLoad: false });
         this.setState({ isLoading: true, initialAddress: address });
         this.fetchTransactionsThenUpdateGraph(address)
             .catch(err => console.log('App.searchHandler ERROR:', err))
@@ -157,12 +157,12 @@ class App extends Component {
     }
 
     onDirectionChange = (directed) => {
-      console.log(`Updating graph direction feature: old directed = ${this.state.graph.directed}, new directed = ${directed}`)
-      this.state.directed = directed
-      this.setState(currentState => {
-				const graph = Object.assign(currentState.graph, { directed })
-				return { graph }
-			})
+        console.log(`Updating graph direction feature: old directed = ${this.state.graph.directed}, new directed = ${directed}`)
+        this.state.directed = directed
+        this.setState(currentState => {
+            const graph = Object.assign(currentState.graph, { directed })
+            return { graph }
+        })
     }
 
     onUpdateEdgeScaling = (newEdgeScaling) => {
@@ -209,12 +209,12 @@ class App extends Component {
     }
 
     onCurrencyChange = (newCurrency) => {
-      console.log(`Updating graph currency to ${newCurrency}`)
-      this.state.currency = newCurrency
-      //resend to the streams
-      this.state.linkClickedStream.pub(false)
-      this.state.mouseOverNodeStream.pub(false)
-      this.state.currencyStream.pub(this.state.currency)
+        console.log(`Updating graph currency to ${newCurrency}`)
+        this.state.currency = newCurrency
+        //resend to the streams
+        this.state.linkClickedStream.pub(false)
+        this.state.mouseOverNodeStream.pub(false)
+        this.state.currencyStream.pub(this.state.currency)
     }
 
     onTokenChange = (newToken) => {
@@ -242,7 +242,7 @@ class App extends Component {
             this.updateWithTransactions(transactions)
 
             this.state.backlogCreatedStream.pub(accountAddress)
-            this.setState({backlogSize: transactionIter.size()});
+            this.setState({ backlogSize: transactionIter.size() });
         } else {
             const transactions = transactionIter.drain()
             this.updateWithTransactions(transactions)
@@ -250,7 +250,7 @@ class App extends Component {
     }
 
     onMouseOverLink = async (source, target) => {
-        const link = containsLink(this.state.accountLinks, {source, target})
+        const link = containsLink(this.state.accountLinks, { source, target })
         this.state.selectedLink = link
         this.state.linkClickedStream.pub(link)
         this.state.currencyStream.pub(this.state.currency)
@@ -269,17 +269,19 @@ class App extends Component {
         // This is just a catch if there is no transactions for this account, show this as a little something something
         if (transactions.length === 0) {
             console.error('No transactions returned for account:', accountAddress)
-            this.setState({error: true, isLoading: false})
+            this.setState({ error: true, isLoading: false })
             return
         }
 
         this.updateWithTransactions(transactions)
     }
 
+
     /**
      * TODO: this should become the main update (state) function since it's used across several methods.
      */
     updateWithTransactions = (transactions) => {
+        transactions = this.filterExistingTransactions(transactions)
         updateTransactions(this.state.transactions, transactions)
         updateAccountTransactions(this.state.accountTxns, transactions)
         const accountNodes = accountTransactionsToNodes(this.state.accountTxns)
@@ -300,6 +302,43 @@ class App extends Component {
         })
     }
 
+    filterExistingTransactions = (transactions) => {
+        console.log("Checking duplicates")
+
+        //CHeck for duplicate transactions
+        for (var txn in transactions) {
+            for (var oldTxn in this.state.transactions) {
+                if (this.state.transactions[oldTxn] == undefined || transactions[txn] == undefined) {
+                    continue;
+                }
+                if (this.state.transactions[oldTxn].hash == transactions[txn].hash) {
+                    console.log("match found")
+                    console.log(this.state.transactions[oldTxn].hash)
+                    console.log(transactions[txn].hash)
+                    transactions[txn] = null
+                }
+            }
+        }
+
+        //Check if transactions is now empty -> if so do no further updates
+        if (Object.entries(transactions).length === 0) {
+            console.log("Transactions empty")
+            return;
+        }
+
+        //Re filter to remove empty elements in the transactions
+        var updatedTransactions = []
+        for (var txn in transactions) {
+            if (transactions[txn] === null) {
+                continue;
+            } else {
+                updatedTransactions.push(transactions[txn])
+            }
+        }
+        transactions = updatedTransactions
+        return transactions;
+    }
+
     loadTransactionBacklog = (address) => {
         let txnsIter = this.state.transactionBacklogs[address]
         if (!txnsIter) {
@@ -316,14 +355,14 @@ class App extends Component {
     /**
     Function which fetches the conversion rate from an online source
     */
-    getConversionRate = async() => {
+    getConversionRate = async () => {
         const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
             return response.json()
         }).then(function (response) {
-              return parseFloat(response.AUD)
+            return parseFloat(response.AUD)
         });
         this.state.currencyConversionStream.pub(rate)
-        this.setState({currencyConversionRate: true})
+        this.setState({ currencyConversionRate: true })
     };
 
     render() {
@@ -341,19 +380,19 @@ class App extends Component {
 
                     <div className="selected-container">
                         <NodeInfo nodes={this.state.mouseOverNodeStream}
-                                  currency={this.state.currencyStream}
-                                  currencyConversionRate={this.state.currencyConversionStream}/>
+                            currency={this.state.currencyStream}
+                            currencyConversionRate={this.state.currencyConversionStream} />
                         <LinkInfo links={this.state.linkClickedStream}
-                                  currency={this.state.currencyStream}
-                                  currencyConversionRate={this.state.currencyConversionStream}/>
+                            currency={this.state.currencyStream}
+                            currencyConversionRate={this.state.currencyConversionStream} />
                     </div>
 
                     <AddressEntry searchHandler={this.searchHandler}
-                                  onEdgeScaleChange={this.onUpdateEdgeScaling}
-                                  onNetworkChange={this.onNetworkChange}
-                                  onDirectionChange={this.onDirectionChange}
-                                  onTokenChange={this.onTokenChange}
-                                  onCurrencyChange={this.onCurrencyChange}/>
+                        onEdgeScaleChange={this.onUpdateEdgeScaling}
+                        onNetworkChange={this.onNetworkChange}
+                        onDirectionChange={this.onDirectionChange}
+                        onTokenChange={this.onTokenChange}
+                        onCurrencyChange={this.onCurrencyChange} />
 
                     <CustomGraph
                         graph={this.state.graph}
@@ -368,7 +407,7 @@ class App extends Component {
                 </div>
 
                 <SnackbarProvider
-                    anchorOrigin={{vertical: 'top', horizontal: 'left'}}>
+                    anchorOrigin={{ vertical: 'top', horizontal: 'left' }}>
                     <TransactionBacklog
                         loadBacklogHandler={this.loadTransactionBacklog}
                         backlogDestroyStream={this.state.backlogDestroyStream}
