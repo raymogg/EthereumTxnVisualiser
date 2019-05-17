@@ -8,6 +8,7 @@ import LinkInfo from './components/LinkInfo'
 import { createMuiTheme } from '@material-ui/core/styles';
 import {
     fetchERC20Transactions,
+    fetchERC20TransactionsIter,
     fetchTransactions,
     fetchTxnIterable,
 } from "./services/api";
@@ -218,6 +219,17 @@ class App extends Component {
     }
 
     onTokenChange = (newToken) => {
+        // Change currency to T for token
+        this.state.currency = "T";
+        this.state.currencyStream.pub(this.state.currency);
+        if (newToken === "0x0") {
+            // Change currency to Ethereum
+            this.state.currency = "E";
+            this.state.currencyStream.pub(this.state.currency);
+        }
+        //resend to the streams
+        this.state.linkClickedStream.pub(false);
+        this.state.mouseOverNodeStream.pub(false);
         this.setState({ tokenAddress: newToken },
             () => {
                 if (this.state.initialAddress !== "") {
@@ -230,19 +242,22 @@ class App extends Component {
     }
 
     onClickGraph = async () => {
+        console.log("Aidan was here.")
     }
 
     onClickNode = async (accountAddress) => {
         this.setState({ isLoading: true });
         let transactionIter = await fetchTxnIterable(accountAddress, this.state.network)
         if (transactionIter.size() > 10) {
-            this.state.transactionBacklogs[accountAddress] = transactionIter
+            if (!this.state.transactionBacklogs[accountAddress]) {
+                this.state.transactionBacklogs[accountAddress] = transactionIter
 
-            const transactions = transactionIter.take(10)
-            this.updateWithTransactions(transactions)
+                const transactions = transactionIter.take(10)
+                this.updateWithTransactions(transactions)
 
-            this.state.backlogCreatedStream.pub(accountAddress)
-            this.setState({ backlogSize: transactionIter.size() });
+                this.state.backlogCreatedStream.pub(accountAddress)
+                this.setState({ backlogSize: transactionIter.size() });
+            }
         } else {
             const transactions = transactionIter.drain()
             this.updateWithTransactions(transactions)
@@ -257,23 +272,29 @@ class App extends Component {
     }
 
     fetchTransactionsThenUpdateGraph = async (accountAddress) => {
-        console.log('Fetching transactions for accountAddress:', accountAddress)
+        // console.log('Fetching transactions for accountAddress:', accountAddress)
+        //
+        // // Check if we are getting transactions for Ether or for an ERC20 Token
+        // const transactions = await (this.state.tokenAddress === '0x0'
+        //     ? fetchTxnIterable(accountAddress, this.state.network)
+        //     : fetchERC20TransactionsIter(accountAddress, this.state.tokenAddress))
+        //
+        // console.log('Transactions for account id:', transactions)
+        //
+        // // Put the initial search into the backlog
+        // this.state.transactionBacklogs[accountAddress] = transactions;
+        //
+        // // This is just a catch if there is no transactions for this account, show this as a little something something
+        // if (transactions.length === 0) {
+        //     console.error('No transactions returned for account:', accountAddress)
+        //     this.setState({ error: true, isLoading: false })
+        //     return
+        // }
+        //
+        // const transactions = transactionIter.drain()
+        // this.updateWithTransactions(transactions)
 
-        // Check if we are getting transactions for Ether or for an ERC20 Token
-        const transactions = await (this.state.tokenAddress === '0x0'
-            ? fetchTransactions(accountAddress, this.state.network)
-            : fetchERC20Transactions(accountAddress, this.state.tokenAddress))
-
-        console.log('Transactions for account id:', transactions)
-
-        // This is just a catch if there is no transactions for this account, show this as a little something something
-        if (transactions.length === 0) {
-            console.error('No transactions returned for account:', accountAddress)
-            this.setState({ error: true, isLoading: false })
-            return
-        }
-
-        this.updateWithTransactions(transactions)
+        this.onClickNode(accountAddress);
     }
 
 
