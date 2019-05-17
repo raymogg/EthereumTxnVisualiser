@@ -3,38 +3,33 @@ import React, {Component} from 'react';
 
 export default class LinkInfo extends Component {
     state = {
-      currency: "",
-      acc1Sent: 0,
-      acc2Sent: 0,
-      totalValue: 0,
+        currency: "E",
     }
-
-    convert_currency = async(selectedLink) => {
-      var newAcc1Sent = selectedLink.acc1Sent
-      var newAcc2Sent = selectedLink.acc2Sent
-      var newTotalValue = selectedLink.totalValue
-        //Only convert if the graph currency is $ default for nodes and links is eth
-        if (this.state.currency === "$") {
-            const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
-                return response.json();
-            }).then(function (response) {
-                return parseFloat(response.AUD);
-            });
-            newAcc1Sent = parseFloat(rate * newAcc1Sent);
-            newAcc2Sent = parseFloat(rate * newAcc2Sent);
-            newTotalValue = parseFloat(rate * newTotalValue);
-        }
-        this.setState({acc1Sent: newAcc1Sent, acc2Sent: newAcc2Sent, totalValue: newTotalValue})
-    };
 
     componentDidMount() {
         this.props.links.sub(selectedLink => {
             this.setState({ selectedLink })
             this.convert_currency(selectedLink)
         })
+        this.props.currencyConversionRate.sub(currencyConversionRate => {
+            this.setState({ currencyConversionRate: currencyConversionRate })
+        })
         this.props.currency.sub(currency => {
             this.setState({currency: currency})
         })
+    }
+
+    convert_currency(selectedLink) {
+        var newAcc1Sent = selectedLink.acc1Sent
+        var newAcc2Sent = selectedLink.acc2Sent
+        var newTotalValue = selectedLink.totalValue
+        var rate = this.state.currencyConversionRate
+        if (this.state.currency === "$") {
+            newAcc1Sent = parseFloat(rate * newAcc1Sent);
+            newAcc2Sent = parseFloat(rate * newAcc2Sent);
+            newTotalValue = parseFloat(rate * newTotalValue);
+        }
+        this.setState({acc1Sent: newAcc1Sent, acc2Sent: newAcc2Sent, totalValue: newTotalValue})
     }
 
     render() {

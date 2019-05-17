@@ -33,7 +33,6 @@ const myConfig = {
     },
     link: {
         highlightColor: 'lightblue',
-        renderLabel: true,
         fontColor: "white",
     }
 }

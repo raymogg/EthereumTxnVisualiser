@@ -1,16 +1,8 @@
 import React, {Component} from 'react';
 
 
-export default class AccountInfo extends Component {
-    state = {
-        selectedNode: {
-            id: 'accountAddress',
-            transactionsToCount: 10,
-            transactionsFromCount: 10,
-            netValue: 10,
-            currency: 'E',
-        },
-    }
+export default class NodeInfo extends Component {
+    state = {}
 
     componentDidMount() {
         this.props.nodes.sub(selectedNode => {
@@ -42,43 +34,13 @@ export default class AccountInfo extends Component {
         this.setState({netValue: newNetValue})
     };
 
-    /**
-     * Function to do the API call for AUD conversion ralue for ETH.
-     *
-     * @returns {Promise<void>}
-    onValueClick = async () => {
-        var value, currency;
-        console.log(this.state.selectedNode)
-        // if we have native ETH Value in the selectedNode state object (which we always will, but just in case)
-        if (this.state.selectedNode.currency === "E") {
-            const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
-                return response.json();
-            }).then(function (response) {
-                return parseFloat(response.AUD);
-            });
-
-            value = parseFloat(rate * this.state.selectedNode.netValue);
-            currency = "$";
-        } else {
-            const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=AUD&tsyms=ETH").then(function (response) {
-                return response.json();
-            }).then(function (response) {
-                console.log(response)
-                return parseFloat(response.ETH);
-            });
-            value = parseFloat(rate * this.state.selectedNode.netValue);
-            currency = "E";
-        }
-        // create a new object to send back as the updated state for re-render
-        const updatedNode = this.state.selectedNode;
-        updatedNode.currency = currency;
-        updatedNode.netValue = value;
-        console.log(this.state.selectedNode)
-        // set the state
-        this.setState({ noNodeSelected: updatedNode });
-    };*/
-
     render() {
+      return this.state.selectedNode
+          ? this.renderSelectedNode()
+          : NodeInfo.renderNoneSelected()
+    }
+
+    renderSelectedNode() {
         return (
             <div className="selected-node">
                 <h4>{this.state.selectedNode.id}</h4>
@@ -94,6 +56,14 @@ export default class AccountInfo extends Component {
                     <div>Node Net Value</div>
                     <div>({this.state.currency}){this.state.netValue}</div>
                 </div>
+            </div>
+        )
+    }
+
+    static renderNoneSelected() {
+        return (
+            <div className="selected-node">
+                <div>No Node selected yet</div>
             </div>
         )
     }

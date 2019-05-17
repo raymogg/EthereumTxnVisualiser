@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './App.css';
 import CustomGraph from "./components/Graph.js"
 import AddressEntry from './components/AddressEntry';
-import AccountInfo from './components/AccountInfo'
+import NodeInfo from './components/NodeInfo'
 import TransactionBacklog from './components/TransactionBacklog'
 import LinkInfo from './components/LinkInfo'
 import {createMuiTheme} from '@material-ui/core/styles';
@@ -55,14 +55,6 @@ const emptyGraph = {
     links: []
 }
 
-const noNodeSelected = {
-    id: "Hover over node",
-    transactionsToCount: 0,
-    transactionsFromCount: 0,
-    netValue: 0,
-    currency: "E",
-};
-
 
 class App extends Component {
     state = {
@@ -77,11 +69,6 @@ class App extends Component {
         dataSet: false,
         /* object with 'nodes' and 'updateAccountLinks' properties */
         graph: emptyGraph,
-
-        /* empty node placeholder for the node details on hover */
-        selectedNode: noNodeSelected,
-        //place holder for selectedLink
-        selectedLink: "",
         /* a bool that represents whether a new graph is being loaded */
         isLoading: false,
         //Bool representating whether edges should be scaled by transaction value (when true)
@@ -97,9 +84,13 @@ class App extends Component {
         tokenAddress: "0x0",
         //Holder for the direction of the graph
         directed: false,
-        //Holder for the currency displayed by the graphs data
+        //currency holder which determines what currency the data is displayed in
         currency: "E",
         currencyStream: SimpleStream(),
+        //Holder to check if the conversion rate has been retrieved
+        currencyConversionRate: false,
+        //Stream that sends the conversion rate
+        currencyConversionStream: SimpleStream(),
         /* Whenever the user 'hovers' over a node, the node / account info should be
         * published to this stream. */
         mouseOverNodeStream: SimpleStream(),
@@ -160,7 +151,6 @@ class App extends Component {
             accountLinks: {},
             dataSet: false,
             graph: emptyGraph,
-            selectedNode: noNodeSelected,
             isLoading: true,
             error: false
         }, onComplete)
@@ -223,8 +213,8 @@ class App extends Component {
       this.state.currency = newCurrency
       //resend to the streams
       this.state.linkClickedStream.pub(false)
+      this.state.mouseOverNodeStream.pub(false)
       this.state.currencyStream.pub(this.state.currency)
-      this.state.mouseOverNodeStream.pub(noNodeSelected)
     }
 
     onTokenChange = (newToken) => {
@@ -323,21 +313,39 @@ class App extends Component {
         this.updateWithTransactions(transactions)
     }
 
+    /**
+    Function which fetches the conversion rate from an online source
+    */
+    getConversionRate = async() => {
+        const rate = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=AUD").then(function (response) {
+            return response.json()
+        }).then(function (response) {
+              return parseFloat(response.AUD)
+        });
+        this.state.currencyConversionStream.pub(rate)
+        this.setState({currencyConversionRate: true})
+    };
+
     render() {
         if (this.state.dataSet) {
             document.querySelector(".selected-node").style.visibility = "visible";
             document.querySelector(".selected-link").style.visibility = "visible";
-        }
+        };
+        if (!this.state.currencyConversionRate) {
+            this.getConversionRate();
+        };
 
         return (
             <div className="App">
                 <div className="mainContainer" style={mainContainerStyle}>
 
                     <div className="selected-container">
-                        <AccountInfo nodes={this.state.mouseOverNodeStream}
-                                     currency={this.state.currencyStream}/>
+                        <NodeInfo nodes={this.state.mouseOverNodeStream}
+                                  currency={this.state.currencyStream}
+                                  currencyConversionRate={this.state.currencyConversionStream}/>
                         <LinkInfo links={this.state.linkClickedStream}
-                                  currency={this.state.currencyStream}/>
+                                  currency={this.state.currencyStream}
+                                  currencyConversionRate={this.state.currencyConversionStream}/>
                     </div>
 
                     <AddressEntry searchHandler={this.searchHandler}
