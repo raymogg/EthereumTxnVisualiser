@@ -1,6 +1,6 @@
 import {IterStream} from "../stream";
 
-const API_KEY = `FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7`;
+const API_KEY = process.env.API_KEY || `FNSRA72PPZD837EAM6N6Q3ZU2EUKRYGPQ7`
 
 
 function removeTransactionsWithInvalidAddresses(transactions) {

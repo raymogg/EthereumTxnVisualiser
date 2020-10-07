@@ -84,7 +84,7 @@ class App extends Component {
         //What token does the user want to show transactions for (note this is the tokens contract address)
         tokenAddress: "0x0",
         //Holder for the direction of the graph
-        directed: false,
+        directed: true,
         //currency holder which determines what currency the data is displayed in
         currency: "E",
         currencyStream: SimpleStream(),
