@@ -21,6 +21,9 @@
     "request-promise": "^4.2.4",
     "web3-utils": "^1.0.0-beta.55"
   },
+  "devDependencies": {
+    "prettier": "^2.1.2"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -41,5 +44,21 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "trailingComma": "es5",
+    "arrowParens": "avoid",
+    "printWidth": 120,
+    "proseWrap": "always",
+    "jsxBracketSameLine": true,
+    "jsxSingleQuote": true,
+    "importSort": {
+      ".js, .jsx, .ts, .tsx": {
+        "style": "module"
+      }
+    }
   }
 }

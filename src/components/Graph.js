@@ -117,16 +117,17 @@ class CustomGraph extends Component {
             }
         } else {
             return (
-                <Graph
-                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                    data={this.props.graph}
-                    config={this.setConfig(myConfig)}
-                    style={{width: '100%!important', height: '100vh!important'}}
-                    onMouseOverNode={this.props.onHoverNode}
-                    onClickGraph={this.props.onClickGraph}
-                    onClickNode={this.props.onClickNode}
-                    onMouseOverLink={this.props.onMouseOverLink}
-                />
+              <Graph
+                id='graph-id' // id is mandatory, if no id is defined rd3g will throw an error
+                data={this.props.graph}
+                config={this.setConfig(myConfig)}
+                style={{ width: '100%!important', height: '100vh!important' }}
+                onMouseOverNode={this.props.onHoverNode}
+                onClickGraph={this.props.onClickGraph}
+                onClickNode={this.props.onClickNode}
+                onDoubleClickNode={this.props.onDoubleClickNode}
+                onMouseOverLink={this.props.onMouseOverLink}
+              />
             )
         }
     }
