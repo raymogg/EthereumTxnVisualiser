@@ -33,7 +33,7 @@ class AddressEntry extends Component {
         open: false,
         edgeScaleSetting: "Transaction Count",
         showKey: true,
-        directionKey: false,
+        directionKey: true,
         network: "mainnet",
         selectedToken: "0x0",
         addressError: false,
